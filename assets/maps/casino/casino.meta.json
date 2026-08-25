@@ -1,0 +1,16 @@
+{
+  "id": "casino",
+  "version": 1,
+  "spawn": {
+    "x": 19.5,
+    "z": 2.5,
+    "yawDegrees": 0.0
+  },
+  "skyPalette": "sky",
+  "fogPalette": "fog",
+  "ceiling": {
+    "height": 7.0,
+    "material": "ceiling.casino"
+  },
+  "objectsFile": "casino.objects.json"
+}

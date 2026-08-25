@@ -1,0 +1,364 @@
+{
+  "cells": [
+    {
+      "id": "road",
+      "token": ".",
+      "groundMaterial": "ground.road",
+      "facadeMaterial": "facade.none",
+      "solid": false,
+      "opaque": false,
+      "height": 0,
+      "tags": ["road", "walkable", "open-sightline"]
+    },
+    {
+      "id": "sidewalk",
+      "token": ",",
+      "groundMaterial": "ground.sidewalk",
+      "facadeMaterial": "facade.none",
+      "solid": false,
+      "opaque": false,
+      "height": 0,
+      "tags": ["sidewalk", "walkable"]
+    },
+    {
+      "id": "alley",
+      "token": ":",
+      "groundMaterial": "ground.alley",
+      "facadeMaterial": "facade.none",
+      "solid": false,
+      "opaque": false,
+      "height": 0,
+      "tags": ["alley", "walkable", "glitch-zone"]
+    },
+    {
+      "id": "plaza",
+      "token": "_",
+      "groundMaterial": "ground.plaza",
+      "facadeMaterial": "facade.none",
+      "solid": false,
+      "opaque": false,
+      "height": 0,
+      "tags": ["plaza", "walkable", "public-node"]
+    },
+    {
+      "id": "park.grass",
+      "token": "p",
+      "groundMaterial": "ground.park",
+      "facadeMaterial": "facade.none",
+      "solid": false,
+      "opaque": false,
+      "height": 0,
+      "tags": ["park", "grass", "walkable"]
+    },
+    {
+      "id": "park.tree",
+      "token": "g",
+      "groundMaterial": "ground.park",
+      "facadeMaterial": "facade.foliage",
+      "solid": true,
+      "opaque": true,
+      "height": 8,
+      "tags": ["park", "tree", "foliage"]
+    },
+    {
+      "id": "park.path",
+      "token": "=",
+      "groundMaterial": "ground.park-path",
+      "facadeMaterial": "facade.none",
+      "solid": false,
+      "opaque": false,
+      "height": 0,
+      "tags": ["park", "path", "walkable"]
+    },
+    {
+      "id": "park.pond",
+      "token": "~",
+      "groundMaterial": "ground.pond",
+      "facadeMaterial": "facade.none",
+      "solid": true,
+      "opaque": false,
+      "height": 1,
+      "tags": ["park", "pond", "water"]
+    },
+    {
+      "id": "park.bench",
+      "token": "b",
+      "groundMaterial": "ground.park",
+      "facadeMaterial": "facade.park-wood",
+      "solid": true,
+      "opaque": true,
+      "height": 1,
+      "tags": ["park", "bench", "fixture"]
+    },
+    {
+      "id": "park.bin",
+      "token": "i",
+      "groundMaterial": "ground.park",
+      "facadeMaterial": "facade.park-metal",
+      "solid": true,
+      "opaque": true,
+      "height": 1,
+      "tags": ["park", "bin", "fixture"]
+    },
+    {
+      "id": "park.fountain",
+      "token": "f",
+      "groundMaterial": "ground.pond",
+      "facadeMaterial": "facade.fountain",
+      "solid": true,
+      "opaque": true,
+      "height": 2,
+      "tags": ["park", "fountain", "fixture", "water"]
+    },
+    {
+      "id": "park.pavilion",
+      "token": "v",
+      "groundMaterial": "ground.park-path",
+      "facadeMaterial": "facade.pavilion",
+      "solid": true,
+      "opaque": true,
+      "height": 4,
+      "tags": ["park", "pavilion", "fixture"]
+    },
+    {
+      "id": "nature.trail",
+      "token": "q",
+      "groundMaterial": "ground.nature-trail",
+      "facadeMaterial": "facade.none",
+      "solid": false,
+      "opaque": false,
+      "height": 0,
+      "tags": ["park", "nature", "path", "trail", "walkable"]
+    },
+    {
+      "id": "nature.pine",
+      "token": "y",
+      "groundMaterial": "ground.park",
+      "facadeMaterial": "facade.pine",
+      "solid": true,
+      "opaque": true,
+      "height": 10,
+      "tags": ["park", "nature", "tree", "pine", "foliage"]
+    },
+    {
+      "id": "nature.tent",
+      "token": "c",
+      "groundMaterial": "ground.park",
+      "facadeMaterial": "facade.tent",
+      "solid": true,
+      "opaque": true,
+      "height": 2,
+      "tags": ["park", "nature", "tent", "fixture"]
+    },
+    {
+      "id": "nature.bridge",
+      "token": "h",
+      "groundMaterial": "ground.bridge",
+      "facadeMaterial": "facade.none",
+      "solid": false,
+      "opaque": false,
+      "height": 0,
+      "tags": ["park", "nature", "path", "bridge", "walkable"]
+    },
+    {
+      "id": "nature.waterfall",
+      "token": "w",
+      "groundMaterial": "ground.pond",
+      "facadeMaterial": "facade.waterfall",
+      "solid": true,
+      "opaque": true,
+      "height": 7,
+      "tags": ["park", "nature", "water", "waterfall", "fixture"]
+    },
+    {
+      "id": "nature.rock",
+      "token": "r",
+      "groundMaterial": "ground.park",
+      "facadeMaterial": "facade.rock",
+      "solid": true,
+      "opaque": true,
+      "height": 7,
+      "tags": ["park", "nature", "rock", "cliff"]
+    },
+    {
+      "id": "building.garden-home-1",
+      "token": "H",
+      "groundMaterial": "ground.alley",
+      "facadeMaterial": "facade.garden-home",
+      "solid": true,
+      "opaque": true,
+      "height": 3,
+      "tags": ["building", "residential", "garden-home", "house", "one-story"]
+    },
+    {
+      "id": "building.garden-home-2",
+      "token": "J",
+      "groundMaterial": "ground.alley",
+      "facadeMaterial": "facade.garden-home",
+      "solid": true,
+      "opaque": true,
+      "height": 6,
+      "tags": ["building", "residential", "garden-home", "house", "two-story"]
+    },
+    {
+      "id": "building.residential-1",
+      "token": "1",
+      "groundMaterial": "ground.alley",
+      "facadeMaterial": "facade.residential",
+      "solid": true,
+      "opaque": true,
+      "height": 3,
+      "tags": ["building", "residential", "house", "garden-home", "one-story"]
+    },
+    {
+      "id": "building.residential-2",
+      "token": "2",
+      "groundMaterial": "ground.alley",
+      "facadeMaterial": "facade.residential",
+      "solid": true,
+      "opaque": true,
+      "height": 6,
+      "tags": ["building", "residential", "house", "garden-home", "two-story"]
+    },
+    {
+      "id": "building.residential-3",
+      "token": "3",
+      "groundMaterial": "ground.alley",
+      "facadeMaterial": "facade.residential",
+      "solid": true,
+      "opaque": true,
+      "height": 9,
+      "tags": ["building", "residential", "complex", "three-story"]
+    },
+    {
+      "id": "building.residential-4",
+      "token": "4",
+      "groundMaterial": "ground.alley",
+      "facadeMaterial": "facade.residential",
+      "solid": true,
+      "opaque": true,
+      "height": 12,
+      "tags": ["building", "residential", "complex", "four-story"]
+    },
+    {
+      "id": "building.residential-5",
+      "token": "5",
+      "groundMaterial": "ground.alley",
+      "facadeMaterial": "facade.residential",
+      "solid": true,
+      "opaque": true,
+      "height": 15,
+      "tags": ["building", "residential", "complex", "five-story"]
+    },
+    {
+      "id": "building.low",
+      "token": "l",
+      "groundMaterial": "ground.alley",
+      "facadeMaterial": "facade.low",
+      "solid": true,
+      "opaque": true,
+      "height": 6,
+      "tags": ["building", "low-rise"]
+    },
+    {
+      "id": "building.mid",
+      "token": "m",
+      "groundMaterial": "ground.alley",
+      "facadeMaterial": "facade.mid",
+      "solid": true,
+      "opaque": true,
+      "height": 12,
+      "tags": ["building", "mid-rise", "data-facade"]
+    },
+    {
+      "id": "building.tall",
+      "token": "t",
+      "groundMaterial": "ground.alley",
+      "facadeMaterial": "facade.tall",
+      "solid": true,
+      "opaque": true,
+      "height": 22,
+      "tags": ["building", "tower", "signal-stack"]
+    },
+    {
+      "id": "building.neon",
+      "token": "n",
+      "groundMaterial": "ground.alley",
+      "facadeMaterial": "facade.neon",
+      "solid": true,
+      "opaque": true,
+      "height": 16,
+      "tags": ["building", "neon", "volatile-data"]
+    },
+    {
+      "id": "interior.water-park-wall",
+      "token": "x",
+      "groundMaterial": "ground.plaza",
+      "facadeMaterial": "facade.water-park-wall",
+      "solid": true,
+      "opaque": true,
+      "height": 7,
+      "tags": ["interior", "water-park", "wall"]
+    },
+    {
+      "id": "interior.casino-floor",
+      "token": "u",
+      "groundMaterial": "ground.casino-carpet",
+      "facadeMaterial": "facade.none",
+      "solid": false,
+      "opaque": false,
+      "height": 0,
+      "tags": ["interior", "casino", "carpet", "walkable"]
+    },
+    {
+      "id": "interior.casino-aisle",
+      "token": "j",
+      "groundMaterial": "ground.casino-aisle",
+      "facadeMaterial": "facade.none",
+      "solid": false,
+      "opaque": false,
+      "height": 0,
+      "tags": ["interior", "casino", "aisle", "walkable"]
+    },
+    {
+      "id": "interior.casino-wall",
+      "token": "X",
+      "groundMaterial": "ground.casino-carpet",
+      "facadeMaterial": "facade.casino-wall",
+      "solid": true,
+      "opaque": true,
+      "height": 7,
+      "tags": ["interior", "casino", "wall"]
+    },
+    {
+      "id": "interior.casino-slot",
+      "token": "s",
+      "groundMaterial": "ground.casino-carpet",
+      "facadeMaterial": "facade.casino-slot",
+      "solid": true,
+      "opaque": true,
+      "height": 2,
+      "tags": ["interior", "casino", "slot-machine", "fixture"]
+    },
+    {
+      "id": "interior.casino-table",
+      "token": "k",
+      "groundMaterial": "ground.casino-carpet",
+      "facadeMaterial": "facade.casino-table",
+      "solid": true,
+      "opaque": true,
+      "height": 1,
+      "tags": ["interior", "casino", "gaming-table"]
+    },
+    {
+      "id": "interior.casino-light-column",
+      "token": "o",
+      "groundMaterial": "ground.casino-aisle",
+      "facadeMaterial": "facade.casino-light",
+      "solid": true,
+      "opaque": true,
+      "height": 3,
+      "tags": ["interior", "casino", "light-column"]
+    }
+  ]
+}

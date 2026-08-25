@@ -1,0 +1,52 @@
+{
+  "dialogues": [
+    {
+      "id": "dialogue.rin.intro",
+      "speaker": "Rin",
+      "lines": [
+        "You hear the city compiling under the rain.",
+        "Follow the bright data lanes if you want the archive."
+      ]
+    },
+    {
+      "id": "terminal.relay-01",
+      "speaker": "CASCADE RELAY",
+      "lines": [
+        "CONNECTION ESTABLISHED // CASCADE UPLINK",
+        "RECOVERY PROTOCOL PENDING"
+      ]
+    },
+    {
+      "id": "terminal.archive",
+      "speaker": "ARCHIVE NODE",
+      "lines": [
+        "ARCHIVE HANDSHAKE REJECTED",
+        "RECOVERY PROTOCOL PENDING"
+      ]
+    },
+    {
+      "id": "terminal.water-control",
+      "speaker": "FLOW CONTROL",
+      "lines": [
+        "FLOW REGULATOR ONLINE",
+        "AUTOMATIC WATER CYCLE NOMINAL"
+      ]
+    },
+    {
+      "id": "terminal.reserve-relay",
+      "speaker": "RESERVE RELAY",
+      "lines": [
+        "WILDLIFE BAND CARRIER DETECTED",
+        "RECOVERY PROTOCOL PENDING"
+      ]
+    },
+    {
+      "id": "terminal.casino-jackpot",
+      "speaker": "JACKPOT CONTROL",
+      "lines": [
+        "LAST LIGHT PAYOUT GRID ONLINE",
+        "HOUSE NETWORK ISOLATED // ALL MACHINES NOMINAL"
+      ]
+    }
+  ]
+}

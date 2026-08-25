@@ -1,0 +1,252 @@
+{
+  "sprites": [
+    {
+      "id": "sprite.rin",
+      "physicalWidth": 0.8,
+      "physicalHeight": 1.8,
+      "anchor": { "x": 0.5, "y": 0.0 },
+      "glyphRows": [
+        "   /\\    ",
+        "  /__\\   ",
+        " |o  o|  ",
+        " | -- |  ",
+        "  \\__/   ",
+        "  /||\\   ",
+        " / || \\  ",
+        "   ||    ",
+        "  /  \\   ",
+        " /____\\  "
+      ],
+      "colorRows": [
+        "   cc    ",
+        "  cccc   ",
+        " nc  cn  ",
+        " n nn n  ",
+        "  nnnn   ",
+        "  mnnm   ",
+        " m nn m  ",
+        "   nn    ",
+        "  n  n   ",
+        " nnnnnn  "
+      ],
+      "colors": [
+        { "symbol": "c", "palette": "neonCyan" },
+        { "symbol": "m", "palette": "neonMagenta" },
+        { "symbol": "n", "palette": "npc" }
+      ]
+    },
+    {
+      "id": "sprite.terminal",
+      "physicalWidth": 0.9,
+      "physicalHeight": 1.25,
+      "anchor": { "x": 0.5, "y": 0.0 },
+      "glyphRows": [
+        "   .-------.   ",
+        "   | [###] |   ",
+        "   | [###] |   ",
+        "   | [---] |   ",
+        "   |   |   |   ",
+        "   |___|___|   ",
+        "      | |      ",
+        "     /___\\     "
+      ],
+      "colorRows": [
+        "   mmmmmmmmm   ",
+        "   m mcccm m   ",
+        "   m mcccm m   ",
+        "   m mcccm m   ",
+        "   m   m   m   ",
+        "   mmmmmmmmm   ",
+        "      m m      ",
+        "     mmmmm     "
+      ],
+      "colors": [
+        { "symbol": "c", "palette": "neonCyan" },
+        { "symbol": "m", "palette": "parkMetal" }
+      ]
+    },
+    {
+      "id": "sprite.door",
+      "physicalWidth": 3.0,
+      "physicalHeight": 2.2,
+      "anchor": { "x": 0.5, "y": 0.0 },
+      "glyphRows": [
+        "+-----------+",
+        "|  @@   @@  |",
+        "|  @@   @@  |",
+        "|  ||---||  |",
+        "|__||___||__|"
+      ],
+      "colorRows": [
+        "mmmmmmmmmmmmm",
+        "m  cc   cc  m",
+        "m  cc   cc  m",
+        "m  mmmmmmm  m",
+        "mmmmmmmmmmmmm"
+      ],
+      "colors": [
+        { "symbol": "c", "palette": "neonCyan" },
+        { "symbol": "m", "palette": "neonAmber" }
+      ]
+    },
+    {
+      "id": "sprite.car.taxi",
+      "physicalWidth": 1.8,
+      "physicalHeight": 0.9,
+      "anchor": { "x": 0.5, "y": 0.0 },
+      "glyphRows": [
+        "_______",
+        "|=*=|  ",
+        "|o---o|",
+        " O   O "
+      ],
+      "colorRows": [
+        "aaaaaaa",
+        "accca  ",
+        "acaaaca",
+        " a   a "
+      ],
+      "colors": [
+        { "symbol": "a", "palette": "neonAmber" },
+        { "symbol": "c", "palette": "neonCyan" }
+      ]
+    },
+    {
+      "id": "sprite.car.sedan",
+      "physicalWidth": 1.8,
+      "physicalHeight": 0.9,
+      "anchor": { "x": 0.5, "y": 0.0 },
+      "glyphRows": [
+        "_______",
+        "|<+>|  ",
+        "|o===o|",
+        " O   O "
+      ],
+      "colorRows": [
+        "aaaaaaa",
+        "accca  ",
+        "acaaaca",
+        " a   a "
+      ],
+      "colors": [
+        { "symbol": "a", "palette": "neonMagenta" },
+        { "symbol": "c", "palette": "neonCyan" }
+      ]
+    },
+    {
+      "id": "sprite.car.van",
+      "physicalWidth": 2.0,
+      "physicalHeight": 1.0,
+      "anchor": { "x": 0.5, "y": 0.0 },
+      "glyphRows": [
+        "_______",
+        "|[+]|  ",
+        "|o===o|",
+        " O   O "
+      ],
+      "colorRows": [
+        "aaaaaaa",
+        "accca  ",
+        "acaaaca",
+        " a   a "
+      ],
+      "colors": [
+        { "symbol": "a", "palette": "neonGreen" },
+        { "symbol": "c", "palette": "neonAmber" }
+      ]
+    },
+    {
+      "id": "sprite.pedestrian.coat",
+      "physicalWidth": 0.65,
+      "physicalHeight": 1.75,
+      "anchor": { "x": 0.5, "y": 0.0 },
+      "glyphRows": [
+        "  .-.  ",
+        " (o o) ",
+        "  \\_/  ",
+        "  /|\\  ",
+        " / | \\ ",
+        "   |   ",
+        "  / \\  ",
+        " /   \\ "
+      ],
+      "colorRows": [
+        "  aaa  ",
+        " an na ",
+        "  nnn  ",
+        "  aaa  ",
+        " a a a ",
+        "   a   ",
+        "  a a  ",
+        " a   a "
+      ],
+      "colors": [
+        { "symbol": "a", "palette": "npc" },
+        { "symbol": "n", "palette": "signCream" }
+      ]
+    },
+    {
+      "id": "sprite.pedestrian.umbrella",
+      "physicalWidth": 0.85,
+      "physicalHeight": 1.8,
+      "anchor": { "x": 0.5, "y": 0.0 },
+      "glyphRows": [
+        "_______",
+        "  .-.  ",
+        " (o o) ",
+        "  \\_/  ",
+        "  /|\\  ",
+        " / | \\ ",
+        "   |   ",
+        "  / \\  ",
+        " /   \\ "
+      ],
+      "colorRows": [
+        "rrrrrrr",
+        "  aaa  ",
+        " an na ",
+        "  nnn  ",
+        "  aaa  ",
+        " a a a ",
+        "   a   ",
+        "  a a  ",
+        " a   a "
+      ],
+      "colors": [
+        { "symbol": "r", "palette": "signRedOrange" },
+        { "symbol": "a", "palette": "npc" },
+        { "symbol": "n", "palette": "signCream" }
+      ]
+    },
+    {
+      "id": "sprite.pedestrian.courier",
+      "physicalWidth": 0.72,
+      "physicalHeight": 1.75,
+      "anchor": { "x": 0.5, "y": 0.0 },
+      "glyphRows": [
+        "  _-_  ",
+        " (o o) ",
+        "  \\_/  ",
+        "[]/|\\  ",
+        "[] | \\ ",
+        "   |   ",
+        "  / \\  ",
+        " /   \\ "
+      ],
+      "colorRows": [
+        "  ggg  ",
+        " gn ng ",
+        "  nnn  ",
+        "ggggg  ",
+        "gg g g ",
+        "   g   ",
+        "  g g  ",
+        " g   g "
+      ],
+      "colors": [
+        { "symbol": "g", "palette": "signGold" },
+        { "symbol": "n", "palette": "signCream" }
+      ]
+    }
+  ]
+}

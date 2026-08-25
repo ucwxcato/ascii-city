@@ -1,0 +1,50 @@
+{
+  "objects": [
+    {
+      "id": "npc.rin",
+      "type": "npc",
+      "x": 23.5,
+      "z": 15.5,
+      "blocking": true,
+      "radius": 0.24,
+      "spriteId": "sprite.rin",
+      "facingDegrees": 270.0,
+      "interactionId": "dialogue.rin.intro",
+      "displayText": "Rin"
+    },
+    {
+      "id": "terminal.reserve-relay",
+      "type": "terminal",
+      "x": 19.5,
+      "z": 28.5,
+      "blocking": false,
+      "radius": 0.24,
+      "interactionId": "terminal.reserve-relay",
+      "displayText": "RESERVE RELAY"
+    },
+    {
+      "id": "lamp.reserve-trailhead",
+      "type": "lamp",
+      "x": 19.5,
+      "z": 4.5
+    },
+    {
+      "id": "lamp.reserve-crossing-west",
+      "type": "lamp",
+      "x": 15.5,
+      "z": 15.5
+    },
+    {
+      "id": "lamp.reserve-crossing-east",
+      "type": "lamp",
+      "x": 24.5,
+      "z": 16.5
+    },
+    {
+      "id": "lamp.reserve-cascade",
+      "type": "lamp",
+      "x": 13.5,
+      "z": 24.5
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "nature-reserve",
+  "version": 1,
+  "spawn": {
+    "x": 19.5,
+    "z": 2.5,
+    "yawDegrees": 0.0
+  },
+  "skyPalette": "sky",
+  "fogPalette": "fog",
+  "objectsFile": "nature-reserve.objects.json"
+}

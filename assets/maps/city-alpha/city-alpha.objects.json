@@ -1,0 +1,632 @@
+{
+  "objects": [
+    {
+      "id": "npc.rin",
+      "type": "npc",
+      "x": 45.5,
+      "z": 16.5,
+      "blocking": true,
+      "radius": 0.24,
+      "spriteId": "sprite.rin",
+      "facingDegrees": 270.0,
+      "interactionId": "dialogue.rin.intro",
+      "displayText": "Rin"
+    },
+    {
+      "id": "terminal.relay-01",
+      "type": "terminal",
+      "x": 2.5,
+      "z": 25.5,
+      "blocking": false,
+      "radius": 0.24,
+      "interactionId": "terminal.relay-01",
+      "displayText": "CASCADE RELAY"
+    },
+    {
+      "id": "terminal.archive",
+      "type": "terminal",
+      "x": 51.5,
+      "z": 20.5,
+      "blocking": false,
+      "radius": 0.24,
+      "interactionId": "terminal.archive",
+      "displayText": "ARCHIVE NODE"
+    },
+    {
+      "id": "door.last-light-casino",
+      "type": "door",
+      "x": 26.5,
+      "z": 4.5,
+      "blocking": false,
+      "radius": 1.5,
+      "interactionId": "door.last-light-casino",
+      "displayText": "LAST LIGHT CASINO",
+      "destinationMapId": "casino"
+    },
+    {
+      "id": "door.archive",
+      "type": "door",
+      "x": 53.5,
+      "z": 19.5,
+      "blocking": true,
+      "radius": 0.45,
+      "interactionId": "door.archive",
+      "displayText": "SEALED"
+    },
+    {
+      "id": "lamp.market-west-01",
+      "type": "lamp",
+      "x": 45.5,
+      "z": 12.5
+    },
+    {
+      "id": "lamp.market-east-01",
+      "type": "lamp",
+      "x": 51.5,
+      "z": 12.5
+    },
+    {
+      "id": "lamp.market-west-02",
+      "type": "lamp",
+      "x": 45.5,
+      "z": 22.5
+    },
+    {
+      "id": "lamp.market-east-02",
+      "type": "lamp",
+      "x": 51.5,
+      "z": 22.5
+    },
+    {
+      "id": "lamp.market-west-03",
+      "type": "lamp",
+      "x": 45.5,
+      "z": 28.5
+    },
+    {
+      "id": "lamp.market-east-03",
+      "type": "lamp",
+      "x": 51.5,
+      "z": 28.5
+    },
+    {
+      "id": "lamp.market-west-04",
+      "type": "lamp",
+      "x": 45.5,
+      "z": 36.5
+    },
+    {
+      "id": "lamp.market-east-04",
+      "type": "lamp",
+      "x": 51.5,
+      "z": 36.5
+    },
+    {
+      "id": "lamp.park-entry",
+      "type": "lamp",
+      "x": 28.5,
+      "z": 15.5
+    },
+    {
+      "id": "lamp.park-south",
+      "type": "lamp",
+      "x": 31.5,
+      "z": 18.5
+    },
+    {
+      "id": "lamp.park-west",
+      "type": "lamp",
+      "x": 24.5,
+      "z": 21.5
+    },
+    {
+      "id": "lamp.park-east",
+      "type": "lamp",
+      "x": 40.5,
+      "z": 21.5
+    },
+    {
+      "id": "lamp.park-north",
+      "type": "lamp",
+      "x": 32.5,
+      "z": 23.5
+    },
+    {
+      "id": "lamp.park-pavilion",
+      "type": "lamp",
+      "x": 37.5,
+      "z": 26.5
+    },
+    {
+      "id": "lamp.nature-trailhead",
+      "type": "lamp",
+      "x": 11.5,
+      "z": 20.5
+    },
+    {
+      "id": "lamp.nature-camp",
+      "type": "lamp",
+      "x": 9.5,
+      "z": 18.5
+    },
+    {
+      "id": "lamp.nature-cascade",
+      "type": "lamp",
+      "x": 3.5,
+      "z": 24.5
+    }
+  ],
+  "trafficCars": [
+    {
+      "id": "car.night-taxi",
+      "spriteId": "sprite.car.taxi",
+      "speedCellsPerSecond": 2.1,
+      "phaseOffsetSeconds": 0.0,
+      "label": "TAXI",
+      "waypoints": [
+        { "x": 16.5, "z": 10.5 },
+        { "x": 48.5, "z": 10.5 },
+        { "x": 48.5, "z": 33.5 },
+        { "x": 16.5, "z": 33.5 }
+      ]
+    },
+    {
+      "id": "car.neon-sedan",
+      "spriteId": "sprite.car.sedan",
+      "speedCellsPerSecond": 1.65,
+      "phaseOffsetSeconds": 19.0,
+      "waypoints": [
+        { "x": 47.5, "z": 34.5 },
+        { "x": 80.5, "z": 34.5 },
+        { "x": 80.5, "z": 57.5 },
+        { "x": 47.5, "z": 57.5 }
+      ]
+    },
+    {
+      "id": "car.cargo-van",
+      "spriteId": "sprite.car.van",
+      "speedCellsPerSecond": 1.2,
+      "phaseOffsetSeconds": 46.0,
+      "waypoints": [
+        { "x": 15.5, "z": 58.5 },
+        { "x": 47.5, "z": 58.5 },
+        { "x": 47.5, "z": 81.5 },
+        { "x": 15.5, "z": 81.5 }
+      ]
+    },
+    {
+      "id": "car.arcade-coupe",
+      "spriteId": "sprite.car.sedan",
+      "speedCellsPerSecond": 2.1,
+      "phaseOffsetSeconds": 17.0,
+      "waypoints": [
+        { "x": 16.5, "z": 10.5 },
+        { "x": 48.5, "z": 10.5 },
+        { "x": 48.5, "z": 33.5 },
+        { "x": 16.5, "z": 33.5 }
+      ]
+    },
+    {
+      "id": "car.market-cab",
+      "spriteId": "sprite.car.taxi",
+      "speedCellsPerSecond": 1.65,
+      "phaseOffsetSeconds": 37.0,
+      "label": "TAXI",
+      "waypoints": [
+        { "x": 47.5, "z": 34.5 },
+        { "x": 80.5, "z": 34.5 },
+        { "x": 80.5, "z": 57.5 },
+        { "x": 47.5, "z": 57.5 }
+      ]
+    },
+    {
+      "id": "car.park-delivery",
+      "spriteId": "sprite.car.van",
+      "speedCellsPerSecond": 1.2,
+      "phaseOffsetSeconds": 29.0,
+      "waypoints": [
+        { "x": 15.5, "z": 58.5 },
+        { "x": 47.5, "z": 58.5 },
+        { "x": 47.5, "z": 81.5 },
+        { "x": 15.5, "z": 81.5 }
+      ]
+    }
+  ],
+  "facadeSigns": [
+    {
+      "id": "sign.last-light-casino",
+      "face": "north",
+      "cellX": 23,
+      "cellZ": 3,
+      "widthCells": 10,
+      "bottom": 2.4,
+      "height": 3.6,
+      "glyphRows": [
+        "+..............................................................+",
+        "|                                                              |",
+        "|                                                              |",
+        "|                                                              |",
+        "|                        . . . . . . .                         |",
+        "|                                                              |",
+        "|                           7  7  7                            |",
+        "|                                                              |",
+        "|                                                              |",
+        "|                                                              |",
+        "|                                                              |",
+        "+..............................................................+"
+      ],
+      "distantGlyphRows": [
+        "+..................................+",
+        "|                                  |",
+        "|                                  |",
+        "|            . . . . .             |",
+        "|             7  7  7              |",
+        "|                                  |",
+        "|                                  |",
+        "+..................................+"
+      ],
+      "borderPalette": "signGold",
+      "textPalette": "signCream",
+      "accentPalette": "signRedOrange",
+      "backgroundPalette": "signBackground",
+      "animationRate": 3.0,
+      "label": "LAST LIGHT CASINO"
+    },
+    {
+      "id": "sign.signal-lost",
+      "face": "south",
+      "cellX": 33,
+      "cellZ": 37,
+      "widthCells": 10,
+      "bottom": 1.5,
+      "height": 3.6,
+      "glyphRows": [
+        "+..............................................................+",
+        "|                                                              |",
+        "|                                                              |",
+        "|                                                              |",
+        "|                        . . . . . . .                         |",
+        "|                                                              |",
+        "|                                                              |",
+        "|                                                              |",
+        "|                                                              |",
+        "|                                                              |",
+        "|                                                              |",
+        "+..............................................................+"
+      ],
+      "distantGlyphRows": [
+        "+..................................+",
+        "|                                  |",
+        "|                                  |",
+        "|            . . . . .             |",
+        "|                                  |",
+        "|                                  |",
+        "|                                  |",
+        "+..................................+"
+      ],
+      "borderPalette": "signRedOrange",
+      "textPalette": "signCream",
+      "accentPalette": "signGold",
+      "backgroundPalette": "signBackground",
+      "animationRate": 2.0,
+      "label": "SIGNAL LOST"
+    },
+    {
+      "id": "sign.lucky-seven-synthetics",
+      "face": "east",
+      "cellX": 11,
+      "cellZ": 37,
+      "widthCells": 10,
+      "bottom": 1.5,
+      "height": 3.6,
+      "glyphRows": [
+        "+..............................................................+",
+        "|                                                              |",
+        "|                                                              |",
+        "|                                                              |",
+        "|                        . . . . . . .                         |",
+        "|                                                              |",
+        "|                                                              |",
+        "|                                                              |",
+        "|                                                              |",
+        "|                                                              |",
+        "|                                                              |",
+        "+..............................................................+"
+      ],
+      "distantGlyphRows": [
+        "+..................................+",
+        "|                                  |",
+        "|                                  |",
+        "|            . . . . .             |",
+        "|                                  |",
+        "|                                  |",
+        "|                                  |",
+        "+..................................+"
+      ],
+      "borderPalette": "signGold",
+      "textPalette": "signAcid",
+      "accentPalette": "signRedOrange",
+      "backgroundPalette": "signBackground",
+      "animationRate": 2.5,
+      "label": "LUCKY//7"
+    },
+    {
+      "id": "prop.vending-archive",
+      "face": "west",
+      "cellX": 53,
+      "cellZ": 14,
+      "widthCells": 1,
+      "bottom": 0.2,
+      "height": 2.0,
+      "glyphRows": [
+        "+-------+",
+        "|[SODA] |",
+        "| 24H   |",
+        "| . . . |",
+        "| [===] |",
+        "|   o   |",
+        "|_______|"
+      ],
+      "distantGlyphRows": [
+        "+---+",
+        "|24H|",
+        "|.o.|",
+        "+---+"
+      ],
+      "borderPalette": "signGold",
+      "textPalette": "signCream",
+      "accentPalette": "signAcid",
+      "backgroundPalette": "signBackground",
+      "animationRate": 1.4,
+      "label": "ARCHIVE 24H"
+    },
+    {
+      "id": "prop.noodle-market",
+      "face": "west",
+      "cellX": 53,
+      "cellZ": 24,
+      "widthCells": 1,
+      "bottom": 0.3,
+      "height": 2.1,
+      "glyphRows": [
+        "+-------+",
+        "|NOODLES|",
+        "| ~~~ . |",
+        "| \\___/ |",
+        "|OPEN 7 |",
+        "| . . . |",
+        "+-------+"
+      ],
+      "distantGlyphRows": [
+        "+-----+",
+        "|NOODL|",
+        "|~.o.~|",
+        "+-----+"
+      ],
+      "borderPalette": "signRedOrange",
+      "textPalette": "signCream",
+      "accentPalette": "signGold",
+      "backgroundPalette": "signBackground",
+      "animationRate": 1.0,
+      "label": "OPEN NOODLES"
+    },
+    {
+      "id": "prop.security-panel",
+      "face": "south",
+      "cellX": 35,
+      "cellZ": 37,
+      "widthCells": 1,
+      "bottom": 0.1,
+      "height": 1.2,
+      "glyphRows": [
+        "+-----+",
+        "|CAM.1|",
+        "| <o> |",
+        "|..REC|",
+        "+-----+"
+      ],
+      "distantGlyphRows": [
+        "+---+",
+        "|<o>|",
+        "+---+"
+      ],
+      "borderPalette": "signGold",
+      "textPalette": "signCream",
+      "accentPalette": "signRedOrange",
+      "backgroundPalette": "signBackground",
+      "animationRate": 1.8
+    }
+  ],
+  "facadeEntrances": [
+    {
+      "id": "entrance.last-light-casino",
+      "face": "north",
+      "cellX": 26,
+      "cellZ": 3,
+      "widthCells": 3,
+      "height": 2.2,
+      "glyphRows": [
+        "+-----------+",
+        "|  @@   @@  |",
+        "|  @@   @@  |",
+        "|  ||---||  |",
+        "|__||___||__|"
+      ],
+      "distantGlyphRows": [
+        "+-----+",
+        "|@@ @@|",
+        "| || ||",
+        "+-----+"
+      ],
+      "borderPalette": "neonAmber",
+      "textPalette": "neonCyan",
+      "accentPalette": "neonMagenta",
+      "backgroundPalette": "signBackground",
+      "animationRate": 3.0,
+      "lighting": "clubStrobe"
+    },
+    {
+      "id": "entrance.archive",
+      "face": "west",
+      "cellX": 53,
+      "cellZ": 19,
+      "widthCells": 1,
+      "height": 2.2,
+      "glyphRows": [
+        "+-----------+",
+        "|  @@   @@  |",
+        "|  @@   @@  |",
+        "|  ||---||  |",
+        "|__||___||__|"
+      ],
+      "distantGlyphRows": [
+        "+-----+",
+        "|@@ @@|",
+        "| || ||",
+        "+-----+"
+      ],
+      "borderPalette": "neonAmber",
+      "textPalette": "signCream",
+      "accentPalette": "neonAmber",
+      "backgroundPalette": "signBackground",
+      "animationRate": 1.2,
+      "lighting": "amberPulse"
+    }
+  ],
+  "atmosphericEmitters": [
+    {
+      "id": "steam.market-west",
+      "kind": "steam",
+      "x": 45.5,
+      "z": 24.5,
+      "riseHeight": 1.8,
+      "drift": 0.28,
+      "periodSeconds": 3.8,
+      "phaseOffset": 0.10
+    },
+    {
+      "id": "steam.market-east",
+      "kind": "steam",
+      "x": 52.5,
+      "z": 24.5,
+      "riseHeight": 1.5,
+      "drift": 0.22,
+      "periodSeconds": 4.4,
+      "phaseOffset": 0.45
+    },
+    {
+      "id": "steam.crossing-north",
+      "kind": "steam",
+      "x": 47.5,
+      "z": 30.5,
+      "riseHeight": 1.3,
+      "drift": 0.18,
+      "periodSeconds": 3.2,
+      "phaseOffset": 0.72
+    },
+    {
+      "id": "exhaust.archive-roof",
+      "kind": "rooftopExhaust",
+      "x": 53.5,
+      "z": 14.5,
+      "riseHeight": 2.2,
+      "drift": 0.55,
+      "periodSeconds": 5.6,
+      "phaseOffset": 0.20
+    },
+    {
+      "id": "exhaust.signal-roof",
+      "kind": "rooftopExhaust",
+      "x": 39.5,
+      "z": 37.5,
+      "riseHeight": 2.6,
+      "drift": 0.62,
+      "periodSeconds": 6.2,
+      "phaseOffset": 0.63
+    }
+  ],
+  "ambientEventEmitters": [
+    {
+      "id": "event.vent-market-west",
+      "kind": "ventHiss",
+      "x": 45.5,
+      "z": 24.5,
+      "height": 0.25,
+      "minimumIntervalSeconds": 5.0,
+      "maximumIntervalSeconds": 10.0,
+      "durationSeconds": 0.7,
+      "audibleRange": 11.0
+    },
+    {
+      "id": "event.spark-vending",
+      "kind": "electricSpark",
+      "x": 52.75,
+      "z": 14.5,
+      "height": 1.35,
+      "minimumIntervalSeconds": 7.0,
+      "maximumIntervalSeconds": 15.0,
+      "durationSeconds": 0.28,
+      "audibleRange": 10.0
+    },
+    {
+      "id": "event.spark-noodle",
+      "kind": "electricSpark",
+      "x": 52.75,
+      "z": 24.5,
+      "height": 1.65,
+      "minimumIntervalSeconds": 9.0,
+      "maximumIntervalSeconds": 18.0,
+      "durationSeconds": 0.22,
+      "audibleRange": 9.0
+    },
+    {
+      "id": "event.horn-crossing",
+      "kind": "distantHorn",
+      "x": 48.5,
+      "z": 33.5,
+      "height": 0.8,
+      "minimumIntervalSeconds": 12.0,
+      "maximumIntervalSeconds": 28.0,
+      "durationSeconds": 0.8,
+      "audibleRange": 22.0
+    }
+  ],
+  "ambientActors": [
+    {
+      "id": "ambient.courier-market",
+      "spriteId": "sprite.pedestrian.courier",
+      "radius": 0.22,
+      "speedCellsPerSecond": 0.58,
+      "waitSeconds": 2.0,
+      "startDelaySeconds": 0.5,
+      "waypoints": [
+        { "x": 44.5, "z": 24.5 },
+        { "x": 44.5, "z": 28.5 }
+      ]
+    },
+    {
+      "id": "ambient.umbrella-archive",
+      "spriteId": "sprite.pedestrian.umbrella",
+      "radius": 0.24,
+      "speedCellsPerSecond": 0.42,
+      "waitSeconds": 3.5,
+      "startDelaySeconds": 4.0,
+      "waypoints": [
+        { "x": 52.5, "z": 14.5 },
+        { "x": 52.5, "z": 18.5 }
+      ]
+    },
+    {
+      "id": "ambient.walker-park",
+      "spriteId": "sprite.pedestrian.coat",
+      "radius": 0.22,
+      "speedCellsPerSecond": 0.34,
+      "waitSeconds": 5.0,
+      "startDelaySeconds": 1.5,
+      "waypoints": [
+        { "x": 34.5, "z": 20.5 },
+        { "x": 38.5, "z": 20.5 }
+      ]
+    }
+  ]
+}

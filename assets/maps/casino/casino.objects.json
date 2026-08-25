@@ -1,0 +1,67 @@
+{
+  "objects": [
+    {
+      "id": "door.casino-exit",
+      "type": "door",
+      "x": 19.5,
+      "z": 3.5,
+      "blocking": false,
+      "radius": 1.5,
+      "interactionId": "door.casino-exit",
+      "displayText": "RETURN TO LAST LIGHT",
+      "renderBillboard": true,
+      "destinationMapId": "city-alpha",
+      "destinationSpawn": {
+        "x": 26.5,
+        "z": 5.8,
+        "yawDegrees": 180.0
+      }
+    },
+    {
+      "id": "terminal.casino-jackpot",
+      "type": "terminal",
+      "x": 19.5,
+      "z": 29.5,
+      "blocking": false,
+      "radius": 0.24,
+      "interactionId": "terminal.casino-jackpot",
+      "displayText": "JACKPOT CONTROL"
+    },
+    {
+      "id": "lamp.casino-entry",
+      "type": "lamp",
+      "x": 19.5,
+      "z": 4.5
+    },
+    {
+      "id": "lamp.casino-south-west",
+      "type": "lamp",
+      "x": 7.5,
+      "z": 15.5
+    },
+    {
+      "id": "lamp.casino-south-east",
+      "type": "lamp",
+      "x": 32.5,
+      "z": 15.5
+    },
+    {
+      "id": "lamp.casino-north-west",
+      "type": "lamp",
+      "x": 13.5,
+      "z": 28.5
+    },
+    {
+      "id": "lamp.casino-north-east",
+      "type": "lamp",
+      "x": 26.5,
+      "z": 28.5
+    },
+    {
+      "id": "lamp.casino-jackpot",
+      "type": "lamp",
+      "x": 19.5,
+      "z": 27.5
+    }
+  ]
+}

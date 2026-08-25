@@ -1,0 +1,330 @@
+{
+  "materials": [
+    {
+      "id": "ground.road",
+      "glyphRamp": " .:|!",
+      "paletteKey": "asphalt",
+      "animation": "dataStream",
+      "animationRate": 8.0,
+      "phaseScale": 0.35,
+      "tags": ["ground", "data", "traffic-stream", "road-detail", "road-asphalt"]
+    },
+    {
+      "id": "ground.sidewalk",
+      "glyphRamp": " .,:;",
+      "paletteKey": "sidewalk",
+      "animation": "signalPulse",
+      "animationRate": 2.0,
+      "phaseScale": 0.18,
+      "tags": ["ground", "pedestrian-data", "sidewalk-detail"]
+    },
+    {
+      "id": "ground.alley",
+      "glyphRamp": " ./*",
+      "paletteKey": "fog",
+      "animation": "glitchFlicker",
+      "animationRate": 3.5,
+      "phaseScale": 0.42,
+      "tags": ["ground", "glitch"]
+    },
+    {
+      "id": "ground.plaza",
+      "glyphRamp": ".oO0",
+      "paletteKey": "sidewalk",
+      "animation": "signalPulse",
+      "animationRate": 1.25,
+      "phaseScale": 0.12,
+      "tags": ["ground", "public-node"]
+    },
+    {
+      "id": "ground.park",
+      "glyphRamp": ".,'*",
+      "paletteKey": "parkGround",
+      "animation": "static",
+      "animationRate": 0.0,
+      "phaseScale": 0.0,
+      "tags": ["ground", "park", "greenery"]
+    },
+    {
+      "id": "ground.park-path",
+      "glyphRamp": ".:+",
+      "paletteKey": "parkPath",
+      "animation": "static",
+      "animationRate": 0.0,
+      "phaseScale": 0.0,
+      "tags": ["ground", "park", "path"]
+    },
+    {
+      "id": "ground.pond",
+      "glyphRamp": "~-_",
+      "paletteKey": "parkWater",
+      "accentPaletteKeys": ["neonCyan"],
+      "animation": "signalPulse",
+      "animationRate": 0.7,
+      "phaseScale": 0.08,
+      "tags": ["ground", "park", "water"]
+    },
+    {
+      "id": "ground.nature-trail",
+      "glyphRamp": ".,;",
+      "paletteKey": "parkPath",
+      "animation": "static",
+      "animationRate": 0.0,
+      "phaseScale": 0.0,
+      "tags": ["ground", "park", "nature", "trail"]
+    },
+    {
+      "id": "ground.bridge",
+      "glyphRamp": "=+",
+      "paletteKey": "parkWood",
+      "animation": "static",
+      "animationRate": 0.0,
+      "phaseScale": 0.0,
+      "tags": ["ground", "park", "nature", "bridge"]
+    },
+    {
+      "id": "ground.casino-carpet",
+      "glyphRamp": ".,:;",
+      "paletteKey": "casinoCarpet",
+      "animation": "static",
+      "animationRate": 0.0,
+      "phaseScale": 0.0,
+      "tags": ["ground", "interior", "casino", "carpet"]
+    },
+    {
+      "id": "ground.casino-aisle",
+      "glyphRamp": ".+*",
+      "paletteKey": "casinoAisle",
+      "animation": "signalPulse",
+      "animationRate": 0.8,
+      "phaseScale": 0.08,
+      "tags": ["ground", "interior", "casino", "aisle"]
+    },
+    {
+      "id": "ceiling.water-park",
+      "glyphRamp": ".",
+      "paletteKey": "waterParkCeiling",
+      "accentPaletteKeys": ["waterParkEmergency"],
+      "animation": "static",
+      "animationRate": 0.0,
+      "phaseScale": 0.0,
+      "tags": ["ceiling", "interior", "water-park", "white-tile", "ceiling-tile-grid"]
+    },
+    {
+      "id": "ceiling.casino",
+      "glyphRamp": ".+*o",
+      "paletteKey": "casinoCeiling",
+      "accentPaletteKeys": ["casinoLight", "neonCyan", "neonMagenta", "neonAmber"],
+      "animation": "signalPulse",
+      "animationRate": 2.4,
+      "phaseScale": 0.24,
+      "tags": ["ceiling", "interior", "casino", "neon"]
+    },
+    {
+      "id": "facade.none",
+      "glyphRamp": " ",
+      "paletteKey": "sky",
+      "animation": "static",
+      "animationRate": 0.0,
+      "phaseScale": 0.0,
+      "tags": ["empty"]
+    },
+    {
+      "id": "facade.low",
+      "glyphRamp": ".:-=+",
+      "paletteKey": "wallFront",
+      "accentPaletteKeys": ["neonGreen", "neonOrange", "neonAmber", "windowLit"],
+      "animation": "dataStream",
+      "animationRate": 4.0,
+      "phaseScale": 0.20,
+      "tags": ["facade", "low-rise", "data", "facade-ribbed"]
+    },
+    {
+      "id": "facade.garden-home",
+      "glyphRamp": "[]|/\\",
+      "paletteKey": "signCream",
+      "accentPaletteKeys": ["windowLit", "neonAmber", "neonGreen"],
+      "animation": "signalPulse",
+      "animationRate": 0.45,
+      "phaseScale": 0.08,
+      "tags": ["facade", "residential", "garden-home", "window-light", "facade-window-grid"]
+    },
+    {
+      "id": "facade.residential",
+      "glyphRamp": "[]|:.",
+      "paletteKey": "wallFront",
+      "accentPaletteKeys": ["windowLit", "neonAmber", "neonCyan", "neonMagenta"],
+      "animation": "signalPulse",
+      "animationRate": 1.1,
+      "phaseScale": 0.14,
+      "tags": ["facade", "residential", "window-light", "facade-window-grid"]
+    },
+    {
+      "id": "facade.mid",
+      "glyphRamp": "01|:/\\",
+      "paletteKey": "wallSide",
+      "accentPaletteKeys": ["neonPurple", "neonViolet", "neonCyan", "neonAmber"],
+      "animation": "dataStream",
+      "animationRate": 7.0,
+      "phaseScale": 0.31,
+      "tags": ["facade", "mid-rise", "code", "facade-ribbed"]
+    },
+    {
+      "id": "facade.tall",
+      "glyphRamp": "01ABCDEF#",
+      "paletteKey": "wallFront",
+      "accentPaletteKeys": ["windowLit", "neonRed", "neonGreen", "neonLime", "neonBerry"],
+      "animation": "signalPulse",
+      "animationRate": 1.5,
+      "phaseScale": 0.09,
+      "tags": ["facade", "tower", "signal", "facade-window-grid"]
+    },
+    {
+      "id": "facade.neon",
+      "glyphRamp": "$%&@#",
+      "paletteKey": "neonBerry",
+      "accentPaletteKeys": ["neonIndigo", "neonPurple", "neonViolet", "neonMagenta", "neonRed", "neonGreen", "neonCyan", "neonAmber", "windowLit"],
+      "animation": "glitchFlicker",
+      "animationRate": 6.0,
+      "phaseScale": 0.55,
+      "tags": ["facade", "neon", "volatile-data"]
+    },
+    {
+      "id": "facade.foliage",
+      "glyphRamp": "*%&#",
+      "paletteKey": "parkLeaf",
+      "accentPaletteKeys": ["neonGreen", "neonLime"],
+      "animation": "signalPulse",
+      "animationRate": 0.8,
+      "phaseScale": 0.14,
+      "tags": ["facade", "park", "foliage"]
+    },
+    {
+      "id": "facade.park-wood",
+      "glyphRamp": "=+",
+      "paletteKey": "parkWood",
+      "animation": "static",
+      "animationRate": 0.0,
+      "phaseScale": 0.0,
+      "tags": ["facade", "park", "wood"]
+    },
+    {
+      "id": "facade.park-metal",
+      "glyphRamp": "#",
+      "paletteKey": "parkMetal",
+      "animation": "static",
+      "animationRate": 0.0,
+      "phaseScale": 0.0,
+      "tags": ["facade", "park", "metal"]
+    },
+    {
+      "id": "facade.fountain",
+      "glyphRamp": "~|",
+      "paletteKey": "parkStone",
+      "accentPaletteKeys": ["parkWater", "neonCyan"],
+      "animation": "signalPulse",
+      "animationRate": 0.7,
+      "phaseScale": 0.08,
+      "tags": ["facade", "park", "fountain"]
+    },
+    {
+      "id": "facade.pavilion",
+      "glyphRamp": "^|",
+      "paletteKey": "parkPavilion",
+      "accentPaletteKeys": ["neonAmber", "windowLit"],
+      "animation": "signalPulse",
+      "animationRate": 0.4,
+      "phaseScale": 0.06,
+      "tags": ["facade", "park", "pavilion"]
+    },
+    {
+      "id": "facade.pine",
+      "glyphRamp": "*^%",
+      "paletteKey": "parkLeaf",
+      "accentPaletteKeys": ["neonGreen"],
+      "animation": "signalPulse",
+      "animationRate": 0.35,
+      "phaseScale": 0.09,
+      "tags": ["facade", "park", "nature", "pine", "foliage"]
+    },
+    {
+      "id": "facade.tent",
+      "glyphRamp": "/^",
+      "paletteKey": "parkPavilion",
+      "accentPaletteKeys": ["neonAmber", "windowLit"],
+      "animation": "signalPulse",
+      "animationRate": 0.25,
+      "phaseScale": 0.04,
+      "tags": ["facade", "park", "nature", "tent"]
+    },
+    {
+      "id": "facade.waterfall",
+      "glyphRamp": "|:~",
+      "paletteKey": "parkWater",
+      "accentPaletteKeys": ["neonCyan"],
+      "animation": "dataStream",
+      "animationRate": 2.5,
+      "phaseScale": 0.20,
+      "tags": ["facade", "park", "nature", "waterfall"]
+    },
+    {
+      "id": "facade.rock",
+      "glyphRamp": "#:.",
+      "paletteKey": "parkStone",
+      "animation": "static",
+      "animationRate": 0.0,
+      "phaseScale": 0.0,
+      "tags": ["facade", "park", "nature", "rock"]
+    },
+    {
+      "id": "facade.water-park-wall",
+      "glyphRamp": ".",
+      "paletteKey": "waterParkWall",
+      "accentPaletteKeys": ["waterParkEmergency"],
+      "animation": "static",
+      "animationRate": 0.0,
+      "phaseScale": 0.0,
+      "tags": ["facade", "interior", "water-park", "white-tile", "wall-tile-grid"]
+    },
+    {
+      "id": "facade.casino-wall",
+      "glyphRamp": "#*+.",
+      "paletteKey": "casinoWall",
+      "accentPaletteKeys": ["neonCyan", "neonMagenta", "neonAmber", "neonViolet"],
+      "animation": "signalPulse",
+      "animationRate": 1.8,
+      "phaseScale": 0.18,
+      "tags": ["facade", "interior", "casino", "neon", "solid-interior-wall"]
+    },
+    {
+      "id": "facade.casino-slot",
+      "glyphRamp": "7$BAR*",
+      "paletteKey": "casinoCabinet",
+      "accentPaletteKeys": ["neonRed", "neonCyan", "neonMagenta", "casinoLight"],
+      "animation": "dataStream",
+      "animationRate": 3.2,
+      "phaseScale": 0.36,
+      "tags": ["facade", "interior", "casino", "slot-machine", "neon"]
+    },
+    {
+      "id": "facade.casino-table",
+      "glyphRamp": "<>#",
+      "paletteKey": "casinoTable",
+      "accentPaletteKeys": ["casinoLight", "neonRed"],
+      "animation": "signalPulse",
+      "animationRate": 0.9,
+      "phaseScale": 0.12,
+      "tags": ["facade", "interior", "casino", "gaming-table"]
+    },
+    {
+      "id": "facade.casino-light",
+      "glyphRamp": "|!*",
+      "paletteKey": "casinoLight",
+      "accentPaletteKeys": ["neonCyan", "neonMagenta", "neonAmber"],
+      "animation": "signalPulse",
+      "animationRate": 3.8,
+      "phaseScale": 0.42,
+      "tags": ["facade", "interior", "casino", "light-column", "neon"]
+    }
+  ]
+}

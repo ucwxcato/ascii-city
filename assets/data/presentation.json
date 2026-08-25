@@ -1,0 +1,13 @@
+{
+  "fogStartDistance": 10.0,
+  "fogEndDistance": 48.0,
+  "fogEndGlyphDensity": 0.38,
+  "nearContrastDistance": 8.0,
+  "minimumNearLuminanceContrast": 0.05,
+  "sideFaceBrightness": 0.66,
+  "signalPulseMinimumBrightness": 0.78,
+  "glitchBrightnessBoost": 1.15,
+  "maximumGlitchRate": 6.0,
+  "glitchGlyphChanceDivisor": 17,
+  "glitchFlashChanceDivisor": 29
+}

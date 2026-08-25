@@ -1,0 +1,38 @@
+{
+  "objects": [
+    {
+      "id": "terminal.water-control",
+      "type": "terminal",
+      "x": 19.5,
+      "z": 28.5,
+      "blocking": false,
+      "radius": 0.24,
+      "interactionId": "terminal.water-control",
+      "displayText": "FLOW CONTROL"
+    },
+    {
+      "id": "lamp.water-park-south",
+      "type": "lamp",
+      "x": 19.5,
+      "z": 7.5
+    },
+    {
+      "id": "lamp.water-park-west",
+      "type": "lamp",
+      "x": 13.5,
+      "z": 8.5
+    },
+    {
+      "id": "lamp.water-park-east",
+      "type": "lamp",
+      "x": 26.5,
+      "z": 8.5
+    },
+    {
+      "id": "lamp.water-park-north",
+      "type": "lamp",
+      "x": 19.5,
+      "z": 28.5
+    }
+  ]
+}
