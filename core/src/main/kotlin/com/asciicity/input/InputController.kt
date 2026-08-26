@@ -75,6 +75,7 @@ class InputController : InputAdapter() {
         Input.Keys.F3 -> GameCommand.TOGGLE_DEBUG
         Input.Keys.TAB -> GameCommand.CYCLE_DEBUG_MAP
         Input.Keys.C -> GameCommand.TOGGLE_CRT
+        Input.Keys.V -> GameCommand.TOGGLE_DEBUG_VEHICLE
         Input.Keys.M -> GameCommand.TOGGLE_MUSIC
         else -> null
     }

@@ -66,6 +66,7 @@ object HudText {
         groundMaterialId: String,
         facadeMaterialId: String,
         crtEffectEnabled: Boolean,
+        drivingDebugVehicle: Boolean,
     ): String = buildString {
         append("MAP ").append(mapId)
         if (nextMapId != null) append(" | [TAB] LOAD ").append(nextMapId)
@@ -102,6 +103,12 @@ object HudText {
         append("MAT ").append(groundMaterialId).append(" / ").append(facadeMaterialId)
             .append('\n')
         append("CRT ").append(if (crtEffectEnabled) "ON" else "OFF").append(" | [C] TOGGLE")
+            .append('\n')
+        if (drivingDebugVehicle) {
+            append("DEBUG CAR ACTIVE | WASD DRIVE | [V] REMOVE")
+        } else {
+            append("[V] SPAWN DEBUG CAR")
+        }
     }
 
     private val COMPASS_POINTS = arrayOf("N", "NE", "E", "SE", "S", "SW", "W", "NW")

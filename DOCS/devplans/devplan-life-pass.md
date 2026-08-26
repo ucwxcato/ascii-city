@@ -6,7 +6,7 @@
 >
 > **Purpose:** Make `city-alpha` feel inhabited and mechanically coherent through steam/exhaust, ambient citizens, bounded road activity, living storefronts, and park wildlife.
 >
-> **Authority:** This document owns the optional city-life implementation and verification contract after the canonical `Last Packet` route passes `VERIFY-07`. The canonical game, story, renderer, and release plan remains [ascii-city-development-plan.md](ascii-city-development-plan.md); the map and projection contracts remain [map-format.md](../map-format.md) and [rendering-contract.md](../rendering-contract.md).
+> **Authority:** This document owns the optional city-life implementation and verification contract after the canonical `Last Packet` route passes `VERIFY-07`. Player-controlled free-roam vehicles and racing are owned by the core [devplan-open-world-racing.md](devplan-open-world-racing.md), not this life pass. The canonical game, story, renderer, and release plan remains [ascii-city-development-plan.md](ascii-city-development-plan.md); the map and projection contracts remain [map-format.md](../map-format.md) and [rendering-contract.md](../rendering-contract.md).
 >
 > **Target:** The existing Kotlin/LibGDX desktop game, fixed `city-alpha` map, responsive CPU-rendered first-person ASCII surface with a 96×30 minimum and a 128×40 reference canvas, and current lightweight domain model.
 
@@ -37,7 +37,7 @@ pause, resize, resume, and exit with deterministic state and bounded performance
 
 ### Dependency rule
 
-This is a focused post-MVP polish plan, not a replacement for Phase 7. No life-pass implementation packet begins until the canonical `Last Packet` route passes `VERIFY-07`; this lets final story targets, prompts, doors, and sightlines define safe ambient placements. After that gate, implement the restrained render-only work before semantic actors and implement moving vehicles last. Citizens, vehicles, and the cat must reuse `AsciiSpriteRegistry`, `EntitySpriteRenderer`, and the canonical `NPC-01/02` world-entity integration; they must not create a second sprite projection or actor-occupancy system. The life pass remains optional and is not a release gate.
+This is a focused post-MVP polish plan, not a replacement for Phase 7. No life-pass implementation packet begins until the canonical `Last Packet` route passes `VERIFY-07`; this lets final story targets, prompts, doors, and sightlines define safe ambient placements. After that gate, implement the restrained render-only work before semantic actors and implement cosmetic traffic vehicles last. Citizens, cosmetic traffic vehicles, and the cat must reuse `AsciiSpriteRegistry`, `EntitySpriteRenderer`, and the canonical `NPC-01/02` world-entity integration; they must not create a second sprite projection or actor-occupancy system. Player-controlled vehicles are separately owned by [devplan-open-world-racing.md](devplan-open-world-racing.md). The life pass remains optional and is not a release gate.
 
 ## 2. Locked decisions
 
@@ -88,7 +88,7 @@ These are hard first-pass caps, not targets to fill indiscriminately.
 
 - Large crowds, schedules, jobs, homes, dialogue for background citizens, reputation, police, combat, or crowd reactions.
 - General NPC patrol/pathfinding. This pass permits only validated short pacing/flee lanes; canonical `NPC-03` remains the owner of general patrol behavior.
-- Drivable vehicles, traffic laws, intersections with physical right-of-way simulation, collisions that injure/push the player, or vehicle interiors.
+- Traffic laws, intersections with physical right-of-way simulation, collisions that injure/push the player, or vehicle interiors. Player-controlled free-roam vehicles and racing are owned by [devplan-open-world-racing.md](devplan-open-world-racing.md).
 - Arbitrary particle graphs, GPU particles, smoke physics, volumetric fog, dynamic shadows, bloom, reflections, or weather simulation.
 - Enterable shops, purchasing, inventory, minigames, opening hours, or interactive vending transactions.
 - Wildlife ecology, random spawning, breeding, feeding, collectible animals, or persistence.
@@ -139,10 +139,10 @@ These are hard first-pass caps, not targets to fill indiscriminately.
 |---|---|
 | `ContentLoader` / `ContentVerifier` | Parse and cross-validate all optional life-pass arrays before world construction. |
 | `LoadedContent` | Carry immutable render definitions and actor behavior definitions beside the constructed `GameWorld`. |
-| `GameWorld` / `SpatialEntityIndex` | Own visible solid citizens, vehicles, and the cat; update positions/removal atomically. |
+| `GameWorld` / `SpatialEntityIndex` | Own visible solid citizens, cosmetic traffic vehicles, and the cat; update positions/removal atomically. |
 | `CollisionSystem` | Validate actor steps and player clearance; ignore the actor currently moving by stable ID. |
 | `FixedStepClock` / `GameScreen` | Advance ambient/traffic systems at the same fixed delta as player simulation. |
-| `AsciiSpriteRegistry` / `EntitySpriteRenderer` | Render all citizen, vehicle, and cat bodies with the verified shared projection/depth rules. |
+| `AsciiSpriteRegistry` / `EntitySpriteRenderer` | Render all citizen, cosmetic traffic-vehicle, and cat bodies with the verified shared projection/depth rules. |
 | Canonical `NPC-01/02` entity integration | Establish the shared blocking actor, spatial-index, culling, and resize-safe rendering path before ambient actors are added. |
 | `WorldAsciiRenderer` / `AsciiFrame` | Compose storefronts/effects and enforce finite-depth writes/clipping. |
 | `StreetLampRenderer` | Anchor derived firefly swarms to authored lamp fixtures without duplicating lamp placement. |

@@ -34,7 +34,7 @@ class AsciiPresenter(
     private var depthTexture: Texture? = null
     private var emissiveTexture: Texture? = null
 
-    var crtEffectEnabled: Boolean = true
+    var crtEffectEnabled: Boolean = false
         private set
 
     val compositeFiniteDepthCellCount: Int

@@ -6,5 +6,6 @@ enum class GameCommand {
     TOGGLE_DEBUG,
     CYCLE_DEBUG_MAP,
     TOGGLE_CRT,
+    TOGGLE_DEBUG_VEHICLE,
     TOGGLE_MUSIC,
 }

@@ -94,6 +94,7 @@ For all launch, capture, map, camera, asset-override, and verification commands,
 | `F3` | Toggle diagnostics and the debug footprint |
 | `Tab` while F3 is open | Load the next playable map |
 | `C` while F3 is open | Toggle the CRT world presentation effect |
+| `V` while F3 is open | Spawn/remove the third-person debug car; WASD drives it |
 | `M` or the music HUD button | Mute / unmute the soundtrack; rain and footsteps stay audible |
 
 ## Build and verify
