@@ -23,7 +23,9 @@ The MVP is one `city-alpha` solo time trial. It is the foundation for future eve
 - Walk/drive is the core loop. On-foot exploration remains available and existing story interaction stays on foot.
 - The player-facing sedan is an authored `vehicle.player.sedan`, entered/exited with `E`; it is never spawned from F3. The current F3 `V` prototype remains only until the full loop passes verification, then is removed or reduced to a test hook.
 - Player cars are detailed, authored pixel-art vehicle assets with directional frames, not enlarged ASCII glyph billboards. They use nearest-neighbor sampling, the existing restrained neon/neutral palette language, and a dedicated cell-depth-clipped presentation path so they feel intentionally premium inside the ASCII world.
+- Every player vehicle is a believable road-worn civilian "beater," not a supercar: modest top speed, visible wear/mismatched panels, practical proportions, and a weighty street-handling character. Cars may be recent rather than vintage, but must never read as luxury, exotic, pristine, or race-built machinery.
 - While driving, `W` throttles forward, `S` brakes/reverses, and `A`/`D` steer. Camera is a collision-bounded third-person follow pose; no overhead camera or car interior.
+- `Space` is the handbrake. At sufficient speed while steering, it intentionally reduces rear lateral grip and enables a controllable drift; releasing it restores normal grip over bounded fixed-step recovery. A drift is a physical velocity/heading relationship, never an animation toggle.
 - Vehicle state advances only in the existing fixed step and collides via `CollisionSystem` against semantic cells and blocking world entities. Rendered glyphs/gates/colors never define collision.
 - A parked vehicle is a blocking `WorldEntity`. A driven vehicle occupies the authoritative player simulation position/radius and is rendered from that same state, never as a duplicate colliding entity.
 - Exiting requires a deterministic safe on-foot candidate beside/behind the car. If none is clear, refuse without changing state.
@@ -43,12 +45,26 @@ The MVP is one `city-alpha` solo time trial. It is the foundation for future eve
 - Strict data validation for vehicle placement and road-only routes.
 - Clear extension seams for multiple events and later rivals, without implementing them now.
 
-### Explicitly out of scope
+### MVP boundary
 
-- AI rivals, traffic combat, damage, police/heat, rubber-banding, drifting physics, gearboxes, interiors, upgrades, garages, money, shops, betting, saves, or online leaderboards.
-- Races outside `city-alpha`, cross-map races, procedural roads/events, or multiplayer.
-- Replacing the CPU ASCII renderer, fixed maps, lightweight Kotlin model, Scene2D UI, or approved bounded compositor.
-- Changes to Last Packet story progress, dialogue, door ownership, or canonical completion rules.
+The first release packet deliberately proves one car, handling/drift/smoke, and one city-alpha time trial before it adds a career. The following are **planned later scope**, not rejected features: AI rivals, active road traffic, collisions/damage, police/heat, rubber-banding policy, gearboxes, interiors, upgrades, garages, currency, shops, betting, saved career state, leaderboards, additional-map/cross-map events, procedural event selection, and multiplayer.
+
+### Explicitly not part of the product direction
+
+- Replacing the CPU ASCII world, fixed authored maps, lightweight Kotlin model, Scene2D UI, or approved bounded compositor with a generic 3D/engine stack.
+- Letting racing bypass or silently mutate Last Packet story progress, dialogue, door ownership, or canonical completion rules. A future story/racing crossover must be an explicit planned integration packet.
+
+### Long-term racing roadmap
+
+| Expansion | Player-facing outcome | Dependency boundary |
+|---|---|---|
+| Street events and rivals | Multiple event types, rival beaters, traffic-aware racing, and a deliberate rubber-banding policy. | Proven solo race state, safe vehicle/traffic collision, and visual budget. |
+| Career and garage | Earn money from events, buy/keep beater cars, tune performance/cosmetics, use garages/shops, and retain a career save. | Authoritative progression/economy/save contract; no client-trust shortcuts. |
+| Heat and consequences | Police attention, pursuits, damage/repair, and meaningful event risk/reward. | Robust AI, damage, failure/recovery, and safe player-state persistence. |
+| World expansion | Events on additional maps, cross-map travel rules for vehicles, curated procedural event rotation, and richer interiors. | Map-travel vehicle persistence plus route/content validation. |
+| Social competition | Local/online leaderboards, ghosts, then multiplayer if the deterministic/network contract is explicitly designed. | Replay integrity, anti-cheat, account/service, and network authority plan. |
+
+These are all in scope for ASCII City's racing direction; phase ordering is a quality and safety boundary, not a product veto.
 
 ## 3. Player and interaction flow
 
@@ -62,8 +78,9 @@ The MVP is one `city-alpha` solo time trial. It is the foundation for future eve
 
 1. Enter atomically removes the parked entity, moves the authoritative player state to its pose, applies vehicle radius, and switches the render pose to third person.
 2. Footsteps/head bob stop; rain, fog, normal resizing, and audio ownership remain unchanged.
-3. HUD reads `W/S DRIVE | A/D STEER | E EXIT`; `E` exits only at a valid roadside position and recreates exactly one parked entity.
+3. HUD reads `W/S DRIVE | A/D STEER | SPACE DRIFT | E EXIT`; `E` exits only at a valid roadside position and recreates exactly one parked entity.
 4. NPC, terminal, and door actions do not fire from a moving car. Door use shows `EXIT VEHICLE FIRST`.
+5. A drift starts only when rear traction is deliberately broken by speed, steering, and held handbrake. A short neutral tire-smoke trail appears from the rear wheels only while the car is actually sliding; ordinary turns do not emit smoke.
 
 ### Race
 
@@ -77,18 +94,30 @@ The MVP is one `city-alpha` solo time trial. It is the foundation for future eve
 
 | Owner | Responsibility | Never owns |
 |---|---|---|
-| `racing/VehicleDefinition.kt` *(proposed)* | Authored vehicle ID, sprite, parked pose, radius, speed, turn limits. | Mutable runtime state/rendering. |
+| `racing/VehicleDefinition.kt` *(proposed)* | Authored beater identity, art set, parked pose, radius, and bounded handling values. | Mutable runtime state/rendering. |
+| `racing/VehicleDynamicsState.kt` *(proposed)* | Fixed-step velocity vector, heading, drift/slip state, and last safe collision response. | Content data, UI, particle ownership. |
 | `racing/RaceDefinition.kt` *(proposed)* | Race ID/name, starter gate entity, ordered checkpoint positions/radii. | Progress/rewards/render output. |
 | `ContentLoader` / `LoadedContent` | Parse vehicle/race records and create linked parked vehicle/race gate entities. | Runtime movement. |
 | `GameWorld` / `WorldEntity` | Parked-car/gate entity authority, spatial index, atomic entity mutations. | Driven duplicate, checkpoint state. |
-| `VehicleSystem` *(proposed; refactors `DebugVehicleSystem`)* | Fixed-step entry/exit, drive update, collision, follow pose. | Race rules/story/UI. |
+| `VehicleSystem` *(proposed; refactors `DebugVehicleSystem`)* | Fixed-step entry/exit, acceleration/braking, steering, handbrake drift, collision response, and follow pose. | Race rules/story/UI. |
 | `PlayerSimulation` | Select on-foot/vehicle update, interpolation, one player-world update per step. | Raw keyboard reads/F3 product logic. |
 | `RaceSession` / `RaceSystem` *(proposed)* | `IDLE`, `ACTIVE`, `FINISHED`, `ABANDONED`; elapsed time, order, start/abort/finish. | Collision/saving/rendering. |
 | `InteractionSystem` / `InteractionOutcome` | Typed vehicle/gate targeting and outcome routing. | Dialogue-only assumptions or direct race mutation. |
 | `VehicleVisualRenderer` / `RaceGateRenderer` *(proposed)* | Depth-clipped, nearest-neighbor directional pixel-art car frames and finite-depth ASCII gates in the existing presentation path. | Collision/state, a general effect chain, 3D models. |
+| `TireSmokeRenderer` *(proposed)* | Render-only bounded neutral smoke sampled from fixed-step skid emissions. | Vehicle physics, collision, a general particle system. |
 | `GameScreen` | Fixed-step order, HUD, outcome routing, audio/head-bob mode, lifecycle cleanup. | Parsing/persistence. |
 
 `TrafficSystem` stays cosmetic. Do not repurpose its time-sampled ASCII traffic paths for the player car or future opponents.
+
+### Handling model
+
+`VehicleSystem` uses a local-space velocity model, not direct position rotation. Each fixed step resolves throttle/brake acceleration, rolling drag, speed-limited steering, then lateral grip before asking collision to sweep the proposed movement. The resulting world velocity is the authoritative source for car motion, slip, and race checkpoint crossing.
+
+- Longitudinal velocity is limited by the authored beater top speed; reverse is substantially slower. Releasing `W`/`S` coasts down through rolling resistance instead of stopping instantly.
+- Steering is strongest at city speed and deliberately reduces at the top of the beater's range. The car turns from its current velocity/heading; it cannot pivot in place or gain speed from turning.
+- Normal lateral grip rapidly settles a small slide. Holding `Space` applies handbrake braking and lower rear lateral grip only when moving and steering; the visual/race state becomes `DRIFTING` only after a minimum signed slip angle is reached.
+- On wall/entity contact, the collision result removes the blocked velocity component, retains only a small tangent component, and applies a bounded speed loss. There is no damage, spinout lottery, push-through, or collision-derived boost.
+- The first handling profile must feel lively at normal city-road speeds but cannot exceed the map's readable first/third-person pace. Exact acceleration, grip, turn, and top-speed values remain data tuning, bounded by validation and deterministic tests.
 
 ## 5. Data, lifecycle, and failures
 
@@ -104,8 +133,17 @@ Document this in `DOCS/map-format.md` before authoring content:
       "spriteId": "sprite.car.sedan",
       "x": 28.5, "z": 14.5, "yawDegrees": 0,
       "radius": 0.42,
-      "speedCellsPerSecond": 7.0,
-      "turnSpeedDegreesPerSecond": 115.0,
+      "class": "beater",
+      "handling": {
+        "topSpeedCellsPerSecond": 8.5,
+        "reverseSpeedCellsPerSecond": 2.75,
+        "accelerationCellsPerSecondSquared": 5.0,
+        "brakeCellsPerSecondSquared": 8.0,
+        "turnDegreesPerSecond": 105.0,
+        "normalLateralGrip": 8.0,
+        "handbrakeLateralGrip": 1.8,
+        "driftMinimumSpeed": 3.5
+      },
       "displayText": "SEDAN"
     }
   ],
@@ -125,7 +163,7 @@ Document this in `DOCS/map-format.md` before authoring content:
 }
 ```
 
-Validation must require stable unique IDs/references, existing sprites, finite bounded tuning, in-bounds non-solid vehicle/gate centers, full parked-car clearance, existing `raceGate` starter ID, at least three non-duplicate ordered checkpoints, road-tagged checkpoint cells, and four-direction road connectivity between starter/checkpoints. Authoring must explicitly reject overlap with protected story door, terminal, or arrival footprints.
+Validation must require stable unique IDs/references, existing directional pixel-art asset sets, `class: "beater"`, finite bounded handling values, in-bounds non-solid vehicle/gate centers, full parked-car clearance, existing `raceGate` starter ID, at least three non-duplicate ordered checkpoints, road-tagged checkpoint cells, and four-direction road connectivity between starter/checkpoints. Authoring must explicitly reject overlap with protected story door, terminal, or arrival footprints.
 
 ### Runtime state
 
@@ -133,10 +171,13 @@ Validation must require stable unique IDs/references, existing sprites, finite b
 Vehicle: ON_FOOT -> ENTERING -> DRIVING -> EXITING -> ON_FOOT
 Race:    IDLE -> ACTIVE(nextCheckpoint, elapsed) -> FINISHED -> IDLE
                          \-> ABANDONED -----------------------> IDLE
+Handling: GRIP -> HANDBRAKE -> DRIFTING -> GRIP
 ```
 
 - Transitions run at fixed-step boundaries or `GameScreen` command handling before the next step; renderer/HUD never mutate gameplay.
 - `RaceSession` stores active race ID, next index, and fixed-step seconds. A finished time is display-only and session-only.
+- `VehicleDynamicsState` is reset on vehicle entry, screen replacement, and safe exit. Its velocity, heading, drift state, and emission sequence are interpolated/read-only for presentation; a renderer may never invent a drift or modify traction.
+- Tire smoke uses a small fixed-capacity emission ring generated only by confirmed drifting fixed steps. Each emission stores position, heading, age seed, and intensity; the renderer samples it deterministically for less than one second, writes only finite-depth smoke glyphs, and never creates collision or a general particle list.
 - Failure (invalid entry/exit/start, duplicate E, skipped checkpoint, resize/pause, F3 map switch, screen disposal, content failure) preserves or cleans state deterministically. Map/screen replacement aborts a race and starts the replacement map on foot.
 
 ## 6. UI, rendering, and product constraints
@@ -145,6 +186,8 @@ Race:    IDLE -> ACTIVE(nextCheckpoint, elapsed) -> FINISHED -> IDLE
 - Extend `HudModel` with travel mode and optional race state. Story objective/signal values remain separate from racing state.
 - Gates are bounded finite-depth glyphs with restrained existing-neon accents. They do not brighten broad roads, change compositor behavior, or write UI.
 - `VehicleVisualRenderer` owns only vehicle art: a small directional-frame asset set (rear, front, left, right, then diagonals only if visual review needs them), fixed logical-world scale, nearest filtering, and explicit clipping against the completed finite ASCII depth field. It must not be a generic textured-world layer, a shader stack, a 3D model pipeline, or a way to draw through walls. Its low-resolution pixel art remains crisp at the existing whole-number glyph scale, uses no anti-aliasing, and is visually tuned against the dark neutral road rather than becoming a bright full-screen focal block.
+- Beater art uses original/re-distributable pixel assets and restrained physical detail: dented/misaligned body panels, faded paint, grime, taped/cracked lamps, worn tires, and small practical aftermarket touches. No real manufacturer marks, copied vehicle designs, glossy showroom finish, or excessive underglow. The car remains readable against the dark road without becoming a saturated neon billboard.
+- `TireSmokeRenderer` is a dedicated, bounded effect rather than a general particle engine: smoke is desaturated grey/fog-tone, sparse, short-lived, rear-wheel anchored, depth-clipped, and emitted only by actual drift state. It never covers the reticle/HUD, recolors the road, or flashes the frame.
 - Third-person camera shortens toward the car if its preferred 2.6-cell rear offset is blocked; it never leaves map bounds or exposes through-wall geometry.
 - No engine/skid/start/finish audio in MVP. Existing music/rain/waterfall/footstep ownership stays intact.
 - Collision remains semantic. The car cannot push/damage/remove story entities. It blocks/slides only.
@@ -157,6 +200,10 @@ Race:    IDLE -> ACTIVE(nextCheckpoint, elapsed) -> FINISHED -> IDLE
 | Enter sedan | One parked entity becomes one driven state; radius/camera/directional pixel-art car agree. | System/index tests + 1280x720 capture. |
 | Blocked entry/exit | Refusal changes no state or entity count. | Collision trace and runtime message test. |
 | Driving trace | Deterministic W/S/A/D behavior, no wall/entity tunneling. | Fixed-step hash across frame chunkings. |
+| Beater limits | Every authored player vehicle validates as `beater`; top speed/reverse/acceleration remain inside established modest ranges. | Content validation fixtures. |
+| Grip and handbrake | Normal steering settles lateral velocity; Space plus speed/steering produces a bounded drift; release recovers deterministically. | Vehicle-dynamics traces and frame-chunking hash tests. |
+| Collision while sliding | Contact removes blocked velocity and costs speed without tunnelling, damage, or a random spin. | Swept-collision velocity tests. |
+| Tire smoke | Only confirmed rear-wheel drift emits capped, finite-depth neutral smoke; ordinary turns/collisions emit none. | Emission/renderer tests and rear/side/occlusion capture. |
 | Follow camera by wall | In bounds; shortens safely; no through-wall render. | Camera test + manual close-wall capture. |
 | Start on foot | Vehicle-required feedback; race stays idle. | Interaction/race test. |
 | Race happy path | Ordered checkpoints advance once; finish gives stable time/replay. | Race trace + start/checkpoint/finish desktop captures. |
@@ -178,11 +225,12 @@ Race:    IDLE -> ACTIVE(nextCheckpoint, elapsed) -> FINISHED -> IDLE
 
 ### Phase 1 — Production free-roam vehicle
 
-- [ ] Refactor F3-only `DebugVehicleSystem` into data-backed `VehicleSystem`; remove hard-coded spawn/sprite ownership.
-- [ ] Define/import one redistributable, authored directional pixel-art sedan asset set and validate frame dimensions, palette treatment, logical scale, and nearest filtering. Do not generate the final asset from a generic text glyph layout.
+- [ ] Refactor F3-only `DebugVehicleSystem` into data-backed `VehicleSystem`; add fixed-step local velocity, beater acceleration/brake/drag/steering, handbrake drift, collision velocity response, and no hard-coded spawn/sprite ownership.
+- [ ] Define/import one redistributable, authored directional pixel-art beater sedan asset set and validate frame dimensions, worn-detail/palette treatment, logical scale, nearest filtering, and `class: "beater"`. Do not generate the final asset from a generic text glyph layout.
 - [ ] Add a narrowly scoped `VehicleVisualRenderer` that composites the car frame into the existing FBO/presentation route only where the resolved ASCII depth permits it; add typed parked vehicle entities, atomic entry/exit, vehicle input mode, door refusal, and third-person camera.
-- [ ] Add collision/control/camera/entity/lifecycle tests.
-- [ ] **Verify:** Focused tests, content validation, `clean check`, and visually approved 1280x720 on-foot/enter/rear/side-turn/exit/close-wall captures. Verify that the car reads as detailed pixel art rather than an ASCII billboard at both Fine and Standard.
+- [ ] Add a fixed-capacity, drift-only `TireSmokeRenderer` and smoke emission tests; do not introduce a generic particle system.
+- [ ] Add collision/control/drift/smoke/camera/entity/lifecycle tests.
+- [ ] **Verify:** Focused tests, content validation, `clean check`, and visually approved 1280x720 on-foot/enter/rear/side-turn/controlled-drift/smoke/exit/close-wall captures. Verify that the car reads as detailed pixel art rather than an ASCII billboard at both Fine and Standard.
 
 ### Phase 2 — Race data and deterministic state
 
@@ -196,14 +244,31 @@ Race:    IDLE -> ACTIVE(nextCheckpoint, elapsed) -> FINISHED -> IDLE
 - [ ] Update README, run commands, map format, controls, and verification notes after evidence; remove/demote F3 V after parity.
 - [ ] **Verify:** Visual review at 1280x720 and ultrawide for gate/start/checkpoint/finish/wall scenes; update hashes only after approval; smoke test and `clean check`.
 
-### Phase 4 — Expansion after MVP proof
+### Phase 4 — Street-racing field expansion
 
-- [ ] Add one more city-alpha event by reusing the same data/session/renderer pipeline.
-- [ ] Choose exactly one next packet: ghost replay or one deterministic AI rival.
-- [ ] **Verify:** Repeat Phase 3 evidence for each event.
+- [ ] Add multiple city-alpha event types and one deterministic rival beater using the proven race pipeline; define and test its rubber-banding policy rather than hiding it in tuning.
+- [ ] Add bounded semantic traffic/vehicle collision behavior for races, with no player/entity tunnelling or renderer-owned occupancy.
+- [ ] **Verify:** Rival/traffic deterministic traces, collision/failure recovery tests, story-route regression, and repeated desktop race captures.
+
+### Phase 5 — Career, garage, and beater progression
+
+- [ ] Create a separate authoritative career/economy/save contract covering event rewards, money, owned beaters, garages, shops, upgrades, cosmetic wear, repair, and safe save/load migrations.
+- [ ] Add additional beater classes only after the garage contract validates every asset and handling profile against the no-supercar rule.
+- [ ] **Verify:** Economy transaction/integrity tests, save/reload/migration coverage, garage/shop runtime flows, and complete regression of free-roam and races.
+
+### Phase 6 — Heat, damage, and wider city competition
+
+- [ ] Add damage/repair, police heat/pursuits, event betting/risk, gearbox/manual-driving support, and vehicle interiors through focused subplans sharing one player-vehicle authority.
+- [ ] Add vehicle-safe cross-map travel, additional-map races, curated procedural event rotation, and explicit story/racing crossover content only after the travel/session contract is extended.
+- [ ] **Verify:** Failure/recovery, pursuit, damage, door/map-transfer, event-generation, and full story/career smoke evidence.
+
+### Phase 7 — Competitive services
+
+- [ ] Design replay/ghost integrity, leaderboards, and multiplayer as server-authoritative/networked features; do not ship any claimed competitive result from untrusted local state.
+- [ ] **Verify:** Determinism/replay validation, anti-cheat/service failure cases, disconnected-session recovery, and multiplayer soak evidence.
 
 ## 9. Open tuning points
 
-- Speed `7.0`, turn `115` degrees/sec, radius `0.42`, and current follow target (2.6 cells rear, 1.35 height) are prototype starting points; alter only with fixed-step + visual evidence.
+- The example 8.5-cell/sec top speed, 2.75-cell/sec reverse, 5.0 acceleration, 8.0 braking, 105-degree steering, grip values, 3.5 drift threshold, radius `0.42`, and current follow target (2.6 cells rear, 1.35 height) are starting points. Tune only through fixed-step handling traces plus controlled-drift, smoke, and collision capture evidence; remain inside validated beater limits.
 - Exact parking/gate/checkpoint coordinates are TBD pending overlap and sightline audit; city-alpha-only, road-connected, three-plus ordered checkpoints are locked.
-- Progression (rewards, ownership, garages, upgrades), opponents, heat/police, and persistence each need a separate plan because they introduce economy, adversarial behavior, or durable-state contracts.
+- Career, rivals, heat, damage, wider-map events, and competitive services are all planned in Phases 4–7. Each still needs its focused implementation contract before work begins because it introduces AI, economy, adversarial behavior, persistence, or network authority.
