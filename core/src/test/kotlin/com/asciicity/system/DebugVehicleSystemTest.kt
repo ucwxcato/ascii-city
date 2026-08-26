@@ -28,6 +28,13 @@ class DebugVehicleSystemTest {
         assertTrue(driven.position.x > spawned.position.x)
         assertTrue(driven.position.z > spawned.position.z)
         assertTrue(driven.yawRadians > spawned.yawRadians)
+        assertTrue(vehicle.frontWheelSteerRadians > 0.0)
+        assertTrue(vehicle.wheelRotationRadians > 0.0)
+
+        input.keyUp(Input.Keys.D)
+        input.keyDown(Input.Keys.A)
+        vehicle.update(driven, input, 0.2)
+        assertTrue(vehicle.frontWheelSteerRadians < 0.0)
 
         val removed = assertNotNull(vehicle.toggle(driven))
         assertFalse(vehicle.isDriving)
@@ -54,5 +61,26 @@ class DebugVehicleSystemTest {
         )
         assertTrue(view.position.z < car.position.z)
         assertEquals(Math.toRadians(-8.0), view.pitchRadians, 1e-12)
+    }
+
+    @Test
+    fun `handbrake steering produces a deterministic drift only after the car is moving`() {
+        val world = SystemTestWorld.create(width = 30, depth = 30, playerPosition = WorldPosition(15.0, 15.0))
+        val input = InputController()
+        val vehicle = DebugVehicleSystem(CollisionSystem(world), onFootRadius = 0.22, onFootEyeHeight = 0.60)
+        var car = assertNotNull(vehicle.toggle(world.player))
+
+        input.keyDown(Input.Keys.W)
+        repeat(10) { car = vehicle.update(car, input, 0.1) }
+        assertFalse(vehicle.isDrifting)
+
+        input.keyDown(Input.Keys.A)
+        input.keyDown(Input.Keys.SPACE)
+        car = vehicle.update(car, input, 0.2)
+        assertTrue(vehicle.isDrifting)
+
+        input.keyUp(Input.Keys.SPACE)
+        car = vehicle.update(car, input, 0.2)
+        assertFalse(vehicle.isDrifting)
     }
 }

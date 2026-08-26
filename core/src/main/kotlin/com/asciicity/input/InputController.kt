@@ -62,6 +62,7 @@ class InputController : InputAdapter() {
         Input.Keys.S -> GameAction.MOVE_BACKWARD
         Input.Keys.A -> GameAction.STRAFE_LEFT
         Input.Keys.D -> GameAction.STRAFE_RIGHT
+        Input.Keys.SPACE -> GameAction.HANDBRAKE
         Input.Keys.LEFT -> GameAction.LOOK_LEFT
         Input.Keys.RIGHT -> GameAction.LOOK_RIGHT
         Input.Keys.UP -> GameAction.LOOK_UP

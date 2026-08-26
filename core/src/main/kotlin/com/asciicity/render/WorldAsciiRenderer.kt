@@ -27,7 +27,6 @@ class WorldAsciiRenderer(
     atmosphericEmitters: Collection<AtmosphericEmitter> = emptyList(),
     private val ambientEventSystem: AmbientEventSystem? = null,
     private val ambientActorSystem: AmbientActorSystem? = null,
-    private val debugVehicleRenderer: DebugVehicleRenderer? = null,
     private val fontProfile: AsciiFontProfile = AsciiFontProfile.STANDARD,
 ) {
     private val materialSampler = MaterialSampler(palette, presentation)
@@ -73,7 +72,6 @@ class WorldAsciiRenderer(
         pose: ViewPose,
         timeSeconds: Double,
         interpolationAlpha: Double = 1.0,
-        debugVehiclePosition: WorldPosition? = null,
     ) {
         require(timeSeconds.isFinite() && timeSeconds >= 0.0) { "Render time must be finite and non-negative" }
         require(interpolationAlpha.isFinite() && interpolationAlpha in 0.0..1.0) {
@@ -95,7 +93,6 @@ class WorldAsciiRenderer(
         stats.atmosphericWrites = atmosphericRenderer.render(frame, pose, metrics, timeSeconds)
         stats.ambientEventWrites = ambientEventSystem?.render(frame, pose, metrics, materialSampler) ?: 0
         stats.trafficSpriteWrites = trafficSystem?.render(frame, pose, metrics, timeSeconds) ?: 0
-        debugVehicleRenderer?.render(frame, pose, metrics, debugVehiclePosition)
         doorBillboardRenderer?.render(frame, pose, metrics)
         stats.terminalSpriteWrites = terminalBillboardRenderer?.render(frame, pose, metrics) ?: 0
         stats.entitySpriteWrites = npcSystem?.render(frame, pose, metrics) ?: 0

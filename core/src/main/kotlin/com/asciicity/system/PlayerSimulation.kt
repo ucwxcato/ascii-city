@@ -27,6 +27,12 @@ class PlayerSimulation(
     val isDrivingDebugVehicle: Boolean
         get() = debugVehicleSystem.isDriving
 
+    val debugVehicleWheelRotationRadians: Double
+        get() = debugVehicleSystem.wheelRotationRadians
+
+    val debugVehicleFrontWheelSteerRadians: Double
+        get() = debugVehicleSystem.frontWheelSteerRadians
+
     init {
         world.updatePlayer(initialState)
     }

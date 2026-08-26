@@ -22,11 +22,12 @@ import com.asciicity.render.AsciiPresenter
 import com.asciicity.render.AsciiViewport
 import com.asciicity.render.AsciiViewportCalculator
 import com.asciicity.render.DoorBillboardRenderer
-import com.asciicity.render.DebugVehicleRenderer
 import com.asciicity.render.HeadBob
 import com.asciicity.render.ProjectionMetrics
 import com.asciicity.render.TerminalBillboardRenderer
 import com.asciicity.render.ViewPose
+import com.asciicity.render.VehicleModelPose
+import com.asciicity.render.VehicleModelRenderer
 import com.asciicity.render.WorldAsciiRenderer
 import com.asciicity.system.FixedStepClock
 import com.asciicity.system.InteractionOutcome
@@ -70,12 +71,13 @@ class GameScreen(
     initialDebugVisible: Boolean = false,
     initialPosition: WorldPosition? = null,
     private val worldFontProfile: AsciiFontProfile = AsciiFontProfile.DEFAULT,
+    initialDebugVehicle: Boolean = false,
 ) : ScreenAdapter() {
     private val camera = OrthographicCamera()
     private val presenter = AsciiPresenter(assets.worldFont(worldFontProfile), worldFontProfile)
     private val npcSystem = NpcSystem(content.world, content.npcs, content.sprites)
     private val trafficSystem = TrafficSystem(content.trafficCars, content.sprites)
-    private val debugVehicleRenderer = DebugVehicleRenderer(content.sprites)
+    private val vehicleModelRenderer = VehicleModelRenderer(assets.compactCoupeModel)
     private val ambientActorSystem = AmbientActorSystem(content.world, content.ambientActors, content.sprites)
     private val ambientEventSystem = AmbientEventSystem(content.ambientEventEmitters)
     private val terminalBillboardRenderer = TerminalBillboardRenderer(content.world, content.sprites)
@@ -94,7 +96,6 @@ class GameScreen(
         atmosphericEmitters = content.atmosphericEmitters,
         ambientEventSystem = ambientEventSystem,
         ambientActorSystem = ambientActorSystem,
-        debugVehicleRenderer = debugVehicleRenderer,
         fontProfile = worldFontProfile,
     )
     private val input = InputController()
@@ -151,6 +152,9 @@ class GameScreen(
 
     init {
         inputMultiplexer = InputMultiplexer(input, hud.inputProcessor)
+        if (initialDebugVehicle) {
+            check(simulation.toggleDebugVehicle()) { "Initial debug vehicle position must have vehicle clearance" }
+        }
     }
 
     override fun render(delta: Float) {
@@ -205,10 +209,20 @@ class GameScreen(
             renderPose,
             renderTime,
             interpolationAlpha = fixedStepClock.interpolationAlpha,
-            debugVehiclePosition = playerPose.position.takeIf { simulation.isDrivingDebugVehicle },
+        )
+        val vehicleFrame = vehicleModelRenderer.render(
+            width = activeViewport.pixelWidth,
+            height = activeViewport.pixelHeight,
+            view = renderPose,
+            vehicle = VehicleModelPose(
+                position = playerPose.position,
+                yawRadians = playerPose.yawRadians,
+                wheelRollRadians = simulation.debugVehicleWheelRotationRadians,
+                frontWheelSteerRadians = simulation.debugVehicleFrontWheelSteerRadians,
+            ).takeIf { simulation.isDrivingDebugVehicle },
         )
         hud.update(hudModel(playerPose, activeViewport))
-        presenter.present(activeFrame, activeViewport, camera.combined)
+        presenter.present(activeFrame, activeViewport, camera.combined, vehicleFrame)
         hud.render(delta)
         dialogueOverlay.render(delta)
         if (logRenderStats) {
@@ -290,6 +304,7 @@ class GameScreen(
         hide()
         dialogueOverlay.dispose()
         hud.dispose()
+        vehicleModelRenderer.dispose()
         presenter.dispose()
         audio.dispose()
     }

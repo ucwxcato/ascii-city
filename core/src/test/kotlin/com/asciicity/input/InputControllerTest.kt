@@ -14,6 +14,7 @@ class InputControllerTest {
             Input.Keys.S to GameAction.MOVE_BACKWARD,
             Input.Keys.A to GameAction.STRAFE_LEFT,
             Input.Keys.D to GameAction.STRAFE_RIGHT,
+            Input.Keys.SPACE to GameAction.HANDBRAKE,
             Input.Keys.LEFT to GameAction.LOOK_LEFT,
             Input.Keys.RIGHT to GameAction.LOOK_RIGHT,
             Input.Keys.UP to GameAction.LOOK_UP,
@@ -25,7 +26,7 @@ class InputControllerTest {
             assertTrue(input.keyUp(key))
             assertFalse(input.isHeld(action))
         }
-        assertFalse(input.keyDown(Input.Keys.SPACE))
+        assertFalse(input.keyDown(Input.Keys.F12))
     }
 
     @Test
