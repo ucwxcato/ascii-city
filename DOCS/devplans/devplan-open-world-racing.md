@@ -8,10 +8,10 @@
 
 ## 0. Outcome
 
-The player can remain on foot, walk to an authored parked sedan, enter it, freely drive city streets in a third-person view, then start a glowing meetup race by driving to its gate. A race clears ordered road checkpoints, records a time, and returns to free roam without a loading screen.
+The player can remain on foot, walk to an authored parked compact coupe, enter it, freely drive city streets in a third-person view, then start a glowing meetup race by driving to its gate. A race clears ordered road checkpoints, records a time, and returns to free roam without a loading screen.
 
 ```text
-Launch on foot -> walk to sedan -> [E] enter -> third-person car view ->
+Launch on foot -> walk to compact coupe -> [E] enter -> third-person car view ->
 drive to Neon Run gate -> [E] start -> ordered checkpoints -> finish/time ->
 free roam -> [E] exit at a safe roadside position
 ```
@@ -21,9 +21,10 @@ The MVP is one `city-alpha` solo time trial. It is the foundation for future eve
 ## 1. Locked decisions
 
 - Walk/drive is the core loop. On-foot exploration remains available and existing story interaction stays on foot.
-- The player-facing sedan is an authored `vehicle.player.sedan`, entered/exited with `E`; it is never spawned from F3. The current F3 `V` prototype remains only until the full loop passes verification, then is removed or reduced to a test hook.
+- The first player-facing/test car is the authored `vehicle.player.compact-coupe`, entered/exited with `E`; it is never spawned from F3. Its visual brief is a legally distinct, non-branded early-2000s compact coupe/hatch with the user-requested Focus-coupe energy: short overhangs, an upright cabin, broad practical stance, tapered lamps, and small wheels. It must not copy a Ford badge, name, grille, exact panels, or production-car silhouette. The current F3 `V` sedan prototype remains only until the full loop passes verification, then is removed or reduced to a test hook.
 - Player cars are detailed, authored pixel-art vehicle assets with directional frames, not enlarged ASCII glyph billboards. They use nearest-neighbor sampling, the existing restrained neon/neutral palette language, and a dedicated cell-depth-clipped presentation path so they feel intentionally premium inside the ASCII world.
 - Every player vehicle is a believable road-worn civilian "beater," not a supercar: modest top speed, visible wear/mismatched panels, practical proportions, and a weighty street-handling character. Cars may be recent rather than vintage, but must never read as luxury, exotic, pristine, or race-built machinery.
+- The first compact coupe has a front-wheel-drive handling character: its normal acceleration pulls from the front, while handbrake drifting rotates the rear at modest speed. It must feel agile and scrappy rather than high-power or rear-drive exotic.
 - While driving, `W` throttles forward, `S` brakes/reverses, and `A`/`D` steer. Camera is a collision-bounded third-person follow pose; no overhead camera or car interior.
 - `Space` is the handbrake. At sufficient speed while steering, it intentionally reduces rear lateral grip and enables a controllable drift; releasing it restores normal grip over bounded fixed-step recovery. A drift is a physical velocity/heading relationship, never an animation toggle.
 - Vehicle state advances only in the existing fixed step and collides via `CollisionSystem` against semantic cells and blocking world entities. Rendered glyphs/gates/colors never define collision.
@@ -71,7 +72,7 @@ These are all in scope for ASCII City's racing direction; phase ordering is a qu
 ### On foot
 
 1. Existing WASD walk/strafe and arrow look controls remain unchanged.
-2. Targeting a parked sedan shows `[E] ENTER SEDAN`.
+2. Targeting the parked compact coupe shows `[E] ENTER COUPE`.
 3. Enter validates the car-radius footprint while ignoring only the target parked entity; failure leaves both player and parked entity unchanged.
 
 ### Driving
@@ -129,11 +130,12 @@ Document this in `DOCS/map-format.md` before authoring content:
 {
   "drivableVehicles": [
     {
-      "id": "vehicle.player.sedan",
-      "spriteId": "sprite.car.sedan",
+      "id": "vehicle.player.compact-coupe",
+      "spriteId": "vehicle.art.compact-coupe",
       "x": 28.5, "z": 14.5, "yawDegrees": 0,
       "radius": 0.42,
       "class": "beater",
+      "driveLayout": "frontWheelDrive",
       "handling": {
         "topSpeedCellsPerSecond": 8.5,
         "reverseSpeedCellsPerSecond": 2.75,
@@ -144,7 +146,7 @@ Document this in `DOCS/map-format.md` before authoring content:
         "handbrakeLateralGrip": 1.8,
         "driftMinimumSpeed": 3.5
       },
-      "displayText": "SEDAN"
+      "displayText": "COMPACT COUPE"
     }
   ],
   "races": [
@@ -163,7 +165,7 @@ Document this in `DOCS/map-format.md` before authoring content:
 }
 ```
 
-Validation must require stable unique IDs/references, existing directional pixel-art asset sets, `class: "beater"`, finite bounded handling values, in-bounds non-solid vehicle/gate centers, full parked-car clearance, existing `raceGate` starter ID, at least three non-duplicate ordered checkpoints, road-tagged checkpoint cells, and four-direction road connectivity between starter/checkpoints. Authoring must explicitly reject overlap with protected story door, terminal, or arrival footprints.
+Validation must require stable unique IDs/references, existing directional pixel-art asset sets, `class: "beater"`, a supported explicit drive layout (the first is `frontWheelDrive`), finite bounded handling values, in-bounds non-solid vehicle/gate centers, full parked-car clearance, existing `raceGate` starter ID, at least three non-duplicate ordered checkpoints, road-tagged checkpoint cells, and four-direction road connectivity between starter/checkpoints. Authoring must explicitly reject overlap with protected story door, terminal, or arrival footprints.
 
 ### Runtime state
 
@@ -186,7 +188,7 @@ Handling: GRIP -> HANDBRAKE -> DRIFTING -> GRIP
 - Extend `HudModel` with travel mode and optional race state. Story objective/signal values remain separate from racing state.
 - Gates are bounded finite-depth glyphs with restrained existing-neon accents. They do not brighten broad roads, change compositor behavior, or write UI.
 - `VehicleVisualRenderer` owns only vehicle art: a small directional-frame asset set (rear, front, left, right, then diagonals only if visual review needs them), fixed logical-world scale, nearest filtering, and explicit clipping against the completed finite ASCII depth field. It must not be a generic textured-world layer, a shader stack, a 3D model pipeline, or a way to draw through walls. Its low-resolution pixel art remains crisp at the existing whole-number glyph scale, uses no anti-aliasing, and is visually tuned against the dark neutral road rather than becoming a bright full-screen focal block.
-- Beater art uses original/re-distributable pixel assets and restrained physical detail: dented/misaligned body panels, faded paint, grime, taped/cracked lamps, worn tires, and small practical aftermarket touches. No real manufacturer marks, copied vehicle designs, glossy showroom finish, or excessive underglow. The car remains readable against the dark road without becoming a saturated neon billboard.
+- Beater art uses original/re-distributable pixel assets and restrained physical detail: dented/misaligned body panels, faded paint, grime, taped/cracked lamps, worn tires, and small practical aftermarket touches. The first compact coupe must emphasize its distinct short-overhang/upright-cabin/broad-stance brief rather than reproduce a particular Ford Focus coupe. No real manufacturer marks, copied vehicle designs, glossy showroom finish, or excessive underglow. The car remains readable against the dark road without becoming a saturated neon billboard.
 - `TireSmokeRenderer` is a dedicated, bounded effect rather than a general particle engine: smoke is desaturated grey/fog-tone, sparse, short-lived, rear-wheel anchored, depth-clipped, and emitted only by actual drift state. It never covers the reticle/HUD, recolors the road, or flashes the frame.
 - Third-person camera shortens toward the car if its preferred 2.6-cell rear offset is blocked; it never leaves map bounds or exposes through-wall geometry.
 - No engine/skid/start/finish audio in MVP. Existing music/rain/waterfall/footstep ownership stays intact.
@@ -197,7 +199,7 @@ Handling: GRIP -> HANDBRAKE -> DRIFTING -> GRIP
 
 | Scenario | Expected result | Required proof |
 |---|---|---|
-| Enter sedan | One parked entity becomes one driven state; radius/camera/directional pixel-art car agree. | System/index tests + 1280x720 capture. |
+| Enter compact coupe | One parked entity becomes one driven state; radius/camera/directional pixel-art car agree. | System/index tests + 1280x720 capture. |
 | Blocked entry/exit | Refusal changes no state or entity count. | Collision trace and runtime message test. |
 | Driving trace | Deterministic W/S/A/D behavior, no wall/entity tunneling. | Fixed-step hash across frame chunkings. |
 | Beater limits | Every authored player vehicle validates as `beater`; top speed/reverse/acceleration remain inside established modest ranges. | Content validation fixtures. |
@@ -211,14 +213,14 @@ Handling: GRIP -> HANDBRAKE -> DRIFTING -> GRIP
 | Escape/pause/resize/reload | Clean abort/freeze; no catch-up/duplicate markers/state leak. | Lifecycle tests + smoke route. |
 | Invalid content | Exact file/path errors for IDs, sprites, placement, radius, non-road/disconnected route. | Loader fixtures + `:core:validateContent`. |
 | Story regression | Existing targets remain reachable; driven map door is refused. | Interaction/walk/vehicle-door test. |
-| Vehicle visual quality | Directional pixel-art sedan stays crisp, recognizably detailed, palette-coherent, and depth-clipped rather than reading as an ASCII billboard. | Approved rear/side/turn/occlusion captures at 1280x720 and ultrawide. |
-| Presentation | Gates/sedan depth-correct; dark road/HUD readability survive Fine + Standard. | 1280x720/ultrawide review, smoke stats, `clean check`. |
+| Vehicle visual quality | Directional pixel-art compact coupe stays crisp, recognizably detailed, palette-coherent, legally distinct from its Focus-coupe reference, and depth-clipped rather than reading as an ASCII billboard. | Approved rear/side/turn/occlusion captures at 1280x720 and ultrawide. |
+| Presentation | Gates/compact coupe depth-correct; dark road/HUD readability survive Fine + Standard. | 1280x720/ultrawide review, smoke stats, `clean check`. |
 
 ## 8. Phased checklist
 
 ### Phase 0 — Contract and route lock
 
-- [ ] Add/update this plan, remove life-pass exclusion, and cross-link the canonical plan.
+- [x] Add/update this plan, remove life-pass exclusion, and cross-link the canonical plan.
 - [ ] Add `drivableVehicles`, `races`, and `raceGate` format/validation rules.
 - [ ] Select one story-safe city-alpha parking bay and a 3+ checkpoint road-only Neon Run after first/third-person sightline review.
 - [ ] **Verify:** Route has no required story overlap and schema is approved before loader work.
@@ -226,7 +228,7 @@ Handling: GRIP -> HANDBRAKE -> DRIFTING -> GRIP
 ### Phase 1 — Production free-roam vehicle
 
 - [ ] Refactor F3-only `DebugVehicleSystem` into data-backed `VehicleSystem`; add fixed-step local velocity, beater acceleration/brake/drag/steering, handbrake drift, collision velocity response, and no hard-coded spawn/sprite ownership.
-- [ ] Define/import one redistributable, authored directional pixel-art beater sedan asset set and validate frame dimensions, worn-detail/palette treatment, logical scale, nearest filtering, and `class: "beater"`. Do not generate the final asset from a generic text glyph layout.
+- [ ] Define/import `vehicle.art.compact-coupe`: one redistributable, authored directional pixel-art front-wheel-drive beater compact-coupe asset set. Validate frame dimensions, legal distinctness from its Focus-coupe inspiration, worn-detail/palette treatment, logical scale, nearest filtering, `class: "beater"`, and `driveLayout: "frontWheelDrive"`. Do not generate the final asset from a generic text glyph layout.
 - [ ] Add a narrowly scoped `VehicleVisualRenderer` that composites the car frame into the existing FBO/presentation route only where the resolved ASCII depth permits it; add typed parked vehicle entities, atomic entry/exit, vehicle input mode, door refusal, and third-person camera.
 - [ ] Add a fixed-capacity, drift-only `TireSmokeRenderer` and smoke emission tests; do not introduce a generic particle system.
 - [ ] Add collision/control/drift/smoke/camera/entity/lifecycle tests.
@@ -235,7 +237,7 @@ Handling: GRIP -> HANDBRAKE -> DRIFTING -> GRIP
 ### Phase 2 — Race data and deterministic state
 
 - [ ] Add race definitions, parser/validator/fixtures, race gates, session/state machine, and ordered checkpoint tests.
-- [ ] Author `vehicle.player.sedan`, `race-gate.neon-run`, and `race.neon-run` only after the schema validates.
+- [ ] Author `vehicle.player.compact-coupe`, `race-gate.neon-run`, and `race.neon-run` only after the schema validates.
 - [ ] **Verify:** Exact-path invalid-content tests, deterministic checkpoint/skip/abort/pause/reload tests, content validation, and `clean check`.
 
 ### Phase 3 — Player-facing race integration
@@ -269,6 +271,6 @@ Handling: GRIP -> HANDBRAKE -> DRIFTING -> GRIP
 
 ## 9. Open tuning points
 
-- The example 8.5-cell/sec top speed, 2.75-cell/sec reverse, 5.0 acceleration, 8.0 braking, 105-degree steering, grip values, 3.5 drift threshold, radius `0.42`, and current follow target (2.6 cells rear, 1.35 height) are starting points. Tune only through fixed-step handling traces plus controlled-drift, smoke, and collision capture evidence; remain inside validated beater limits.
+- The first compact coupe's front-wheel-drive layout is locked; its example 8.5-cell/sec top speed, 2.75-cell/sec reverse, 5.0 acceleration, 8.0 braking, 105-degree steering, grip values, 3.5 drift threshold, radius `0.42`, and current follow target (2.6 cells rear, 1.35 height) are starting points. Tune only through fixed-step handling traces plus controlled-drift, smoke, and collision capture evidence; remain inside validated beater limits.
 - Exact parking/gate/checkpoint coordinates are TBD pending overlap and sightline audit; city-alpha-only, road-connected, three-plus ordered checkpoints are locked.
 - Career, rivals, heat, damage, wider-map events, and competitive services are all planned in Phases 4–7. Each still needs its focused implementation contract before work begins because it introduces AI, economy, adversarial behavior, persistence, or network authority.
