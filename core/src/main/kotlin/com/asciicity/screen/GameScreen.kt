@@ -295,6 +295,7 @@ class GameScreen(
 
     private fun handleCommands(viewPose: ViewPose, activeViewport: AsciiViewport) {
         val mapSwitchRequested = input.consume(GameCommand.CYCLE_DEBUG_MAP)
+        val crtToggleRequested = input.consume(GameCommand.TOGGLE_CRT)
         if (input.consume(GameCommand.TOGGLE_MUSIC)) {
             val muted = audio.toggleMusicMuted()
             GameLog.info("AudioService", "Music ${if (muted) "muted" else "unmuted"}")
@@ -313,6 +314,10 @@ class GameScreen(
             if (input.consume(GameCommand.TOGGLE_DEBUG)) {
                 debugVisible = !debugVisible
                 GameLog.info("GameScreen", "F3 diagnostics ${if (debugVisible) "shown" else "hidden"}")
+            }
+            if (debugVisible && crtToggleRequested) {
+                presenter.toggleCrtEffect()
+                GameLog.info("GameScreen", "CRT effect ${if (presenter.crtEffectEnabled) "enabled" else "disabled"}")
             }
             if (debugVisible && mapSwitchRequested && nextMapId != null) {
                 GameLog.info("GameScreen", "F3 map switch requested: ${content.world.mapId} -> $nextMapId")
@@ -407,6 +412,7 @@ class GameScreen(
                 cellId = definition.id,
                 groundMaterialId = definition.groundMaterialId,
                 facadeMaterialId = definition.facadeMaterialId,
+                crtEffectEnabled = presenter.crtEffectEnabled,
             ),
             debugMap = if (!debugVisible) "" else DebugFootprint.render(content.world.grid, currentCell),
             musicAvailable = audio.musicAvailable,

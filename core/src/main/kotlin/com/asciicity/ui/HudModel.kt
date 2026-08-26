@@ -65,6 +65,7 @@ object HudText {
         cellId: String,
         groundMaterialId: String,
         facadeMaterialId: String,
+        crtEffectEnabled: Boolean,
     ): String = buildString {
         append("MAP ").append(mapId)
         if (nextMapId != null) append(" | [TAB] LOAD ").append(nextMapId)
@@ -99,6 +100,8 @@ object HudText {
         append('\n')
         append("CELL ").append(cellId).append('\n')
         append("MAT ").append(groundMaterialId).append(" / ").append(facadeMaterialId)
+            .append('\n')
+        append("CRT ").append(if (crtEffectEnabled) "ON" else "OFF").append(" | [C] TOGGLE")
     }
 
     private val COMPASS_POINTS = arrayOf("N", "NE", "E", "SE", "S", "SW", "W", "NW")

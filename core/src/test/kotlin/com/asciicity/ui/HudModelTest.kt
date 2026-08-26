@@ -49,6 +49,7 @@ class HudModelTest {
             cellId = "road",
             groundMaterialId = "ground.road",
             facadeMaterialId = "facade.none",
+            crtEffectEnabled = false,
         )
 
         assertTrue("MAP city-alpha | [TAB] LOAD water-park" in debug)
@@ -57,6 +58,7 @@ class HudModelTest {
         assertTrue("TARGET terminal.archive @ 1.250" in debug)
         assertTrue("CELL road" in debug)
         assertTrue("ground.road / facade.none" in debug)
+        assertTrue("CRT OFF | [C] TOGGLE" in debug)
     }
 
     @Test

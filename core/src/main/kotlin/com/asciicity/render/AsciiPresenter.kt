@@ -34,11 +34,18 @@ class AsciiPresenter(
     private var depthTexture: Texture? = null
     private var emissiveTexture: Texture? = null
 
+    var crtEffectEnabled: Boolean = true
+        private set
+
     val compositeFiniteDepthCellCount: Int
         get() = compositeData.finiteDepthCellCount
 
     val compositeEmissiveCellCount: Int
         get() = compositeData.emissiveCellCount
+
+    fun toggleCrtEffect() {
+        crtEffectEnabled = !crtEffectEnabled
+    }
 
     init {
         val pixel = Pixmap(1, 1, Pixmap.Format.RGBA8888)
@@ -92,6 +99,7 @@ class AsciiPresenter(
         try {
             crtShader.setUniformf("u_resolution", contentWidth.toFloat(), contentHeight.toFloat())
             crtShader.setUniformf("u_cellResolution", frame.width.toFloat(), frame.height.toFloat())
+            crtShader.setUniformf("u_crtEnabled", if (crtEffectEnabled) 1f else 0f)
             crtShader.setUniformi("u_depthTexture", 1)
             crtShader.setUniformi("u_emissiveTexture", 2)
             crtBatch.draw(
@@ -264,6 +272,7 @@ class AsciiPresenter(
             uniform sampler2D u_emissiveTexture;
             uniform vec2 u_resolution;
             uniform vec2 u_cellResolution;
+            uniform float u_crtEnabled;
 
             vec4 cellSample(sampler2D source, vec2 cell) {
                 vec2 boundedCell = clamp(cell, vec2(0.0), u_cellResolution - vec2(1.0));
@@ -286,23 +295,25 @@ class AsciiPresenter(
                 vec2 centered = v_texCoords * 2.0 - 1.0;
                 float radiusSquared = dot(centered, centered);
                 vec2 curvedUv = centered * (1.0 + 0.075 * radiusSquared) * 0.5 + 0.5;
-                float inside = step(0.0, curvedUv.x) * step(curvedUv.x, 1.0) *
+                float curvedInside = step(0.0, curvedUv.x) * step(curvedUv.x, 1.0) *
                     step(0.0, curvedUv.y) * step(curvedUv.y, 1.0);
+                vec2 sampleUv = mix(v_texCoords, curvedUv, u_crtEnabled);
+                float inside = mix(1.0, curvedInside, u_crtEnabled);
 
-                vec2 chromaOffset = vec2(1.5 / u_resolution.x, 0.0) * (0.35 + radiusSquared);
+                vec2 chromaOffset = vec2(1.5 / u_resolution.x, 0.0) * (0.35 + radiusSquared) * u_crtEnabled;
                 vec3 phosphor = vec3(
-                    texture2D(u_texture, curvedUv + chromaOffset).r,
-                    texture2D(u_texture, curvedUv).g,
-                    texture2D(u_texture, curvedUv - chromaOffset).b
+                    texture2D(u_texture, sampleUv + chromaOffset).r,
+                    texture2D(u_texture, sampleUv).g,
+                    texture2D(u_texture, sampleUv - chromaOffset).b
                 );
                 vec3 halo = (
-                    texture2D(u_texture, curvedUv + vec2(2.0 / u_resolution.x, 0.0)).rgb +
-                    texture2D(u_texture, curvedUv - vec2(2.0 / u_resolution.x, 0.0)).rgb +
-                    texture2D(u_texture, curvedUv + vec2(0.0, 2.0 / u_resolution.y)).rgb +
-                    texture2D(u_texture, curvedUv - vec2(0.0, 2.0 / u_resolution.y)).rgb
+                    texture2D(u_texture, sampleUv + vec2(2.0 / u_resolution.x, 0.0)).rgb +
+                    texture2D(u_texture, sampleUv - vec2(2.0 / u_resolution.x, 0.0)).rgb +
+                    texture2D(u_texture, sampleUv + vec2(0.0, 2.0 / u_resolution.y)).rgb +
+                    texture2D(u_texture, sampleUv - vec2(0.0, 2.0 / u_resolution.y)).rgb
                 ) * 0.035;
 
-                vec2 cellPosition = curvedUv * u_cellResolution;
+                vec2 cellPosition = sampleUv * u_cellResolution;
                 vec2 currentCell = min(floor(cellPosition), u_cellResolution - vec2(1.0));
                 vec4 currentDepth = cellSample(u_depthTexture, currentCell);
                 float contactEdge = 0.0;
@@ -319,8 +330,8 @@ class AsciiPresenter(
                 neonHaze += haloFromCell(cellPosition, currentCell + vec2(1.0, 0.0));
                 neonHaze += haloFromCell(cellPosition, currentCell + vec2(0.0, 1.0));
                 neonHaze = min(neonHaze * 0.18, vec3(0.42));
-                float scanline = 0.78 + 0.22 * sin(v_texCoords.y * u_resolution.y * 3.14159265);
-                float vignette = 1.0 - smoothstep(0.30, 1.30, radiusSquared) * 0.66;
+                float scanline = mix(1.0, 0.78 + 0.22 * sin(v_texCoords.y * u_resolution.y * 3.14159265), u_crtEnabled);
+                float vignette = mix(1.0, 1.0 - smoothstep(0.30, 1.30, radiusSquared) * 0.66, u_crtEnabled);
                 gl_FragColor = vec4((phosphor * contactShade + halo + neonHaze) * scanline * vignette * inside, 1.0) * v_color;
             }
         """

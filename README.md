@@ -93,6 +93,7 @@ For all launch, capture, map, camera, asset-override, and verification commands,
 | Escape | Cancel / close |
 | `F3` | Toggle diagnostics and the debug footprint |
 | `Tab` while F3 is open | Load the next playable map |
+| `C` while F3 is open | Toggle the CRT world presentation effect |
 | `M` or the music HUD button | Mute / unmute the soundtrack; rain and footsteps stay audible |
 
 ## Build and verify

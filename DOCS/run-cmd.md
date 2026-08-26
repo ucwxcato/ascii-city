@@ -87,5 +87,5 @@ These are useful for testing controlled asset-load failures or alternate local a
 - Arrow keys: look
 - `E` or Enter: interact
 - `Escape`: cancel
-- `F3`: diagnostics and debug footprint; `Tab` cycles map while diagnostics are open
+- `F3`: diagnostics and debug footprint; `Tab` cycles map and `C` toggles CRT world presentation while diagnostics are open
 - `M`: toggle city/park music only

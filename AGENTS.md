@@ -93,6 +93,7 @@ Useful rendering checks:
 - Escape: cancel.
 - F3: toggle diagnostics and the debug footprint.
 - `Tab` while F3 is open: load the next playable map.
+- C while F3 is open: toggle the CRT world presentation effect.
 - `M`: mute/unmute city and park music only; rain and footsteps remain audible, and the HUD music button performs the same command.
 
 City and park music starts muted by default; rain, waterfall ambience, and footsteps retain their independent ownership.
