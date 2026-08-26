@@ -22,4 +22,13 @@ class VehicleWheelTransformTest {
 
         assertTrue(wheelForward.x > 0.99f)
     }
+
+    @Test
+    fun `vehicle display steering is opposite the wheel node yaw convention`() {
+        val simulationSteerRadians = PI * 0.5
+        val displayedForward = Vector3(0f, 0f, 1f)
+            .mul(VehicleWheelTransform.frontWheelRotation(simulationSteerRadians, rollRadians = 0.0))
+
+        assertTrue(displayedForward.x < -0.99f)
+    }
 }

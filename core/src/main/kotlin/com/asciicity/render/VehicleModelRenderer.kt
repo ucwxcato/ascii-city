@@ -98,8 +98,11 @@ class VehicleModelRenderer(
     private fun updatePose(vehicle: VehicleModelPose) {
         body.translation.set(vehicle.position.x.toFloat(), 0f, vehicle.position.z.toFloat())
         body.rotation.setFromAxis(Vector3.Y, Math.toDegrees(vehicle.yawRadians).toFloat())
-        applyWheelPose(frontLeft, vehicle.frontWheelSteerRadians, vehicle.wheelRollRadians)
-        applyWheelPose(frontRight, vehicle.frontWheelSteerRadians, vehicle.wheelRollRadians)
+        // Simulation's positive steering is driver-right.  The authored wheel nodes use the
+        // opposite local yaw convention, so negate only the display articulation; vehicle
+        // motion remains entirely authoritative in DebugVehicleSystem.
+        applyFrontWheelPose(frontLeft, vehicle.frontWheelSteerRadians, vehicle.wheelRollRadians)
+        applyFrontWheelPose(frontRight, vehicle.frontWheelSteerRadians, vehicle.wheelRollRadians)
         applyWheelPose(rearLeft, 0.0, vehicle.wheelRollRadians)
         applyWheelPose(rearRight, 0.0, vehicle.wheelRollRadians)
         instance.calculateTransforms()
@@ -107,6 +110,10 @@ class VehicleModelRenderer(
 
     private fun applyWheelPose(node: Node, steeringRadians: Double, rollRadians: Double) {
         node.rotation.set(VehicleWheelTransform.rotation(steeringRadians, rollRadians))
+    }
+
+    private fun applyFrontWheelPose(node: Node, steeringRadians: Double, rollRadians: Double) {
+        node.rotation.set(VehicleWheelTransform.frontWheelRotation(steeringRadians, rollRadians))
     }
 
     private fun render(buffer: FrameBuffer, batch: ModelBatch) {
@@ -157,6 +164,10 @@ internal object VehicleWheelTransform {
     fun rotation(steeringRadians: Double, rollRadians: Double): Quaternion = Quaternion()
         .setFromAxis(Vector3.Y, Math.toDegrees(steeringRadians).toFloat())
         .mul(Quaternion().setFromAxis(Vector3.X, Math.toDegrees(rollRadians).toFloat()))
+
+    /** Converts driver-right simulation steering into the authored nodes' local yaw convention. */
+    fun frontWheelRotation(simulationSteeringRadians: Double, rollRadians: Double): Quaternion =
+        rotation(-simulationSteeringRadians, rollRadians)
 }
 
 private class VehicleFlatShaderProvider(
