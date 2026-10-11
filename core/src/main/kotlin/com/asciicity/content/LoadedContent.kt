@@ -6,8 +6,8 @@ import com.asciicity.ambient.AmbientEventEmitter
 import com.asciicity.render.AtmosphericEmitter
 import com.asciicity.render.RenderPalette
 import com.asciicity.render.PresentationTuning
-import com.asciicity.traffic.TrafficCar
 import com.asciicity.render.FacadeSign
+import com.asciicity.traffic.TrafficCar
 import com.asciicity.world.GameWorld
 
 data class LoadedContent(

@@ -1,105 +1,90 @@
 <p align="center">
-  <img src="DOCS/verification/visual-density-compositor/city-fine-default-optimized-1280x720.png" alt="Last Packet: ASCII City — neon first-person street" width="100%" />
+  <img src="DOCS/verification/visual-density-compositor/city-fine-default-optimized-1280x720.png" alt="Neon street rendered in first-person ASCII" width="100%" />
 </p>
 
-<h1 align="center">Last Packet: ASCII City</h1>
+<h1 align="center">ASCII City</h1>
 
 <p align="center">
-  <strong>FIRST-PERSON ASCII CYBERPUNK EXPLORATION</strong><br />
-  Walk rain-soaked neon streets. Follow failing signals. Find the last message still trying to get through.
+  <strong>FIRST-PERSON ASCII CYBERPUNK STORY GAME</strong><br />
+  Walk the city, meet its people, and uncover what lies beneath its network.
 </p>
 
 <p align="center">
-  Kotlin &middot; LibGDX &middot; LWJGL3 &middot; CPU-rendered perspective ASCII
+  Kotlin &middot; LibGDX &middot; LWJGL3 &middot; CPU-rendered ASCII perspective
 </p>
 
-> The exploration and presentation foundation is playable today. The complete Last Packet relay/archive/ending route is still in development.
-
-`Last Packet: ASCII City` is a desktop-first cyberpunk exploration game built from data-authored maps, semantic collision, and a living first-person ASCII renderer. It is not a top-down tile game: façades, roads, terminals, lights, weather, and characters resolve into one depth-tested perspective frame.
-
-## A city made of text
-
-| Fine city streets | Archive district | Last Light Casino |
-|---|---|---|
-| ![Charcoal road and neon façades](DOCS/verification/road-asphalt-1280x720.png) | ![Archive façade](DOCS/verification/visual-density-phase3-archive-1280x720.png) | ![Casino machines](DOCS/verification/visual-density-compositor/casino-fine-composite-1280x720.png) |
+ASCII City is a desktop exploration game built from authored maps and a first-person ASCII renderer. The city foundation is playable. The planned Kernel-Panic campaign is still being adapted from the documents in [`storyline-docs/`](storyline-docs/README.md).
 
 ## Current state
 
-The first-person city foundation, cyberpunk presentation, stationary Rin, visible terminal billboards, and data-driven linear dialogue are playable. The explicit Last Packet progression loop is the next major milestone.
+You can walk through four authored maps, inspect the environment, interact with terminals and characters, and hear the city change between its districts. The old `Last Packet` story is a prototype. The Kernel-Panic campaign, its choices, and its persistent story progress are not implemented yet.
 
-Implemented:
+The campaign documents describe a novice hacker caught in a conflict involving the Architect, the Oracle, and a mysterious system component. The story builds through several arcs, faction relationships, player choices, and multiple endings. The [`campaign roadmap`](storyline-docs/CAMPAIGN_WIP/MASTER_CAMPAIGN_ROADMAP.md) and [`story analysis`](storyline-docs/CAMPAIGN_WIP/STORY_ANALYSIS.md) hold the details.
 
-- High-detail Fine 6×12 ASCII is the default world surface: 213×60 cells at 1280×720, with crisp glyph alignment and Standard-font UI.
-- Street-level first-person exploration with camera-relative WASD movement.
-- Independent arrow-key turning and vertical look.
-- Semantic collision against buildings, park fixtures, water, doors, and entities.
-- Four validated playable maps: the `city-alpha` streets, an enclosed `water-park`, a standalone `nature-reserve`, and the gold-walled neon `casino` interior with camera-facing slot-machine cabinets.
-- Perspective ASCII raycasting with multilevel occlusion, optional depth-tested interior ceilings, distance fog, rain, street lamps, trees, park silhouettes, animated data facades, charcoal road surfaces, readable façade labels, localized light pools, and giant authored Vegas-style marquees.
-- A restrained neon palette with validated contrast and reduced-flicker tuning.
-- HUD, center-ray interaction prompts, terminal responses, and F3 diagnostics.
-- Rin's depth-tested ASCII sprite, two-line introductory dialogue, and semantic blocking position near the city route.
-- Physical in-world terminal billboards: compact cyan screens on metal stands that depth-test against walls while retaining semantic interaction/collision rules.
-- Six visual-only cars loop authored city-road routes at a brisk but low-density pace; they are atmosphere only and never block, collide with, or react to the player.
-- Sparse steam and rooftop exhaust, animated wall machines, positional vent/spark/horn events, and three scheduled pedestrians add deterministic street life; pedestrian sprites and blocking entities share one authoritative position.
-- Validated, data-driven linear dialogue for Rin and terminals; E/Enter advances one line, while Escape closes safely without movement/look input leaking through.
-- City/park music starts muted and can be enabled with `M`; smooth zone crossfades, independent gentle-rain ambience, semantic natural/pavement footsteps, positional city cues, lifecycle-safe playback, and synchronized HUD/keyboard controls remain available.
-- Subtle movement-driven head bob that affects presentation only and can be disabled for reduced motion.
-- Deterministic simulation, content validation, resize-safe rendering, and automated verification routes.
+## In the game now
 
-Coming next:
+- First-person movement, turning, and vertical look.
+- Four authored maps: `city-alpha`, `water-park`, `nature-reserve`, and `casino`.
+- Semantic collision for buildings, water, park fixtures, doors, and characters.
+- Perspective ASCII rendering with fog, rain, animated facades, street lamps, and depth-tested sprites.
+- Center-screen prompts, terminal responses, and linear dialogue.
+- Ambient traffic, steam, rooftop exhaust, small street events, and scheduled pedestrians. Traffic cars are scenery; the player cannot drive them.
+- City and park music, rain, footsteps, and optional head bob.
+- A responsive desktop window with Fine 6×12 ASCII as the default world profile.
 
-- Complete the remaining targeting/modal dialogue coverage.
-- Add the explicit ordered relay state machine, signal guidance, and contextual repeat/early interaction text.
-- Open the one-way archive seal after Relay 3, reveal the final transmission, and return to Rin for the ending.
+## Screenshots
 
-![Visible Archive Node terminal](DOCS/readme/archive-terminal-1280x720.png)
+| City street | Archive district | Casino |
+|---|---|---|
+| ![Neon city street](DOCS/verification/road-asphalt-1280x720.png) | ![Archive district](DOCS/verification/visual-density-phase3-archive-1280x720.png) | ![Casino interior](DOCS/verification/visual-density-compositor/casino-fine-composite-1280x720.png) |
 
-![City-life pedestrian and steam](DOCS/readme/city-life-pedestrian-1280x720.png)
+![Archive terminal](DOCS/readme/archive-terminal-1280x720.png)
 
-The canonical implementation roadmap is in [the development plan](DOCS/devplans/ascii-city-development-plan.md).
+![Pedestrian and steam in the city](DOCS/readme/city-life-pedestrian-1280x720.png)
 
-## Run the game
+## Run
 
 Requirements:
 
 - The checked-in Gradle wrapper.
 - Internet access on the first build so Gradle can resolve dependencies and provision the pinned Java 21 toolchain.
 
-```bash
+Launch the game:
+
+```powershell
 ./gradlew gameRun
 ```
 
-`gameRun` is the standalone game entry point. It launches Fine ASCII by default. The desktop window starts at and keeps a 1280×720 logical minimum and has no upper resize/maximize cap. Larger and ultrawide windows expand the first-person view with crisp whole-number glyph scaling instead of stretching the ASCII image.
+The desktop window starts at a 1280×720 logical size and keeps that as its minimum. Larger windows expand the view with whole-number glyph scaling.
 
-Compare the available world-density profiles:
+Choose a world font profile:
 
-```bash
+```powershell
 ./gradlew desktop:run --args="--ascii-density=fine"
 ./gradlew desktop:run --args="--ascii-density=dense"
 ./gradlew desktop:run --args="--ascii-density=standard"
 ```
 
-For all launch, capture, map, camera, asset-override, and verification commands, see [DOCS/run-cmd.md](DOCS/run-cmd.md).
+See [run commands](DOCS/run-cmd.md) for screenshots, map selection, camera options, and verification routes.
 
 ## Controls
 
 | Input | Action |
 |---|---|
-| `W` / `S` | Walk forward / backward |
-| `A` / `D` | Strafe left / right |
+| `W` / `S` | Walk forward or backward |
+| `A` / `D` | Strafe |
 | Left / Right arrows | Turn |
-| Up / Down arrows | Look up / down |
-| `E` or Enter | Interact / advance |
-| Escape | Cancel / close |
-| `F3` | Toggle diagnostics and the debug footprint |
+| Up / Down arrows | Look up or down |
+| `E` or Enter | Interact or advance dialogue |
+| Escape | Cancel or close dialogue |
+| `F3` | Show diagnostics and the debug footprint |
 | `Tab` while F3 is open | Load the next playable map |
-| `C` while F3 is open | Toggle the CRT world presentation effect |
-| `V` while F3 is open | Spawn/remove the third-person debug car; WASD drives it |
-| `M` or the music HUD button | Mute / unmute the soundtrack; rain and footsteps stay audible |
+| `C` while F3 is open | Toggle the CRT effect |
+| `M` or the music HUD button | Mute or unmute city and park music |
+
+Rain and footsteps keep playing when music is muted.
 
 ## Build and verify
-
-Run the complete automated build:
 
 ```powershell
 ./gradlew clean check
@@ -109,52 +94,32 @@ Run the complete automated build:
 Useful desktop checks:
 
 ```powershell
-# Ten-frame launch/render smoke check
 ./gradlew desktop:run --args=--smoke-test
-
-# Movement, collision, lifecycle, and resize route
 ./gradlew desktop:run --args=--verify-walk
-
-# HUD, targeting, modal input, and terminal route
 ./gradlew desktop:run --args=--verify-interaction
-
-# Brief rain, neon, fog, pause, resize, and immutability route
 ./gradlew desktop:run --args=--verify-presentation
 ```
 
-Diagnostic arguments can be combined with the smoke check:
-
-- `--window-size=WIDTHxHEIGHT`
-- `--ascii-density=fine|dense|standard`
-- `--map=city-alpha|water-park|nature-reserve|casino`
-- `--view-yaw=DEGREES`
-- `--view-pitch=DEGREES`
-- `--view-x=NUMBER` and `--view-z=NUMBER` together to start at a valid authored world position (useful for focused screenshots and renderer debugging)
-- `--screenshot=ABSOLUTE_PATH`
-- `--no-audio`
-- `--no-head-bob`
-
-Recorded test and runtime evidence lives in [verification notes](DOCS/verification-notes.md).
+The [`verification notes`](DOCS/verification-notes.md) record test and runtime evidence.
 
 ## Project layout
 
-- `core/`: portable gameplay, simulation, content loading, rendering, input, and UI.
-- `desktop/`: LWJGL3 launcher, desktop window rules, and desktop failure handling.
-- `assets/data/`: validated palette, presentation, material, cell, and dialogue data.
-- `assets/maps/`: fixed footprints, metadata, and objects for each playable map.
-- `DOCS/`: format contracts, authoring guides, verification evidence, and development plans.
+- `core/`: gameplay, simulation, content loading, rendering, input, and UI.
+- `desktop/`: LWJGL3 launcher and desktop window configuration.
+- `assets/data/`: palette, presentation, materials, cells, sprites, and dialogue.
+- `assets/maps/`: map footprints, metadata, and authored objects.
+- `storyline-docs/`: campaign structure, lore, mission guides, and story analysis.
+- `DOCS/`: map and rendering contracts, authoring guides, verification notes, and implementation plans.
 
-Start with the [map authoring guide](DOCS/map-authoring-guide.md), [map format](DOCS/map-format.md), or [rendering contract](DOCS/rendering-contract.md) when changing content or presentation.
+Start with the [map authoring guide](DOCS/map-authoring-guide.md), [map format](DOCS/map-format.md), or [rendering contract](DOCS/rendering-contract.md) when changing the world.
 
-## Developer orientation
+## Architecture
 
-- `GameScreen` owns the running LibGDX lifecycle and combines the simulation, first-person frame, HUD, and modal dialogue.
-- `PlayerSimulation`, movement/look/collision systems, and `GameWorld` own deterministic gameplay state; renderers never define collision.
-- `ContentLoader` validates palette, material, cell, sprite, dialogue, map, and object data before a world is constructed. Error messages identify the source file and JSON path.
-- `WorldAsciiRenderer` owns the CPU first-person projection. `EntitySpriteRenderer` is reused by Rin and the visible terminal billboards, with per-character depth testing against the world frame.
-- Static map content lives under `assets/`; keep rendering/material changes separate from semantic cells and entities.
+`GameScreen` owns the LibGDX screen lifecycle. `PlayerSimulation`, movement, look, collision, and `GameWorld` own gameplay state. `ContentLoader` validates maps and dialogue before world construction. `WorldAsciiRenderer` builds the first-person frame, and `AsciiPresenter` draws it without changing collision or authored content.
 
-The detailed project constraints and verification expectations are in [AGENTS.md](AGENTS.md). The roadmap is [the development plan](DOCS/devplans/ascii-city-development-plan.md).
+The project uses a small Kotlin domain model. It does not use a general ECS or a 3D model pipeline.
+
+The [development plan](DOCS/devplans/ascii-city-development-plan.md) records the existing engine work and the shift from the `Last Packet` prototype to the campaign docs.
 
 ## Technology
 
@@ -162,6 +127,4 @@ The detailed project constraints and verification expectations are in [AGENTS.md
 - LibGDX
 - LWJGL3 desktop backend
 - Gradle Kotlin DSL
-- CPU-rendered ASCII perspective geometry
-
-The project intentionally uses a lightweight domain model rather than a general ECS, 3D model pipeline, shader stack, or external UI framework.
+- CPU-rendered ASCII perspective

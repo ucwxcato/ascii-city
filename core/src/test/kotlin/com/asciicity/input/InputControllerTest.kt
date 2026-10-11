@@ -14,7 +14,6 @@ class InputControllerTest {
             Input.Keys.S to GameAction.MOVE_BACKWARD,
             Input.Keys.A to GameAction.STRAFE_LEFT,
             Input.Keys.D to GameAction.STRAFE_RIGHT,
-            Input.Keys.SPACE to GameAction.HANDBRAKE,
             Input.Keys.LEFT to GameAction.LOOK_LEFT,
             Input.Keys.RIGHT to GameAction.LOOK_RIGHT,
             Input.Keys.UP to GameAction.LOOK_UP,
@@ -41,13 +40,11 @@ class InputControllerTest {
         input.keyDown(Input.Keys.F3)
         input.keyDown(Input.Keys.TAB)
         input.keyDown(Input.Keys.C)
-        input.keyDown(Input.Keys.V)
         input.keyDown(Input.Keys.M)
         assertTrue(input.consume(GameCommand.CANCEL))
         assertTrue(input.consume(GameCommand.TOGGLE_DEBUG))
         assertTrue(input.consume(GameCommand.CYCLE_DEBUG_MAP))
         assertTrue(input.consume(GameCommand.TOGGLE_CRT))
-        assertTrue(input.consume(GameCommand.TOGGLE_DEBUG_VEHICLE))
         assertTrue(input.consume(GameCommand.TOGGLE_MUSIC))
 
         input.keyDown(Input.Keys.W)
@@ -70,7 +67,6 @@ class InputControllerTest {
         input.keyDown(Input.Keys.F3)
         input.keyDown(Input.Keys.TAB)
         input.keyDown(Input.Keys.C)
-        input.keyDown(Input.Keys.V)
         input.keyDown(Input.Keys.M)
         input.keyDown(Input.Keys.E)
         input.keyDown(Input.Keys.ESCAPE)
@@ -78,7 +74,6 @@ class InputControllerTest {
         assertFalse(input.consume(GameCommand.TOGGLE_DEBUG))
         assertFalse(input.consume(GameCommand.CYCLE_DEBUG_MAP))
         assertFalse(input.consume(GameCommand.TOGGLE_CRT))
-        assertFalse(input.consume(GameCommand.TOGGLE_DEBUG_VEHICLE))
         assertTrue(input.consume(GameCommand.TOGGLE_MUSIC))
         assertTrue(input.consume(GameCommand.INTERACT))
         assertTrue(input.consume(GameCommand.CANCEL))

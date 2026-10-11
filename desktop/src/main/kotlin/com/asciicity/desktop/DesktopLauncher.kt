@@ -82,7 +82,6 @@ fun main(arguments: Array<String>) {
             verifyPresentation = verifyPresentation,
             audioEnabled = "--no-audio" !in arguments,
             headBobEnabled = "--no-head-bob" !in arguments,
-            initialDebugVehicle = "--debug-car" in arguments,
             initialMapId = initialMapId,
             worldFontProfile = worldFontProfile,
             screenshotFrame = when {

@@ -62,7 +62,6 @@ class InputController : InputAdapter() {
         Input.Keys.S -> GameAction.MOVE_BACKWARD
         Input.Keys.A -> GameAction.STRAFE_LEFT
         Input.Keys.D -> GameAction.STRAFE_RIGHT
-        Input.Keys.SPACE -> GameAction.HANDBRAKE
         Input.Keys.LEFT -> GameAction.LOOK_LEFT
         Input.Keys.RIGHT -> GameAction.LOOK_RIGHT
         Input.Keys.UP -> GameAction.LOOK_UP
@@ -76,7 +75,6 @@ class InputController : InputAdapter() {
         Input.Keys.F3 -> GameCommand.TOGGLE_DEBUG
         Input.Keys.TAB -> GameCommand.CYCLE_DEBUG_MAP
         Input.Keys.C -> GameCommand.TOGGLE_CRT
-        Input.Keys.V -> GameCommand.TOGGLE_DEBUG_VEHICLE
         Input.Keys.M -> GameCommand.TOGGLE_MUSIC
         else -> null
     }

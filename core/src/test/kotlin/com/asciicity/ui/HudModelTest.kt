@@ -50,7 +50,6 @@ class HudModelTest {
             groundMaterialId = "ground.road",
             facadeMaterialId = "facade.none",
             crtEffectEnabled = false,
-            drivingDebugVehicle = false,
         )
 
         assertTrue("MAP city-alpha | [TAB] LOAD water-park" in debug)
@@ -60,7 +59,6 @@ class HudModelTest {
         assertTrue("CELL road" in debug)
         assertTrue("ground.road / facade.none" in debug)
         assertTrue("CRT OFF | [C] TOGGLE" in debug)
-        assertTrue("[V] SPAWN DEBUG CAR" in debug)
     }
 
     @Test

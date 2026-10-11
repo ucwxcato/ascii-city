@@ -1,17 +1,19 @@
 # ASCII City — Last Packet Development Plan
 
-> **Status:** Active implementation. Phases 0 through 6, the required Last Packet nature spur/Cascade Relay, the Phase 7 static NPC/entity sprite foundation plus stationary Rin definition/runtime composition, the approved responsive ultrawide window/rendering revision, and the optional whole-map interior-ceiling foundation are verified complete. The required cyberpunk presentation includes rain, living-data facades, park/nature silhouettes, street lamps, spatial waterfall ambience, validated fog/contrast tuning, and a deterministic presentation route. Optional low-volume city/park music, licensed gentle-rain ambience, semantic natural/pavement footsteps, subtle render-only head bob, three warm Vegas-style façade marquees, and the enclosed waterpark treatment are now implemented; interaction cues remain pending. Rin is player-visible and semantically blocking; data-driven dialogue and the `Last Packet` narrative state machine remain planned.
+> **Status:** World and presentation foundation retained; narrative direction has pivoted to the Kernel-Panic campaign in `storyline-docs/`. The supplied campaign documents now own story, characters, missions, choices, and endings. Existing maps, first-person movement, interactions, dialogue presentation, ambience, and authored traffic remain available as implementation foundations. Player-controlled driving and racing have been removed from the game.
 >
-> **Purpose:** Build a short, finishable cyberpunk mystery in which the player explores a first-person ASCII city, recovers three lost data packets, opens a sealed archive, and delivers the city's final transmission to Rin.
+> **Purpose:** Implement the supplied Kernel-Panic storyline as a choice-driven first-person ASCII exploration game.
 >
-> **Authority:** This is the canonical first-person implementation plan. It supersedes the discarded overhead design; do not recreate or reinstate that old plan. The core walk/drive/race direction is specified in [devplan-open-world-racing.md](devplan-open-world-racing.md), which supersedes this plan's prior no-open-world-racing scope for that loop. Optional steam, ambient population, cosmetic traffic, storefront, and park-wildlife work is specified separately in [devplan-life-pass.md](devplan-life-pass.md) and may begin only after the canonical `Last Packet` route passes `VERIFY-07`. The committed contrast, façade/street-detail, localized-lighting, cell-aware composite, density, and higher-density ASCII-surface roadmap is [devplan-city-visual-density.md](devplan-city-visual-density.md); its required composite packet never changes the story gate on its own.
+> **Authority:** `storyline-docs/` is the narrative source of truth. This document records the existing first-person engine and its legacy `Last Packet` prototype; update its story implementation sections against the campaign docs before adding campaign content. Retain the committed city visual-density roadmap in [devplan-city-visual-density.md](devplan-city-visual-density.md). Optional ambient activity, including authored traffic, is documented in the archived [life-pass plan](../ARCHIVE/devplan-life-pass.md). Do not restore player-controlled cars or racing.
 >
 > **Visual reference:** [A Walkable ASCII Cyberpunk City in One HTML File](https://www.youtube.com/watch?v=3YtygAx_C6A).
 >
 > **Target:** Kotlin/JVM, LibGDX, Gradle Kotlin DSL, LWJGL3 desktop, Windows-first development with portable desktop packaging.
 >
 
-## 0. Product scope lock (2026-08-24)
+## 0. Legacy `Last Packet` prototype scope (2026-08-24)
+
+The following scope and implementation checklist describe the previous short-story prototype. It is retained as engine history and is not the current campaign design. New story work follows `storyline-docs/CAMPAIGN_WIP/` and related narrative references.
 
 `Last Packet` is the smallest complete game the ASCII City needs to become. Its whole player loop is **walk, notice, interact, and follow the next signal**. The three relays are authored story landmarks, not collectible counters or hard logic puzzles: each gives one short transmission fragment, changes the player's immediate goal, and leads visibly or through coarse HUD guidance to the next place.
 
@@ -41,7 +43,7 @@ The release target is one coherent 15 to 30 minute run across the authored maps,
 - The player radius is initially 0.22 cell units, eye height 0.60 units, and movement speed 3.0 cells/second. Collision and feel tests may tune these values without redesigning systems.
 - The fixed MVP city loads fully into memory. Procedural chunks and save/load are post-MVP.
 - The critical route crosses the existing fixed `city-alpha`, `water-park`, and `casino` maps through authored, paired doors with validated arrival poses. Map travel preserves the one in-memory Last Packet story session; a full relaunch resets it.
-- The first release retains the linear `Last Packet` scenario across `city-alpha`, `water-park`, and `casino`, while the core open-world walk/drive/race loop is specified by [devplan-open-world-racing.md](devplan-open-world-racing.md). Story progression and racing remain separate until that focused plan explicitly integrates them.
+- Ambient traffic remains a render-only city detail; player-controlled driving and racing are out of scope. The previous `Last Packet` map route is retained here only as a legacy prototype reference.
 - Rin assigns the recovery job, three relay terminals are activated in a fixed order, the third relay permanently unseals the archive for that run, the archive reveals the final transmission, and returning to Rin ends the game.
 - Relay 1 is permanently located at the Cascade Relay waterfall overlook in a required nature spur connected directly to the west side of the spawn park. Reaching it is part of the Last Packet critical path, not optional exploration or disconnected post-MVP content.
 - Story progress is session-only and resets on relaunch. The MVP has no save slots, inventory representation, quest log, branching choice, time limit, combat, death, or fail state.

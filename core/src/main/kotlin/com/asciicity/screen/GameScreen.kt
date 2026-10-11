@@ -26,8 +26,6 @@ import com.asciicity.render.HeadBob
 import com.asciicity.render.ProjectionMetrics
 import com.asciicity.render.TerminalBillboardRenderer
 import com.asciicity.render.ViewPose
-import com.asciicity.render.VehicleModelPose
-import com.asciicity.render.VehicleModelRenderer
 import com.asciicity.render.WorldAsciiRenderer
 import com.asciicity.system.FixedStepClock
 import com.asciicity.system.InteractionOutcome
@@ -71,13 +69,11 @@ class GameScreen(
     initialDebugVisible: Boolean = false,
     initialPosition: WorldPosition? = null,
     private val worldFontProfile: AsciiFontProfile = AsciiFontProfile.DEFAULT,
-    initialDebugVehicle: Boolean = false,
 ) : ScreenAdapter() {
     private val camera = OrthographicCamera()
     private val presenter = AsciiPresenter(assets.worldFont(worldFontProfile), worldFontProfile)
     private val npcSystem = NpcSystem(content.world, content.npcs, content.sprites)
     private val trafficSystem = TrafficSystem(content.trafficCars, content.sprites)
-    private val vehicleModelRenderer = VehicleModelRenderer(assets.compactCoupeModel)
     private val ambientActorSystem = AmbientActorSystem(content.world, content.ambientActors, content.sprites)
     private val ambientEventSystem = AmbientEventSystem(content.ambientEventEmitters)
     private val terminalBillboardRenderer = TerminalBillboardRenderer(content.world, content.sprites)
@@ -152,9 +148,6 @@ class GameScreen(
 
     init {
         inputMultiplexer = InputMultiplexer(input, hud.inputProcessor)
-        if (initialDebugVehicle) {
-            check(simulation.toggleDebugVehicle()) { "Initial debug vehicle position must have vehicle clearance" }
-        }
     }
 
     override fun render(delta: Float) {
@@ -181,21 +174,16 @@ class GameScreen(
                 positionAfterStep.x - positionBeforeStep.x,
                 positionAfterStep.z - positionBeforeStep.z,
             )
-            if (simulation.isDrivingDebugVehicle) {
-                footstepCadence.reset()
-                headBob.reset()
-            } else {
-                val surface = FootstepSurface.fromCellTags(
-                    content.world.grid.cellAt(positionAfterStep.toGridCell()).tags,
-                )
-                footstepCadence.update(distanceMoved, surface)?.let(audio::play)
-                if (headBobEnabled) headBob.update(distanceMoved, fixedStepClock.fixedDeltaSeconds)
-            }
+            val surface = FootstepSurface.fromCellTags(
+                content.world.grid.cellAt(positionAfterStep.toGridCell()).tags,
+            )
+            footstepCadence.update(distanceMoved, surface)?.let(audio::play)
+            if (headBobEnabled) headBob.update(distanceMoved, fixedStepClock.fixedDeltaSeconds)
             simulationStep += 1
         }
         val playerPose = simulation.interpolatedPose(fixedStepClock.interpolationAlpha)
-        val interactionPose = simulation.interpolatedViewPose(fixedStepClock.interpolationAlpha)
-        val renderPose = if (headBobEnabled && !simulation.isDrivingDebugVehicle) headBob.apply(interactionPose) else interactionPose
+        val interactionPose = playerPose
+        val renderPose = if (headBobEnabled) headBob.apply(interactionPose) else interactionPose
         handleCommands(interactionPose, activeViewport)
         audio.update(
             ambienceZone(),
@@ -210,19 +198,8 @@ class GameScreen(
             renderTime,
             interpolationAlpha = fixedStepClock.interpolationAlpha,
         )
-        val vehicleFrame = vehicleModelRenderer.render(
-            width = activeViewport.pixelWidth,
-            height = activeViewport.pixelHeight,
-            view = renderPose,
-            vehicle = VehicleModelPose(
-                position = playerPose.position,
-                yawRadians = playerPose.yawRadians,
-                wheelRollRadians = simulation.debugVehicleWheelRotationRadians,
-                frontWheelSteerRadians = simulation.debugVehicleFrontWheelSteerRadians,
-            ).takeIf { simulation.isDrivingDebugVehicle },
-        )
         hud.update(hudModel(playerPose, activeViewport))
-        presenter.present(activeFrame, activeViewport, camera.combined, vehicleFrame)
+        presenter.present(activeFrame, activeViewport, camera.combined)
         hud.render(delta)
         dialogueOverlay.render(delta)
         if (logRenderStats) {
@@ -304,7 +281,6 @@ class GameScreen(
         hide()
         dialogueOverlay.dispose()
         hud.dispose()
-        vehicleModelRenderer.dispose()
         presenter.dispose()
         audio.dispose()
     }
@@ -321,7 +297,6 @@ class GameScreen(
     private fun handleCommands(viewPose: ViewPose, activeViewport: AsciiViewport) {
         val mapSwitchRequested = input.consume(GameCommand.CYCLE_DEBUG_MAP)
         val crtToggleRequested = input.consume(GameCommand.TOGGLE_CRT)
-        val vehicleToggleRequested = input.consume(GameCommand.TOGGLE_DEBUG_VEHICLE)
         if (input.consume(GameCommand.TOGGLE_MUSIC)) {
             val muted = audio.toggleMusicMuted()
             GameLog.info("AudioService", "Music ${if (muted) "muted" else "unmuted"}")
@@ -344,18 +319,6 @@ class GameScreen(
             if (debugVisible && crtToggleRequested) {
                 presenter.toggleCrtEffect()
                 GameLog.info("GameScreen", "CRT effect ${if (presenter.crtEffectEnabled) "enabled" else "disabled"}")
-            }
-            if (debugVisible && vehicleToggleRequested) {
-                if (simulation.toggleDebugVehicle()) {
-                    footstepCadence.reset()
-                    headBob.reset()
-                    GameLog.info(
-                        "GameScreen",
-                        if (simulation.isDrivingDebugVehicle) "Debug vehicle spawned; WASD drives" else "Debug vehicle removed",
-                    )
-                } else {
-                    GameLog.info("GameScreen", "Debug vehicle needs clear space to spawn")
-                }
             }
             if (debugVisible && mapSwitchRequested && nextMapId != null) {
                 GameLog.info("GameScreen", "F3 map switch requested: ${content.world.mapId} -> $nextMapId")
@@ -451,7 +414,6 @@ class GameScreen(
                 groundMaterialId = definition.groundMaterialId,
                 facadeMaterialId = definition.facadeMaterialId,
                 crtEffectEnabled = presenter.crtEffectEnabled,
-                drivingDebugVehicle = simulation.isDrivingDebugVehicle,
             ),
             debugMap = if (!debugVisible) "" else DebugFootprint.render(content.world.grid, currentCell),
             musicAvailable = audio.musicAvailable,

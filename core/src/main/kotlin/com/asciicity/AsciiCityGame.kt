@@ -34,7 +34,6 @@ class AsciiCityGame(
     private val verifyPresentation: Boolean = false,
     private val audioEnabled: Boolean = true,
     private val headBobEnabled: Boolean = true,
-    private val initialDebugVehicle: Boolean = false,
     private val initialMapId: String = MapCatalog.DEFAULT_MAP_ID,
     private val screenshotFrame: Int = DEFAULT_SCREENSHOT_FRAME,
     private val worldFontProfile: AsciiFontProfile = AsciiFontProfile.DEFAULT,
@@ -60,7 +59,6 @@ class AsciiCityGame(
                 initialMapId,
                 debugVisible = false,
                 initialPosition = initialPosition,
-                initialDebugVehicle = initialDebugVehicle,
             )
         } catch (error: AssetLoadException) {
             GameLog.error("AsciiCityGame", error.userMessage, error)
@@ -101,7 +99,6 @@ class AsciiCityGame(
         debugVisible: Boolean,
         initialPosition: WorldPosition? = null,
         initialYawDegrees: Double? = this.initialYawDegrees,
-        initialDebugVehicle: Boolean = false,
     ) {
         val content = ContentLoader().load(Path.of("."), mapId)
         initialPosition?.let { position ->
@@ -128,7 +125,6 @@ class AsciiCityGame(
             initialDebugVisible = debugVisible,
             initialPosition = initialPosition,
             worldFontProfile = worldFontProfile,
-            initialDebugVehicle = initialDebugVehicle,
         )
         setScreen(nextScreen)
         previousScreen?.dispose()

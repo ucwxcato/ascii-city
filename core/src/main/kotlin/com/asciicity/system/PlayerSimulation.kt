@@ -13,25 +13,10 @@ class PlayerSimulation(
     private val movementSystem: MovementSystem = MovementSystem(collisionSystem),
     initialState: PlayerState = world.player,
 ) {
-    private val debugVehicleSystem = DebugVehicleSystem(
-        collision = collisionSystem,
-        onFootRadius = initialState.radius,
-        onFootEyeHeight = initialState.eyeHeight,
-    )
-
     var previousState: PlayerState = initialState
         private set
     var currentState: PlayerState = initialState
         private set
-
-    val isDrivingDebugVehicle: Boolean
-        get() = debugVehicleSystem.isDriving
-
-    val debugVehicleWheelRotationRadians: Double
-        get() = debugVehicleSystem.wheelRotationRadians
-
-    val debugVehicleFrontWheelSteerRadians: Double
-        get() = debugVehicleSystem.frontWheelSteerRadians
 
     init {
         world.updatePlayer(initialState)
@@ -39,22 +24,10 @@ class PlayerSimulation(
 
     fun step(deltaSeconds: Double) {
         previousState = currentState
-        currentState = if (debugVehicleSystem.isDriving) {
-            debugVehicleSystem.update(currentState, input, deltaSeconds)
-        } else {
-            val looked = lookSystem.update(currentState, input, deltaSeconds)
-            movementSystem.update(looked, input, deltaSeconds)
-        }
+        val looked = lookSystem.update(currentState, input, deltaSeconds)
+        currentState = movementSystem.update(looked, input, deltaSeconds)
         world.updatePlayer(currentState)
         world.advanceTime(deltaSeconds)
-    }
-
-    fun toggleDebugVehicle(): Boolean {
-        val next = debugVehicleSystem.toggle(currentState) ?: return false
-        previousState = currentState
-        currentState = next
-        world.updatePlayer(next)
-        return true
     }
 
     fun interpolatedPose(alpha: Double): ViewPose = ViewPose.interpolate(
@@ -62,11 +35,6 @@ class PlayerSimulation(
         pose(currentState),
         alpha.coerceIn(0.0, 1.0),
     )
-
-    fun interpolatedViewPose(alpha: Double): ViewPose {
-        val vehiclePose = interpolatedPose(alpha)
-        return if (debugVehicleSystem.isDriving) debugVehicleSystem.thirdPersonPose(vehiclePose) else vehiclePose
-    }
 
     fun synchronize() {
         previousState = world.player

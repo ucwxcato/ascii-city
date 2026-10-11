@@ -7,8 +7,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
-import com.badlogic.gdx.graphics.g3d.Model
-import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute
 
 class GameAssets(
     private val paths: AssetPaths = AssetPaths(),
@@ -17,7 +15,6 @@ class GameAssets(
     private val fontKey = AssetKey(paths.font, BitmapFont::class.java)
     private val denseWorldFontKey = AssetKey(paths.denseWorldFont, BitmapFont::class.java)
     private val fineWorldFontKey = AssetKey(paths.fineWorldFont, BitmapFont::class.java)
-    private val compactCoupeModelKey = AssetKey(paths.compactCoupeModel, Model::class.java)
 
     var state: AssetLoadState = AssetLoadState.NOT_STARTED
         private set
@@ -30,9 +27,6 @@ class GameAssets(
 
     val font: BitmapFont
         get() = get(fontKey)
-
-    val compactCoupeModel: Model
-        get() = get(compactCoupeModelKey)
 
     fun worldFont(profile: AsciiFontProfile): BitmapFont = when (profile) {
         AsciiFontProfile.STANDARD -> font
@@ -51,22 +45,19 @@ class GameAssets(
             manager.load(fontKey.path, fontKey.type)
             manager.load(denseWorldFontKey.path, denseWorldFontKey.type)
             manager.load(fineWorldFontKey.path, fineWorldFontKey.type)
-            manager.load(compactCoupeModelKey.path, compactCoupeModelKey.type)
             manager.finishLoading()
             configureFont(fontKey, AsciiFontProfile.STANDARD)
             configureFont(denseWorldFontKey, AsciiFontProfile.DENSE)
             configureFont(fineWorldFontKey, AsciiFontProfile.FINE)
-            configureModelTextures(manager.get(compactCoupeModelKey.path, compactCoupeModelKey.type))
             state = AssetLoadState.READY
         } catch (error: Exception) {
             state = AssetLoadState.FAILED
             manager.clear()
             val userMessage = when (error) {
                 is PaletteValidationException -> "Required palette '${paths.palette}' is invalid. ${error.message}"
-                else -> "Required bitmap world font or compact-coupe model could not be loaded " +
+                else -> "Required bitmap world font could not be loaded " +
                     "or did not satisfy its selected ASCII profile " +
-                    "(standard='${paths.font}', dense='${paths.denseWorldFont}', fine='${paths.fineWorldFont}', " +
-                    "compactCoupe='${paths.compactCoupeModel}'). ${error.message}"
+                    "(standard='${paths.font}', dense='${paths.denseWorldFont}', fine='${paths.fineWorldFont}'). ${error.message}"
             }
             val wrapped = AssetLoadException(
                 userMessage = userMessage,
@@ -89,13 +80,6 @@ class GameAssets(
         }
         loadedFont.setUseIntegerPositions(true)
         loadedFont.region.texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest)
-    }
-
-    private fun configureModelTextures(model: Model) {
-        model.materials.forEach { material ->
-            val texture = material.get(TextureAttribute.Diffuse) as? TextureAttribute ?: return@forEach
-            texture.textureDescription.texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest)
-        }
     }
 
     fun <T : Any> get(key: AssetKey<T>): T {

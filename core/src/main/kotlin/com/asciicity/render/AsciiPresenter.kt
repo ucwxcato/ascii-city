@@ -27,7 +27,6 @@ class AsciiPresenter(
     private val contentProjection = Matrix4()
     private val glyphStrings = Array(127) { codePoint -> codePoint.toChar().toString() }
     private val whitePixel: Texture
-    private val transparentPixel: Texture
     private var crtBuffer: FrameBuffer? = null
     private val compositeData = AsciiCompositeData()
     private var depthPixmap: Pixmap? = null
@@ -54,10 +53,6 @@ class AsciiPresenter(
         pixel.fill()
         whitePixel = Texture(pixel)
         whitePixel.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest)
-        pixel.setColor(0f, 0f, 0f, 0f)
-        pixel.fill()
-        transparentPixel = Texture(pixel)
-        transparentPixel.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest)
         pixel.dispose()
     }
 
@@ -65,7 +60,6 @@ class AsciiPresenter(
         frame: AsciiFrame,
         viewport: AsciiViewport,
         projection: Matrix4,
-        vehicleFrame: VehicleModelFrame? = null,
     ) {
         require(frame.width == viewport.columns && frame.height == viewport.rows) {
             "ASCII frame ${frame.width}x${frame.height} does not match viewport ${viewport.columns}x${viewport.rows}"
@@ -99,8 +93,6 @@ class AsciiPresenter(
         val activeEmissiveTexture = checkNotNull(emissiveTexture)
         activeDepthTexture.bind(1)
         activeEmissiveTexture.bind(2)
-        (vehicleFrame?.color ?: transparentPixel).bind(3)
-        (vehicleFrame?.depth ?: transparentPixel).bind(4)
         Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0)
         crtBatch.projectionMatrix = projection
         crtBatch.begin()
@@ -110,8 +102,6 @@ class AsciiPresenter(
             crtShader.setUniformf("u_crtEnabled", if (crtEffectEnabled) 1f else 0f)
             crtShader.setUniformi("u_depthTexture", 1)
             crtShader.setUniformi("u_emissiveTexture", 2)
-            crtShader.setUniformi("u_vehicleColor", 3)
-            crtShader.setUniformi("u_vehicleDepth", 4)
             crtBatch.draw(
                 buffer.colorBufferTexture,
                 viewport.gutterX.toFloat(),
@@ -250,7 +240,6 @@ class AsciiPresenter(
         depthPixmap?.dispose()
         emissivePixmap?.dispose()
         whitePixel.dispose()
-        transparentPixel.dispose()
     }
 
     private companion object {
@@ -281,8 +270,6 @@ class AsciiPresenter(
             uniform sampler2D u_texture;
             uniform sampler2D u_depthTexture;
             uniform sampler2D u_emissiveTexture;
-            uniform sampler2D u_vehicleColor;
-            uniform sampler2D u_vehicleDepth;
             uniform vec2 u_resolution;
             uniform vec2 u_cellResolution;
             uniform float u_crtEnabled;
@@ -305,14 +292,7 @@ class AsciiPresenter(
             }
 
             vec4 composedScene(vec2 uv) {
-                vec4 ascii = texture2D(u_texture, uv);
-                vec4 vehicle = texture2D(u_vehicleColor, uv);
-                vec4 vehicleDepth = texture2D(u_vehicleDepth, uv);
-                vec2 cell = min(floor(uv * u_cellResolution), u_cellResolution - vec2(1.0));
-                vec4 asciiDepth = cellSample(u_depthTexture, cell);
-                float vehicleIsNearer = step(0.5, vehicleDepth.a) *
-                    max(1.0 - step(0.5, asciiDepth.a), step(vehicleDepth.r + 0.0015, asciiDepth.r));
-                return mix(ascii, vehicle, vehicleIsNearer * vehicle.a);
+                return texture2D(u_texture, uv);
             }
 
             void main() {
