@@ -19,7 +19,7 @@ ASCII City is a desktop exploration game built from authored maps and a first-pe
 
 You can walk through four authored maps, inspect the environment, interact with terminals and characters, and hear the city change between its districts. The old `Last Packet` story is a prototype. The Kernel-Panic campaign, its choices, and its persistent story progress are not implemented yet.
 
-The campaign documents describe a novice hacker caught in a conflict involving the Architect, the Oracle, and a mysterious system component. The story builds through several arcs, faction relationships, player choices, and multiple endings. The [`campaign roadmap`](storyline-docs/CAMPAIGN_WIP/MASTER_CAMPAIGN_ROADMAP.md) and [`story analysis`](storyline-docs/CAMPAIGN_WIP/STORY_ANALYSIS.md) hold the details.
+The campaign documents describe a conflict involving the Architect, the Oracle, and a mysterious system component. The game will tell that story through walking, conversations, discoveries, and choices. Hacking gameplay is out of scope. The [`campaign roadmap`](storyline-docs/CAMPAIGN_WIP/MASTER_CAMPAIGN_ROADMAP.md) and [`story analysis`](storyline-docs/CAMPAIGN_WIP/STORY_ANALYSIS.md) hold the story details; the [walking storyline game plan](DOCS/devplans/devplan-storyline-exploration.md) defines how the game will adapt them.
 
 ## In the game now
 
