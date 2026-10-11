@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "com.asciicity.world-authoring": "file:../../unity-world-authoring"
+  }
+}

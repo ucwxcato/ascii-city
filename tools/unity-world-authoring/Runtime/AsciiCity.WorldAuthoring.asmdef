@@ -1,0 +1,14 @@
+{
+  "name": "AsciiCity.WorldAuthoring",
+  "rootNamespace": "AsciiCity.WorldAuthoring",
+  "references": [],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

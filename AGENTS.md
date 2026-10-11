@@ -19,6 +19,8 @@ Preserve these visual rules:
 - `desktop/`: LWJGL3 launcher, desktop window rules, and desktop-only failure handling.
 - `assets/data/`: palette, materials, semantic cell definitions, and dialogue data.
 - `assets/maps/`: fixed map footprints, map metadata, and map objects.
+- `tools/unity-world-authoring/`: Unity Editor package for painting existing map footprints and placing 3D prefab assets; see its `README.md`.
+- `tools/unity-authoring-project/`: Unity 6 host project that loads the local world-authoring package.
 - `DOCS/map-authoring-guide.md`: practical map creation and editing workflow, including the current token legend.
 - `DOCS/map-format.md`: authoritative map/content format rules.
 - `DOCS/rendering-contract.md`: first-person visual and projection contract.
@@ -34,6 +36,7 @@ Preserve these visual rules:
 - `WorldAsciiRenderer`, `GridRaycaster`, `ProjectionMetrics`, and `MaterialSampler` own first-person ASCII projection and surfaces. `RainRenderer`, `TreeSilhouette`, `ParkFixtureSilhouette`, `ParkFireflyRenderer`, and `LocalizedLightRenderer` own their specialized visual passes. `LocalizedLightRenderer` may tint only final finite frame cells at the source depth or farther, from explicit resolved emissive glyphs; it owns no world state or collision. Do not replace this with a top-down renderer or a full ECS.
 - `AsciiPresenter` turns `AsciiFrame` cells into LibGDX draw calls. Maintain glyph-cell alignment and resize-safe viewport behavior.
 - `InputController` translates desktop input into `GameAction`/`GameCommand`; avoid reading keyboard state directly in gameplay systems.
+- `tools/unity-world-authoring/` is an authoring tool only. Its named-brush painter writes the existing map `.txt` footprint, and its Unity scenes are editable 3D workspaces with generated previews for authored trees, water, fountains, waterfalls, benches, lamps, façade signs, and entrances, plus prefab placements. Do not treat Unity preview geometry as gameplay collision or as a replacement for the Kotlin/LibGDX runtime.
 
 Use plain Kotlin classes and the current lightweight domain model. Do not introduce a general ECS, 3D model pipeline, shader stack, or external UI framework without an explicit request. The approved exception is the one depth-aware neon compositor required by `DOCS/devplans/devplan-city-visual-density.md`: it may use the existing presentation FBO path's low-resolution nearest-filtered ASCII color/depth/emissive inputs for bounded contact shade/local light/emissive halo, but it must not become a general effect chain or affect world/UI semantics.
 
@@ -49,6 +52,7 @@ Use plain Kotlin classes and the current lightweight domain model. Do not introd
 - `AsciiFrame` rows increase upward when presented by LibGDX. Downward screen motion, including falling rain, moves toward smaller row values.
 - Preserve the coordinate contract: `x` is east/west, `z` is north/south, `y` is projected height, and yaw `0` faces north.
 - Map rows are authored north-to-south; `MapLoader` converts them to world coordinates. Read `DOCS/map-format.md` before changing map parsing or data schemas.
+- Unity asset placements are currently exported to `<map-id>.unity-assets.json` sidecars and are not loaded by the Kotlin runtime. Keep that sidecar separate from strict `.objects.json` until the runtime schema, asset loading, and semantic collision behavior are explicitly implemented and validated.
 
 ## Build, test, and runtime checks
 

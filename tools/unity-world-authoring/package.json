@@ -1,0 +1,7 @@
+{
+  "name": "com.asciicity.world-authoring",
+  "version": "0.1.0",
+  "displayName": "ASCII City World Authoring",
+  "description": "Unity Editor tools for painting ASCII City maps and placing Unity prefabs.",
+  "unity": "2022.3"
+}

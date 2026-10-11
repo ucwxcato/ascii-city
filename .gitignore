@@ -27,6 +27,15 @@ logs/
 saves/
 *.log
 
+# Unity authoring project generated state
+tools/unity-authoring-project/Library/
+tools/unity-authoring-project/Temp/
+tools/unity-authoring-project/Logs/
+tools/unity-authoring-project/UserSettings/
+tools/unity-authoring-project/Obj/
+tools/unity-authoring-project/Build/
+tools/unity-authoring-project/Builds/
+
 # OS files
 .DS_Store
 Thumbs.db

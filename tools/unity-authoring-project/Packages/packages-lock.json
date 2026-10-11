@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "com.asciicity.world-authoring": {
+      "version": "file:../../unity-world-authoring",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    }
+  }
+}
