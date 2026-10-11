@@ -16,6 +16,12 @@ Start by copying the three `city-alpha` files and renaming each occurrence of `c
 
 The game starts `city-alpha`. Playable maps are listed in `MapCatalog.playableMapIds`; while F3 diagnostics are open, `Tab` loads the next entry and keeps diagnostics open so the full rotation can be tested quickly. A valid map bundle does not need to exercise every global material, cell tag, or object type; themed maps may intentionally use only the content they need.
 
+## Unity world authoring
+
+For visual world editing, use `tools/unity-authoring-project` and open **Tools > ASCII City > World Authoring**. The Unity scene is where you paint named semantic brushes, raise or smooth terrain, and place whole 3D props or buildings. Roads, sidewalks, and paths are painted as cell types and shown as editable terrain surfaces; they are not individual road prefab stamps. Placeable 3D models are whole scene objects, not parts to assemble.
+
+After editing, use **Save map** to export the scene footprint and its corner-height field, then use **Export scene placements** after moving or editing prefabs. The Kotlin game reads the exported `.txt`, `.terrain.json`, and `.unity-assets.json` files at launch and displays the world as first-person ASCII. It does not load Unity scenes or render their mesh data directly. The sidecar schemas are documented in [map-format.md](map-format.md).
+
 ## 1. Draw the footprint
 
 The `.txt` file is a rectangular, UTF-8 grid. One character represents one world cell. Every row must have the same width; do not use tabs or trailing spaces.

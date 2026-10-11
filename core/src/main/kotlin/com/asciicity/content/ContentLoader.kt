@@ -23,6 +23,7 @@ import com.asciicity.world.SurfaceAnimation
 import com.asciicity.world.SurfaceMaterial
 import com.asciicity.world.WorldPosition
 import com.asciicity.world.WorldGrid
+import com.asciicity.world.WorldAsset
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.math.PI
@@ -32,6 +33,13 @@ import kotlin.math.floor
 import kotlin.math.hypot
 
 private const val MINIMUM_CEILING_CLEARANCE = 0.5
+private const val MINIMUM_TERRAIN_HEIGHT = -32.0
+private const val MAXIMUM_TERRAIN_HEIGHT = 64.0
+
+private data class ParsedUnityAssets(
+    val sprites: List<AsciiSprite>,
+    val placements: List<WorldAsset>,
+)
 
 class ContentLoader {
     fun load(assetRoot: Path, mapName: String = "city-alpha"): LoadedContent {
@@ -44,14 +52,31 @@ class ContentLoader {
         val spriteSource = "data/sprites.json"
         val dialogueSource = "data/dialogue.json"
         val mapSource = "maps/$mapName/$mapName.txt"
+        val terrainSource = "maps/$mapName/$mapName.terrain.json"
+        val unityAssetsSource = "maps/$mapName/$mapName.unity-assets.json"
         val metadataSource = "maps/$mapName/$mapName.meta.json"
 
         val palette = parsePalette(read(normalizedRoot, paletteSource), paletteSource)
         val presentation = parsePresentation(read(normalizedRoot, presentationSource), presentationSource)
         val materials = parseMaterials(read(normalizedRoot, materialSource), materialSource, palette, presentation)
         val cells = parseCells(read(normalizedRoot, cellSource), cellSource, materials)
-        val sprites = parseSprites(read(normalizedRoot, spriteSource), spriteSource, palette)
-        val grid = MapLoader().parse(read(normalizedRoot, mapSource), mapSource, cells)
+        val baseSprites = parseSprites(read(normalizedRoot, spriteSource), spriteSource, palette)
+        val mapText = read(normalizedRoot, mapSource)
+        val terrainPath = normalizedRoot.resolve(terrainSource)
+        val grid = MapLoader().parse(mapText, mapSource, cells) { width, depth ->
+            if (Files.exists(terrainPath)) {
+                parseTerrainHeightfield(read(normalizedRoot, terrainSource), terrainSource, width, depth)
+            } else {
+                DoubleArray(Math.multiplyExact(width + 1, depth + 1))
+            }
+        }
+        val unityAssetsPath = normalizedRoot.resolve(unityAssetsSource)
+        val unityAssets = if (Files.exists(unityAssetsPath)) {
+            parseUnityAssets(read(normalizedRoot, unityAssetsSource), unityAssetsSource, grid, palette)
+        } else {
+            ParsedUnityAssets(emptyList(), emptyList())
+        }
+        val sprites = AsciiSpriteRegistry.create(baseSprites.all() + unityAssets.sprites, unityAssetsSource)
         val metadata = parseMetadata(read(normalizedRoot, metadataSource), metadataSource, palette, materials)
         if (metadata.id != mapName) {
             throw ContentValidationException(
@@ -59,6 +84,7 @@ class ContentLoader {
             )
         }
         validateSpawn(metadata, grid.width, grid.depth) { x, z -> grid.cellAt(WorldPosition(x, z).toGridCell()).solid }
+        validateSpawnAgainstUnityAssets(metadata, unityAssets.placements, unityAssetsSource)
 
         val dialogues = parseDialogues(read(normalizedRoot, dialogueSource), dialogueSource)
         val objectSource = resolveObjectSource(metadata.objectsFile, metadataSource)
@@ -78,6 +104,7 @@ class ContentLoader {
             grid = grid,
             player = metadata.playerSpawn,
             entities = mapObjects.entities,
+            worldAssets = unityAssets.placements,
         )
         return LoadedContent(
             palette = palette,
@@ -94,6 +121,7 @@ class ContentLoader {
             atmosphericEmitters = mapObjects.atmosphericEmitters,
             ambientEventEmitters = mapObjects.ambientEventEmitters,
             ambientActors = mapObjects.ambientActors,
+            worldAssets = unityAssets.placements,
         )
     }
 
@@ -101,6 +129,219 @@ class ContentLoader {
         RenderPalette.parse(text, source)
     } catch (error: PaletteValidationException) {
         throw ContentValidationException("$source:$: ${error.message}", error)
+    }
+
+    private fun parseTerrainHeightfield(text: String, source: String, width: Int, depth: Int): DoubleArray {
+        val root = JsonContentReader.parseObject(text, source)
+        root.rejectUnknown(setOf("width", "depth", "heightsSouthToNorth"))
+        val authoredWidth = root.requiredInt("width")
+        val authoredDepth = root.requiredInt("depth")
+        if (authoredWidth != width || authoredDepth != depth) {
+            throw ContentValidationException(
+                "$source:$.width/$.depth: heightfield is ${authoredWidth}x$authoredDepth; expected ${width}x$depth",
+            )
+        }
+        val expected = Math.multiplyExact(width + 1, depth + 1)
+        val values = root.requiredArray("heightsSouthToNorth")
+        if (values.size != expected) {
+            throw ContentValidationException(
+                "$source:$.heightsSouthToNorth: expected $expected corner heights, but found ${values.size}",
+            )
+        }
+        return DoubleArray(values.size) { index ->
+            val value = values[index].asDouble()
+            if (value !in MINIMUM_TERRAIN_HEIGHT..MAXIMUM_TERRAIN_HEIGHT) {
+                throw ContentValidationException(
+                    "${values[index].location}: must be between $MINIMUM_TERRAIN_HEIGHT and $MAXIMUM_TERRAIN_HEIGHT",
+                )
+            }
+            value
+        }
+    }
+
+    private fun parseUnityAssets(
+        text: String,
+        source: String,
+        grid: WorldGrid,
+        palette: RenderPalette,
+    ): ParsedUnityAssets {
+        val root = JsonContentReader.parseObject(text, source)
+        root.rejectUnknown(setOf("version", "assets", "placements"))
+        if (root.requiredInt("version") != 1) {
+            throw ContentValidationException("$source:$.version: only Unity asset sidecar version 1 is supported")
+        }
+        val profilesByAssetId = linkedMapOf<String, AsciiSprite>()
+        val spriteIds = mutableSetOf<String>()
+        val parsedSprites = root.requiredArray("assets").mapIndexed { index, value ->
+            val item = value.asObject()
+            item.rejectUnknown(
+                setOf(
+                    "assetId", "spriteId", "physicalWidth", "physicalHeight", "anchorX", "anchorY",
+                    "glyphRows", "colorRows", "colors",
+                ),
+            )
+            val assetId = item.requiredString("assetId")
+            ContentIds.requireStable(assetId, source, "${item.location}.assetId")
+            if (profilesByAssetId.containsKey(assetId)) {
+                throw ContentValidationException("${item.location}.assetId: duplicate Unity asset profile '$assetId'")
+            }
+            val spriteId = item.requiredString("spriteId")
+            ContentIds.requireStable(spriteId, source, "${item.location}.spriteId")
+            if (!spriteIds.add(spriteId)) {
+                throw ContentValidationException("${item.location}.spriteId: duplicate Unity sprite ID '$spriteId'")
+            }
+            val physicalWidth = item.requiredDouble("physicalWidth")
+            val physicalHeight = item.requiredDouble("physicalHeight")
+            val anchorX = item.requiredDouble("anchorX")
+            val anchorY = item.requiredDouble("anchorY")
+            validateSpritePhysicalSize(physicalWidth, "${item.location}.physicalWidth")
+            validateSpritePhysicalSize(physicalHeight, "${item.location}.physicalHeight")
+            validateSpriteAnchor(anchorX, "${item.location}.anchorX")
+            validateSpriteAnchor(anchorY, "${item.location}.anchorY")
+            val glyphRows = item.requiredArray("glyphRows").map(JsonValueView::asString)
+            val colorRows = item.requiredArray("colorRows").map(JsonValueView::asString)
+            val columns = validateSpriteRows(glyphRows, "${item.location}.glyphRows")
+            validateSpriteColorRows(colorRows, glyphRows.size, columns, "${item.location}.colorRows")
+            val colors = linkedMapOf<Char, Int>()
+            val colorDefinitions = item.requiredArray("colors")
+            if (colorDefinitions.isEmpty()) {
+                throw ContentValidationException("${item.location}.colors: at least one color definition is required")
+            }
+            for (colorValue in colorDefinitions) {
+                val colorItem = colorValue.asObject()
+                colorItem.rejectUnknown(setOf("symbol", "palette"))
+                val symbolText = colorItem.requiredString("symbol")
+                if (symbolText.length != 1 || symbolText.single() == ' ' || symbolText.single().code !in 33..126) {
+                    throw ContentValidationException("${colorItem.location}.symbol: must be one non-space printable ASCII character")
+                }
+                val symbol = symbolText.single()
+                if (symbol in colors) {
+                    throw ContentValidationException("${colorItem.location}.symbol: duplicate color symbol '$symbol'")
+                }
+                val paletteKey = colorItem.requiredString("palette")
+                colors[symbol] = try {
+                    palette[paletteKey]
+                } catch (_: PaletteValidationException) {
+                    throw ContentValidationException("${colorItem.location}.palette: unknown palette key '$paletteKey'")
+                }
+            }
+
+            val cellCount = Math.multiplyExact(columns, glyphRows.size)
+            val glyphs = IntArray(cellCount)
+            val foregroundColors = IntArray(cellCount)
+            var visibleGlyphCount = 0
+            for (rowIndex in glyphRows.indices) {
+                for (columnIndex in 0 until columns) {
+                    val glyph = glyphRows[rowIndex][columnIndex]
+                    val colorSymbol = colorRows[rowIndex][columnIndex]
+                    val cellPath = "${item.location}.colorRows[$rowIndex] column ${columnIndex + 1}"
+                    when {
+                        glyph == ' ' && colorSymbol != ' ' -> throw ContentValidationException(
+                            "$cellPath: transparent glyph space must use a transparent color space",
+                        )
+                        glyph != ' ' && colorSymbol == ' ' -> throw ContentValidationException(
+                            "$cellPath: visible glyph '$glyph' requires a color symbol",
+                        )
+                        colorSymbol != ' ' && colorSymbol !in colors -> throw ContentValidationException(
+                            "$cellPath: unknown color symbol '$colorSymbol'",
+                        )
+                    }
+                    val cellIndex = rowIndex * columns + columnIndex
+                    glyphs[cellIndex] = glyph.code
+                    if (glyph != ' ') {
+                        foregroundColors[cellIndex] = colors.getValue(colorSymbol)
+                        visibleGlyphCount++
+                    }
+                }
+            }
+            if (visibleGlyphCount == 0) {
+                throw ContentValidationException("${item.location}.glyphRows: must contain at least one visible glyph")
+            }
+            val sprite = AsciiSprite(
+                id = spriteId,
+                columns = columns,
+                rows = glyphRows.size,
+                anchorX = anchorX,
+                anchorY = anchorY,
+                physicalWidth = physicalWidth,
+                physicalHeight = physicalHeight,
+                glyphs = glyphs,
+                foregroundColors = foregroundColors,
+            )
+            profilesByAssetId[assetId] = sprite
+            sprite
+        }
+
+        val ids = mutableSetOf<String>()
+        val placements = root.requiredArray("placements").mapIndexed { index, value ->
+            val item = value.asObject()
+            item.rejectUnknown(
+                setOf(
+                    "id", "assetId", "x", "y", "z", "yawDegrees", "scaleX", "scaleY", "scaleZ",
+                    "blocksMovement", "collisionRadius",
+                ),
+            )
+            val id = item.requiredString("id")
+            ContentIds.requireStable(id, source, "${item.location}.id")
+            if (!ids.add(id)) throw ContentValidationException("${item.location}.id: duplicate placement ID '$id'")
+            val assetId = item.requiredString("assetId")
+            ContentIds.requireStable(assetId, source, "${item.location}.assetId")
+            val sprite = profilesByAssetId[assetId]
+                ?: throw ContentValidationException("${item.location}.assetId: no ASCII model profile for '$assetId'")
+            val x = item.requiredDouble("x")
+            val y = item.requiredDouble("y")
+            val z = item.requiredDouble("z")
+            if (x < 0.0 || x >= grid.width || z < 0.0 || z >= grid.depth) {
+                throw ContentValidationException("${item.location}: placement '$id' is outside map bounds ${grid.width}x${grid.depth}")
+            }
+            if (y !in MINIMUM_TERRAIN_HEIGHT..MAXIMUM_TERRAIN_HEIGHT) {
+                throw ContentValidationException("${item.location}.y: must be between $MINIMUM_TERRAIN_HEIGHT and $MAXIMUM_TERRAIN_HEIGHT")
+            }
+            val yawDegrees = item.requiredDouble("yawDegrees")
+            val scaleX = item.requiredDouble("scaleX")
+            val scaleY = item.requiredDouble("scaleY")
+            val scaleZ = item.requiredDouble("scaleZ")
+            for ((name, scale) in listOf("scaleX" to scaleX, "scaleY" to scaleY, "scaleZ" to scaleZ)) {
+                if (scale <= 0.0 || scale > 16.0) {
+                    throw ContentValidationException("${item.location}.$name: must be greater than zero and at most 16")
+                }
+            }
+            val blocking = item.requiredBoolean("blocksMovement")
+            val authoredRadius = item.requiredDouble("collisionRadius")
+            val radius = authoredRadius * maxOf(scaleX, scaleZ)
+            if (authoredRadius < 0.0 || !authoredRadius.isFinite() || (blocking && authoredRadius <= 0.0) || radius > 16.0) {
+                throw ContentValidationException("${item.location}.collisionRadius: invalid for this placement")
+            }
+            WorldAsset(
+                id = id,
+                assetId = assetId,
+                spriteId = sprite.id,
+                position = WorldPosition(x, z),
+                anchorHeight = y,
+                yawRadians = Math.toRadians(yawDegrees),
+                scaleX = scaleX,
+                scaleY = scaleY,
+                scaleZ = scaleZ,
+                blocking = blocking,
+                collisionRadius = radius,
+            )
+        }
+        return ParsedUnityAssets(parsedSprites, placements)
+    }
+
+    private fun validateSpawnAgainstUnityAssets(
+        metadata: MapMetadata,
+        assets: List<WorldAsset>,
+        source: String,
+    ) {
+        val spawn = metadata.playerSpawn.position
+        for (asset in assets) {
+            if (!asset.blocking) continue
+            val combinedRadius = metadata.playerSpawn.radius + asset.collisionRadius
+            if (hypot(spawn.x - asset.position.x, spawn.z - asset.position.z) < combinedRadius) {
+                throw ContentValidationException("$source: blocking placement '${asset.id}' overlaps the player spawn")
+            }
+        }
     }
 
     private fun parsePresentation(text: String, source: String): PresentationTuning {

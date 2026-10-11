@@ -93,6 +93,7 @@ class GameScreen(
         ambientEventSystem = ambientEventSystem,
         ambientActorSystem = ambientActorSystem,
         fontProfile = worldFontProfile,
+        assetSprites = content.sprites,
     )
     private val input = InputController()
     private val audio = AudioService.create(audioEnabled)

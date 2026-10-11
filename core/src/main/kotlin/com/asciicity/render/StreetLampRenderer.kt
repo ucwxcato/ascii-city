@@ -44,8 +44,8 @@ class StreetLampRenderer(
 
         val column = ((normalizedLateral / metrics.halfFovTangent + 1.0) * frame.width * 0.5).roundToInt()
         if (column < 0 || column >= frame.width) return
-        val bulbRow = metrics.projectWorldHeight(LAMP_HEIGHT, pose.eyeHeight, depth).roundToInt()
-        val baseRow = metrics.projectWorldHeight(0.0, pose.eyeHeight, depth).roundToInt()
+        val bulbRow = metrics.projectWorldHeight(lamp.baseHeight + LAMP_HEIGHT, pose.eyeHeight, depth).roundToInt()
+        val baseRow = metrics.projectWorldHeight(lamp.baseHeight, pose.eyeHeight, depth).roundToInt()
         val lampDepth = depth.toFloat()
 
         renderGlow(frame, column, bulbRow, lampDepth, depth, palette[PaletteKeys.NEON_AMBER])
@@ -107,7 +107,8 @@ class StreetLampRenderer(
         val occupiedCells = if (grid == null) null else BooleanArray(grid.width * grid.depth)
         for (entity in entities) {
             if (entity.type != WorldEntityType.LAMP) continue
-            lamps += LampFixture(entity.position)
+            val baseHeight = grid?.terrainHeightAt(entity.position.x, entity.position.z) ?: 0.0
+            lamps += LampFixture(entity.position, baseHeight)
             if (grid != null) {
                 val cell = entity.position.toGridCell()
                 occupiedCells!![cell.z * grid.width + cell.x] = true
@@ -134,7 +135,8 @@ class StreetLampRenderer(
                 val index = z * grid.width + x
                 if (occupiedCells[index]) continue
                 occupiedCells[index] = true
-                lamps += LampFixture(WorldPosition(x + 0.5, z + 0.5))
+                val position = WorldPosition(x + 0.5, z + 0.5)
+                lamps += LampFixture(position, grid.terrainHeightAt(position.x, position.z))
             }
         }
     }
@@ -196,5 +198,6 @@ class StreetLampRenderer(
 
     private data class LampFixture(
         val position: WorldPosition,
+        val baseHeight: Double,
     )
 }

@@ -89,7 +89,14 @@ class AmbientActorSystem(
                 state.previousPosition.x + (state.currentPosition.x - state.previousPosition.x) * interpolation,
                 state.previousPosition.z + (state.currentPosition.z - state.previousPosition.z) * interpolation,
             )
-            writes += renderer.render(frame, pose, metrics, actorSprites[index], position)
+            writes += renderer.render(
+                frame,
+                pose,
+                metrics,
+                actorSprites[index],
+                position,
+                anchorHeight = world.grid.terrainHeightAt(position.x, position.z),
+            )
         }
         return writes
     }

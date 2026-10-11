@@ -43,7 +43,7 @@ class PlayerSimulation(
 
     private fun pose(player: PlayerState): ViewPose = ViewPose(
         position = player.position,
-        eyeHeight = player.eyeHeight,
+        eyeHeight = world.grid.terrainHeightAt(player.position.x, player.position.z) + player.eyeHeight,
         yawRadians = ViewPose.normalizeYaw(player.yawRadians),
         pitchRadians = player.pitchRadians.coerceIn(-ViewPose.MAX_PITCH_RADIANS, ViewPose.MAX_PITCH_RADIANS),
         horizontalFovRadians = ViewPose.DEFAULT_FOV_RADIANS,

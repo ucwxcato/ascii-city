@@ -64,6 +64,84 @@ class ContentLoaderValidationTest {
     }
 
     @Test
+    fun `Unity terrain and placed model sidecars load into the runtime world`() {
+        val root = copyFixture("unity-sidecars")
+        val baseline = ContentLoader().load(root, "city-alpha")
+        val width = baseline.world.grid.width
+        val depth = baseline.world.grid.depth
+        val heights = DoubleArray((width + 1) * (depth + 1))
+        val stride = width + 1
+        val x = 10
+        val z = 20
+        heights[z * stride + x] = 0.0
+        heights[z * stride + x + 1] = 2.0
+        heights[(z + 1) * stride + x] = 4.0
+        heights[(z + 1) * stride + x + 1] = 6.0
+        Files.writeString(
+            root.resolve("maps/city-alpha/city-alpha.terrain.json"),
+            """{"width":$width,"depth":$depth,"heightsSouthToNorth":[${heights.joinToString(",") }]}""",
+        )
+        Files.writeString(
+            root.resolve("maps/city-alpha/city-alpha.unity-assets.json"),
+            """
+                {
+                  "version": 1,
+                  "assets": [{
+                    "assetId": "building.cyberpunk-shop",
+                    "spriteId": "sprite.unity.cyberpunk-shop",
+                    "physicalWidth": 3.0,
+                    "physicalHeight": 2.0,
+                    "anchorX": 0.5,
+                    "anchorY": 0.0,
+                    "glyphRows": ["###", "# #"],
+                    "colorRows": ["ccc", "c c"],
+                    "colors": [{"symbol": "c", "palette": "neonCyan"}]
+                  }],
+                  "placements": [{
+                    "id": "placement.cyberpunk-shop.test",
+                    "assetId": "building.cyberpunk-shop",
+                    "x": 10.5,
+                    "y": 3.0,
+                    "z": 20.5,
+                    "yawDegrees": 90.0,
+                    "scaleX": 2.0,
+                    "scaleY": 1.0,
+                    "scaleZ": 1.0,
+                    "blocksMovement": true,
+                    "collisionRadius": 0.7
+                  }]
+                }
+            """.trimIndent(),
+        )
+
+        val loaded = ContentLoader().load(root, "city-alpha")
+        val placement = loaded.worldAssets.single()
+
+        assertTrue(loaded.world.grid.hasTerrainElevation)
+        assertEquals(3.0, loaded.world.grid.terrainHeightAt(10.5, 20.5))
+        assertEquals("placement.cyberpunk-shop.test", placement.id)
+        assertEquals(3.0, placement.anchorHeight)
+        assertEquals(1.4, placement.collisionRadius)
+        assertTrue(placement.blocking)
+        assertTrue(loaded.sprites.contains("sprite.unity.cyberpunk-shop"))
+        assertEquals(1, loaded.world.allWorldAssets().size)
+    }
+
+    @Test
+    fun `Unity placement sidecar requires its supported version`() {
+        val root = copyFixture("unity-sidecar-version")
+        Files.writeString(
+            root.resolve("maps/city-alpha/city-alpha.unity-assets.json"),
+            """{"assets":[],"placements":[]}""",
+        )
+
+        assertEquals(
+            "maps/city-alpha/city-alpha.unity-assets.json:$.version: required field is missing",
+            loadFailure(root).message,
+        )
+    }
+
+    @Test
     fun `invalid height material and missing cell fields fail before world construction`() {
         val root = copyFixture("cell-errors")
         val cellsPath = root.resolve("data/cells.json")

@@ -177,4 +177,15 @@ internal class JsonValueView(
         }
         return value.asString()
     }
+
+    fun asDouble(): Double {
+        if (!value.isNumber) {
+            throw ContentValidationException("$source:$path: expected a number")
+        }
+        val number = value.asDouble()
+        if (!number.isFinite()) {
+            throw ContentValidationException("$source:$path: number must be finite")
+        }
+        return number
+    }
 }

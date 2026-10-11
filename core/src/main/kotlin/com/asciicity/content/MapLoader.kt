@@ -3,7 +3,12 @@ package com.asciicity.content
 import com.asciicity.world.WorldGrid
 
 class MapLoader {
-    fun parse(text: String, source: String, cells: CellRegistry): WorldGrid {
+    fun parse(
+        text: String,
+        source: String,
+        cells: CellRegistry,
+        terrainHeights: ((width: Int, depth: Int) -> DoubleArray)? = null,
+    ): WorldGrid {
         val normalized = text.replace("\r\n", "\n").replace('\r', '\n')
         val lines = normalized.split('\n').toMutableList()
         if (lines.lastOrNull().isNullOrEmpty()) {
@@ -41,6 +46,14 @@ class MapLoader {
                 resolved[worldZ * width + x] = cells.indexForToken(token)
             }
         }
-        return WorldGrid.fromResolvedIndices(width, depth, cells, resolved)
+        val terrainVertices = terrainHeights?.invoke(width, depth)
+            ?: DoubleArray(Math.multiplyExact(width + 1, depth + 1))
+        if (terrainVertices.size != Math.multiplyExact(width + 1, depth + 1)) {
+            throw ContentValidationException(
+                "$source: terrain heightfield requires ${(width + 1) * (depth + 1)} corner heights, " +
+                    "but received ${terrainVertices.size}",
+            )
+        }
+        return WorldGrid.fromResolvedIndices(width, depth, cells, resolved, terrainVertices)
     }
 }

@@ -9,9 +9,11 @@ class GameWorld(
     val grid: WorldGrid,
     player: PlayerState,
     entities: Collection<WorldEntity>,
+    worldAssets: Collection<WorldAsset> = emptyList(),
 ) {
     private val entitiesById = linkedMapOf<EntityId, WorldEntity>()
     private val spatialIndex = SpatialEntityIndex()
+    private val worldAssetsById = linkedMapOf<String, WorldAsset>()
 
     var player: PlayerState = player
         private set
@@ -29,9 +31,14 @@ class GameWorld(
         for (entity in entities) {
             addEntity(entity)
         }
+        for (asset in worldAssets) {
+            addWorldAsset(asset)
+        }
     }
 
     fun allEntities(): List<WorldEntity> = entitiesById.values.toList()
+
+    fun allWorldAssets(): List<WorldAsset> = worldAssetsById.values.toList()
 
     fun entity(id: EntityId): WorldEntity? = entitiesById[id]
 
@@ -45,6 +52,12 @@ class GameWorld(
         entitiesById[entity.id] = entity
         spatialIndex.add(entity)
         entityRevision += 1L
+    }
+
+    fun addWorldAsset(asset: WorldAsset) {
+        require(grid.contains(asset.position.toGridCell())) { "World asset '${asset.id}' is outside the world grid" }
+        check(asset.id !in worldAssetsById) { "World asset '${asset.id}' already exists" }
+        worldAssetsById[asset.id] = asset
     }
 
     fun moveEntity(id: EntityId, position: WorldPosition) {

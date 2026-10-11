@@ -5,6 +5,7 @@ import com.asciicity.entity.WorldEntity
 import com.asciicity.entity.WorldEntityType
 import com.asciicity.world.EntityId
 import com.asciicity.world.GridCell
+import com.asciicity.world.WorldAsset
 import com.asciicity.world.WorldPosition
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -12,6 +13,39 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class CollisionSystemTest {
+    @Test
+    fun `movement follows gradual slopes but stops at a terrain rise that is too steep`() {
+        val width = 10
+        val depth = 10
+        val gradualSlope = DoubleArray((width + 1) * (depth + 1)) { index ->
+            (index % (width + 1)) * 0.8
+        }
+        val steepSlope = DoubleArray((width + 1) * (depth + 1)) { index ->
+            (index % (width + 1)) * 4.0
+        }
+        val start = WorldPosition(2.5, 2.5)
+
+        val gradualResult = CollisionSystem(
+            SystemTestWorld.create(
+                width = width,
+                depth = depth,
+                playerPosition = start,
+                terrainVertexHeights = gradualSlope,
+            ),
+        ).move(start, deltaX = 1.0, deltaZ = 0.0, radius = 0.22)
+        val steepResult = CollisionSystem(
+            SystemTestWorld.create(
+                width = width,
+                depth = depth,
+                playerPosition = start,
+                terrainVertexHeights = steepSlope,
+            ),
+        ).move(start, deltaX = 1.0, deltaZ = 0.0, radius = 0.22)
+
+        assertEquals(3.5, gradualResult.x, absoluteTolerance = 1e-9)
+        assertEquals(start, steepResult)
+    }
+
     @Test
     fun `semantic walls corners open cells and boundaries use circle geometry`() {
         val world = SystemTestWorld.create(solidCells = setOf(GridCell(4, 4), GridCell(4, 5)))
@@ -68,6 +102,29 @@ class CollisionSystemTest {
         world.moveEntity(npc.id, WorldPosition(6.5, 4.5))
         assertTrue(collision.isPositionFree(WorldPosition(4.5, 4.5), 0.22))
         assertFalse(collision.isPositionFree(WorldPosition(6.5, 4.5), 0.22))
+    }
+
+    @Test
+    fun `blocking Unity placements participate in movement collision`() {
+        val world = SystemTestWorld.create()
+        val asset = WorldAsset(
+            id = "placement.shop",
+            assetId = "building.cyberpunk-shop",
+            spriteId = "sprite.unity.cyberpunk-shop",
+            position = WorldPosition(4.5, 4.5),
+            anchorHeight = 0.0,
+            yawRadians = 0.0,
+            scaleX = 1.0,
+            scaleY = 1.0,
+            scaleZ = 1.0,
+            blocking = true,
+            collisionRadius = 0.8,
+        )
+        world.addWorldAsset(asset)
+        val collision = CollisionSystem(world)
+
+        assertFalse(collision.isPositionFree(asset.position, 0.22))
+        assertTrue(collision.isPositionFree(WorldPosition(6.0, 4.5), 0.22))
     }
 
     @Test

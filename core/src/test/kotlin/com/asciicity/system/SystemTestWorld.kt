@@ -17,6 +17,7 @@ internal object SystemTestWorld {
         playerPosition: WorldPosition = WorldPosition(2.5, 2.5),
         solidCells: Set<GridCell> = emptySet(),
         entities: List<WorldEntity> = emptyList(),
+        terrainVertexHeights: DoubleArray = DoubleArray((width + 1) * (depth + 1)),
     ): GameWorld {
         val materials = TestContent.loaded.materials
         val cells = CellRegistry.create(
@@ -49,7 +50,7 @@ internal object SystemTestWorld {
         )
         val indices = IntArray(width * depth)
         for (cell in solidCells) indices[cell.z * width + cell.x] = 1
-        val grid = WorldGrid.fromResolvedIndices(width, depth, cells, indices)
+        val grid = WorldGrid.fromResolvedIndices(width, depth, cells, indices, terrainVertexHeights)
         return GameWorld(
             mapId = "test",
             mapVersion = 1,

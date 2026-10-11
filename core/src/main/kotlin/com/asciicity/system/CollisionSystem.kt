@@ -51,6 +51,13 @@ class CollisionSystem(
             val deltaZ = position.z - entity.position.z
             if (deltaX * deltaX + deltaZ * deltaZ < combinedRadius * combinedRadius - COLLISION_EPSILON) return false
         }
+        for (asset in world.allWorldAssets()) {
+            if (!asset.blocking) continue
+            val combinedRadius = radius + asset.collisionRadius
+            val deltaX = position.x - asset.position.x
+            val deltaZ = position.z - asset.position.z
+            if (deltaX * deltaX + deltaZ * deltaZ < combinedRadius * combinedRadius - COLLISION_EPSILON) return false
+        }
         return true
     }
 
@@ -70,14 +77,24 @@ class CollisionSystem(
         var z = start.z
         repeat(stepCount) {
             val candidateX = WorldPosition(x + stepX, z)
-            if (isPositionFree(candidateX, radius, ignoreEntityId)) x = candidateX.x
+            if (isPositionFree(candidateX, radius, ignoreEntityId) && canFollowTerrain(x, z, candidateX.x, z))
+                x = candidateX.x
             val candidateZ = WorldPosition(x, z + stepZ)
-            if (isPositionFree(candidateZ, radius, ignoreEntityId)) z = candidateZ.z
+            if (isPositionFree(candidateZ, radius, ignoreEntityId) && canFollowTerrain(x, z, x, candidateZ.z))
+                z = candidateZ.z
         }
         return WorldPosition(x, z)
     }
 
+    private fun canFollowTerrain(fromX: Double, fromZ: Double, toX: Double, toZ: Double): Boolean {
+        if (!world.grid.hasTerrainElevation) return true
+        val fromHeight = world.grid.terrainHeightAt(fromX, fromZ)
+        val toHeight = world.grid.terrainHeightAt(toX, toZ)
+        return kotlin.math.abs(toHeight - fromHeight) <= MAX_TERRAIN_STEP_HEIGHT
+    }
+
     companion object {
         private const val COLLISION_EPSILON = 1e-12
+        private const val MAX_TERRAIN_STEP_HEIGHT = 0.35
     }
 }

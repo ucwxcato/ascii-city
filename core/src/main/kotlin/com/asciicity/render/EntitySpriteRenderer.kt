@@ -1,8 +1,12 @@
 package com.asciicity.render
 
 import com.asciicity.world.WorldPosition
+import kotlin.math.abs
+import kotlin.math.atan2
 import kotlin.math.ceil
+import kotlin.math.cos
 import kotlin.math.floor
+import kotlin.math.sin
 
 class EntitySpriteRenderer(
     private val maxDrawDistance: Double = DEFAULT_MAX_DRAW_DISTANCE,
@@ -20,11 +24,25 @@ class EntitySpriteRenderer(
         sprite: AsciiSprite,
         position: WorldPosition,
         anchorHeight: Double = 0.0,
+        scaleX: Double = 1.0,
+        scaleY: Double = 1.0,
+        scaleZ: Double = 1.0,
+        orientationYawRadians: Double? = null,
     ): Int {
         require(metrics.columns == frame.width && metrics.rows == frame.height) {
             "Projection metrics must match the ASCII frame dimensions"
         }
         require(anchorHeight.isFinite()) { "Entity sprite anchor height must be finite" }
+        require(
+            scaleX > 0.0 && scaleX.isFinite() &&
+                scaleY > 0.0 && scaleY.isFinite() &&
+                scaleZ > 0.0 && scaleZ.isFinite(),
+        ) {
+            "Entity sprite scale must be positive and finite"
+        }
+        require(orientationYawRadians == null || orientationYawRadians.isFinite()) {
+            "Entity sprite orientation must be finite"
+        }
 
         val relativeX = position.x - pose.position.x
         val relativeZ = position.z - pose.position.z
@@ -34,8 +52,18 @@ class EntitySpriteRenderer(
         val lateralCenter = relativeX * pose.rightX + relativeZ * pose.rightZ
         if (!lateralCenter.isFinite()) return 0
 
-        val leftLateral = lateralCenter - sprite.anchorX * sprite.physicalWidth
-        val rightLateral = leftLateral + sprite.physicalWidth
+        val renderedWidth = if (orientationYawRadians == null) {
+            sprite.physicalWidth * scaleX
+        } else {
+            val directionToCamera = atan2(-relativeX, -relativeZ)
+            val yawDifference = orientationYawRadians - directionToCamera
+            sprite.physicalWidth * (
+                scaleX * abs(cos(yawDifference)) + scaleZ * abs(sin(yawDifference))
+                )
+        }
+        val renderedHeight = sprite.physicalHeight * scaleY
+        val leftLateral = lateralCenter - sprite.anchorX * renderedWidth
+        val rightLateral = leftLateral + renderedWidth
         val leftCameraPlane = leftLateral / depth
         val rightCameraPlane = rightLateral / depth
         if (!leftCameraPlane.isFinite() || !rightCameraPlane.isFinite()) return 0
@@ -43,8 +71,8 @@ class EntitySpriteRenderer(
         val rightScreen = metrics.projectCameraPlaneX(rightCameraPlane)
         if (rightScreen <= 0.0 || leftScreen >= frame.width.toDouble()) return 0
 
-        val bottomWorld = anchorHeight - sprite.anchorY * sprite.physicalHeight
-        val topWorld = bottomWorld + sprite.physicalHeight
+        val bottomWorld = anchorHeight - sprite.anchorY * renderedHeight
+        val topWorld = bottomWorld + renderedHeight
         val bottomScreen = metrics.projectWorldHeight(bottomWorld, pose.eyeHeight, depth)
         val topScreen = metrics.projectWorldHeight(topWorld, pose.eyeHeight, depth)
         if (topScreen <= 0.0 || bottomScreen >= frame.height.toDouble()) return 0
@@ -61,13 +89,13 @@ class EntitySpriteRenderer(
         while (row <= lastRow) {
             val worldHeight = pose.eyeHeight +
                 (row + 0.5 - metrics.horizonRow) * depth / metrics.focalRows
-            val vertical = (worldHeight - bottomWorld) / sprite.physicalHeight
+            val vertical = (worldHeight - bottomWorld) / renderedHeight
             if (vertical >= 0.0 && vertical < 1.0) {
                 val sourceRow = sprite.rows - 1 - floor(vertical * sprite.rows).toInt()
                 var column = firstColumn
                 while (column <= lastColumn) {
                     val rayLateral = metrics.cameraPlaneXForColumn(column) * depth
-                    val horizontal = (rayLateral - leftLateral) / sprite.physicalWidth
+                    val horizontal = (rayLateral - leftLateral) / renderedWidth
                     if (horizontal >= 0.0 && horizontal < 1.0) {
                         val sourceColumn = floor(horizontal * sprite.columns).toInt()
                         if (!sprite.isTransparent(sourceColumn, sourceRow) && frame.writeIfNearer(

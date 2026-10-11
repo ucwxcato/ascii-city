@@ -14,7 +14,7 @@ class FacadeLabelRendererTest {
         frame.clear()
         val pose = pose(yawRadians = 0.0)
 
-        val written = FacadeLabelRenderer(listOf(sign), MaterialSampler(TestContent.loaded.palette)).render(
+        val written = labelRenderer(sign).render(
             frame,
             pose,
             metrics(frame, pose),
@@ -38,7 +38,7 @@ class FacadeLabelRendererTest {
         val pose = pose(yawRadians = 0.0)
         val metrics = metrics(frame, pose)
 
-        FacadeLabelRenderer(listOf(sign), MaterialSampler(TestContent.loaded.palette)).render(frame, pose, metrics)
+        labelRenderer(sign).render(frame, pose, metrics)
 
         val signDepth = 10.0
         val centerRow = kotlin.math.floor(
@@ -60,7 +60,7 @@ class FacadeLabelRendererTest {
 
         assertEquals(
             0,
-            FacadeLabelRenderer(listOf(sign), MaterialSampler(TestContent.loaded.palette)).render(
+            labelRenderer(sign).render(
                 frame,
                 pose,
                 metrics(frame, pose),
@@ -81,7 +81,7 @@ class FacadeLabelRendererTest {
 
         assertEquals(
             0,
-            FacadeLabelRenderer(listOf(sign), MaterialSampler(TestContent.loaded.palette)).render(
+            labelRenderer(sign).render(
                 frame,
                 pose,
                 metrics(frame, pose),
@@ -103,7 +103,7 @@ class FacadeLabelRendererTest {
         )
 
         assertTrue(
-            FacadeLabelRenderer(listOf(sign), MaterialSampler(TestContent.loaded.palette)).render(
+            labelRenderer(sign).render(
                 frame,
                 pose,
                 metrics(frame, pose),
@@ -127,6 +127,12 @@ class FacadeLabelRendererTest {
         backgroundPaletteKey = PaletteKeys.SIGN_BACKGROUND,
         animationRate = 0.0,
         label = "CASINO",
+    )
+
+    private fun labelRenderer(sign: FacadeSign) = FacadeLabelRenderer(
+        signs = listOf(sign),
+        materialSampler = MaterialSampler(TestContent.loaded.palette),
+        grid = TestContent.loaded.world.grid,
     )
 
     private fun pose(

@@ -124,8 +124,9 @@ class InteractionSystem(
         depth: Double,
         centerRow: Int,
     ): Boolean {
-        val bottom = metrics.projectWorldHeight(0.0, pose.eyeHeight, depth)
-        val top = metrics.projectWorldHeight(interactionHeight(entity.type), pose.eyeHeight, depth)
+        val baseHeight = world.grid.terrainHeightAt(entity.position.x, entity.position.z)
+        val bottom = metrics.projectWorldHeight(baseHeight, pose.eyeHeight, depth)
+        val top = metrics.projectWorldHeight(baseHeight + interactionHeight(entity.type), pose.eyeHeight, depth)
         val reticle = centerRow + 0.5
         return reticle in min(bottom, top)..max(bottom, top)
     }
@@ -155,8 +156,11 @@ class InteractionSystem(
             if (perpendicularDepth >= maximumTargetDepth) return@traverse false
             val definition = world.grid.cellAt(cellX, cellZ)
             if (!definition.opaque || definition.height <= 0) return@traverse true
-            val bottom = metrics.projectWorldHeight(0.0, pose.eyeHeight, perpendicularDepth)
-            val top = metrics.projectWorldHeight(definition.height.toDouble(), pose.eyeHeight, perpendicularDepth)
+            val worldX = pose.position.x + rayX * distance
+            val worldZ = pose.position.z + rayZ * distance
+            val baseHeight = world.grid.terrainHeightAt(worldX, worldZ)
+            val bottom = metrics.projectWorldHeight(baseHeight, pose.eyeHeight, perpendicularDepth)
+            val top = metrics.projectWorldHeight(baseHeight + definition.height, pose.eyeHeight, perpendicularDepth)
             val reticle = centerRow + 0.5
             if (reticle in min(bottom, top)..max(bottom, top)) {
                 occluded = true

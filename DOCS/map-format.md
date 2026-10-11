@@ -22,6 +22,8 @@ assets/data/dialogue.json
 assets/maps/<map-name>/<map-name>.txt
 assets/maps/<map-name>/<map-name>.meta.json
 assets/maps/<map-name>/<map-name>.objects.json
+assets/maps/<map-name>/<map-name>.terrain.json                 (optional Unity elevation export)
+assets/maps/<map-name>/<map-name>.unity-assets.json            (optional Unity placement export)
 ```
 
 Stable IDs use lowercase letters, numbers, dots, underscores, and hyphens. Runtime indices are resolved only after validation and must never be authored or saved.
@@ -150,6 +152,61 @@ An enclosed, single-level map may additionally define one ceiling across its com
 ```
 
 `height` is a finite world-space Y coordinate at least `0.5` units above the spawn eye height. `material` must name an existing entry in `materials.json`. The renderer casts this bounded horizontal plane above the pitch-adjusted horizon using the same perpendicular depth convention as ground, walls, fixtures, and sprites. Walls nearer than the plane occlude it, the plane hides taller exterior columns where a ray reaches the roof first, and its finite depth prevents sky-only rain from drawing through it. A metadata ceiling is presentation geometry only: it does not alter footprint collision, create an upper walkable floor, or support stacked levels.
+
+## Unity terrain elevation sidecar
+
+The optional `<map-name>.terrain.json` file is exported by the Unity authoring package. It is separate from metadata and does not change the cell token schema:
+
+```json
+{
+  "width": 2,
+  "depth": 2,
+  "heightsSouthToNorth": [0, 0, 0, 0, 1, 1, 0, 0, 0]
+}
+```
+
+`width` and `depth` must match the text footprint. The array contains exactly `(width + 1) * (depth + 1)` finite corner heights in row-major order from south to north, with `x` increasing inside each row. Heights must be from `-32` through `64` world units. Runtime samples each cell's terrain bilinearly for ground projection, wall bases, actor placement, and slope-aware player movement. The heightfield changes terrain shape only; cell definitions remain the collision and walkability authority.
+
+## Unity model placement sidecar
+
+The optional `<map-name>.unity-assets.json` file is exported separately from strict `.objects.json`. It contains an ASCII profile for each used prefab and one record for each placed prefab instance:
+
+```json
+{
+  "version": 1,
+  "assets": [{
+    "assetId": "building.cyberpunk-shop",
+    "spriteId": "sprite.unity.building.cyberpunk-shop",
+    "physicalWidth": 3.7,
+    "physicalHeight": 5.7,
+    "anchorX": 0.5,
+    "anchorY": 0.0,
+    "glyphRows": [" /#\\ ", "|###|"],
+    "colorRows": [" mcm ", "mcccm"],
+    "colors": [
+      { "symbol": "m", "palette": "wallFront" },
+      { "symbol": "c", "palette": "neonCyan" }
+    ]
+  }],
+  "placements": [{
+    "id": "placement.cyberpunk-shop.01",
+    "assetId": "building.cyberpunk-shop",
+    "x": 8.5,
+    "y": 0.0,
+    "z": 6.5,
+    "yawDegrees": 90.0,
+    "scaleX": 1.0,
+    "scaleY": 1.0,
+    "scaleZ": 1.0,
+    "blocksMovement": true,
+    "collisionRadius": 1.4
+  }]
+}
+```
+
+The sidecar version must be `1`. Asset and sprite IDs and placement IDs are stable, unique IDs. Each placement references a declared asset profile; its sprite rows are validated like `sprites.json`, and all palette keys must exist. Placement coordinates must be in bounds; scale must be positive and at most `16`; `y` must be from `-32` through `64`; and blocking placements require positive collision radius. The runtime scales collision radius horizontally, renders the model's authored ASCII profile as a camera-facing first-person sprite, and uses `blocksMovement` for collision. Unity mesh data itself stays in the authoring project; it is not loaded into the Kotlin renderer.
+
+The Unity scene is the authoring source for these exports. Save the map from the Unity package after footprint or elevation edits, and export placements after prefab edits. The game loads these sidecars at startup; it does not read `.unity` scenes directly.
 
 ## Object schema
 

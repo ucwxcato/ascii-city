@@ -464,3 +464,12 @@ Retained visual evidence:
 - [x] Every semantic terminal now projects the validated compact `sprite.terminal`: a cyan screen in a neutral metal screen-and-stand frame. The visual pass reads only terminal positions from `GameWorld`; it does not change collision, targeting range, dialogue IDs, or authored map geometry.
 - [x] `TerminalBillboardRenderer` writes through `EntitySpriteRenderer` after opaque world geometry and before lamps/rain, so walls can occlude the visible terminal just as they occlude NPC sprites. Its revision cache refreshes only when the entity world changes.
 - [x] Focused sprite/billboard composition tests and `:core:validateContent` pass. A 1280×720 desktop interaction run at `(51.500,19.200)` facing the archive node wrote 914 terminal glyph cells at depth `1.3` and exited without errors; visual inspection approved the compact billboard and centered interaction prompt.
+## Unity-authored terrain and placed assets (2026-10-11)
+
+> Status: The Unity scene export path, validated Kotlin sidecars, elevated terrain projection and movement, ASCII model sprites, and blocking placement collision are connected.
+
+- [x] Unity scene rows are the painter's edit source once a scene exists. `Save map` exports the semantic `.txt` footprint and south-to-north corner-height `.terrain.json`; `Export scene placements` writes version 1 `.unity-assets.json` with per-prefab ASCII sprite profiles and placed transforms.
+- [x] Kotlin validates both optional sidecars. Terrain heights drive ground projection and actor/wall anchors, player eye height follows terrain, and collision follows walkable slopes while rejecting rises over 0.35 units per movement substep.
+- [x] Unity prefab placements render through the first-person ASCII sprite path and use their authored blocking flag and scaled collision radius. Unity mesh geometry stays inside the authoring project.
+- [x] The city map still has 3,050 road cells. The Unity terrain mesh's road material submesh contains 18,300 indices (3,050 quads), and a 1280x720 runtime capture shows the road layer: [Unity authoring road runtime](verification/unity-world-road-runtime-1280x720.png).
+- [x] The authoring package compiles in Unity 6 batch mode. Final `clean check` passes 216 core/desktop tests with zero failures, errors, or skips; content validation and `git diff --check` pass.

@@ -28,6 +28,10 @@ class TerminalBillboardRenderer(
                 metrics = metrics,
                 sprite = terminalSprite,
                 position = resolvedTerminals[index].position,
+                anchorHeight = world.grid.terrainHeightAt(
+                    resolvedTerminals[index].position.x,
+                    resolvedTerminals[index].position.z,
+                ),
             )
             index += 1
         }

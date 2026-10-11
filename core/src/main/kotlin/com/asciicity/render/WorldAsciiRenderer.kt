@@ -2,12 +2,14 @@ package com.asciicity.render
 
 import com.asciicity.content.MaterialRegistry
 import com.asciicity.content.MapCeiling
+import com.asciicity.content.AsciiSpriteRegistry
 import com.asciicity.system.NpcSystem
 import com.asciicity.system.TrafficSystem
 import com.asciicity.system.AmbientActorSystem
 import com.asciicity.ambient.AmbientEventSystem
 import com.asciicity.world.GameWorld
 import com.asciicity.world.WorldPosition
+import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
 
@@ -28,6 +30,7 @@ class WorldAsciiRenderer(
     private val ambientEventSystem: AmbientEventSystem? = null,
     private val ambientActorSystem: AmbientActorSystem? = null,
     private val fontProfile: AsciiFontProfile = AsciiFontProfile.STANDARD,
+    assetSprites: AsciiSpriteRegistry? = null,
 ) {
     private val materialSampler = MaterialSampler(palette, presentation)
     private val facadeSignSampler = FacadeSignSampler(
@@ -36,12 +39,13 @@ class WorldAsciiRenderer(
         world.grid.width,
         world.grid.depth,
     )
-    private val facadeLabelRenderer = FacadeLabelRenderer(facadeSigns, materialSampler)
+    private val facadeLabelRenderer = FacadeLabelRenderer(facadeSigns, materialSampler, world.grid)
     private val localizedLightRenderer = LocalizedLightRenderer()
     private val streetLampRenderer = StreetLampRenderer(world.allEntities(), world.grid, palette)
     private val parkFireflyRenderer = ParkFireflyRenderer(world.allEntities(), world.grid, materialSampler)
     private val rainRenderer = RainRenderer(palette)
     private val atmosphericRenderer = AtmosphericRenderer(atmosphericEmitters, materialSampler)
+    private val worldAssetRenderer = assetSprites?.let { WorldAssetRenderer(world.allWorldAssets(), it) }
     private val parkFixtureBillboardRenderer = ParkFixtureBillboardRenderer(
         world.grid,
         materials,
@@ -53,6 +57,7 @@ class WorldAsciiRenderer(
     private var coveredRows = BooleanArray(0)
     private val wallVisitor = WallRayVisitor()
     private val facadeSignSample = FacadeSignSample()
+    private val minWorldHeight = world.grid.minimumTerrainHeight
     private var cachedMetrics: ProjectionMetrics? = null
     private var cachedWidth = -1
     private var cachedHeight = -1
@@ -64,7 +69,7 @@ class WorldAsciiRenderer(
     init {
         var height = 0
         world.grid.forEachCell { _, definition -> height = maxOf(height, definition.height) }
-        maxWorldHeight = height.toDouble()
+        maxWorldHeight = height.toDouble() + world.grid.maximumTerrainHeight
     }
 
     fun render(
@@ -97,6 +102,7 @@ class WorldAsciiRenderer(
         stats.terminalSpriteWrites = terminalBillboardRenderer?.render(frame, pose, metrics) ?: 0
         stats.entitySpriteWrites = npcSystem?.render(frame, pose, metrics) ?: 0
         stats.ambientActorSpriteWrites = ambientActorSystem?.render(frame, pose, metrics, interpolationAlpha) ?: 0
+        worldAssetRenderer?.render(frame, pose, metrics)
         streetLampRenderer.render(frame, pose, metrics)
         stats.fireflyWrites = parkFireflyRenderer.render(frame, pose, metrics, timeSeconds)
         rainRenderer.render(frame, timeSeconds)
@@ -108,26 +114,31 @@ class WorldAsciiRenderer(
             val directionX = metrics.rayDirectionX(pose, column)
             val directionZ = metrics.rayDirectionZ(pose, column)
             for (row in 0 until frame.height) {
-                val depth = metrics.groundDepthAtRow(row, pose.eyeHeight)
+                val depth = if (world.grid.hasTerrainElevation) {
+                    terrainDepthAtRow(row, pose, metrics, directionX, directionZ)
+                } else {
+                    metrics.groundDepthAtRow(row, pose.eyeHeight)
+                }
                 if (!depth.isFinite() || depth > maxRayDistance) continue
                 val worldX = pose.position.x + directionX * depth
                 val worldZ = pose.position.z + directionZ * depth
                 val cellX = floor(worldX).toInt()
                 val cellZ = floor(worldZ).toInt()
                 if (!world.grid.contains(cellX, cellZ)) continue
+                val surfaceHeight = world.grid.terrainHeightAt(worldX, worldZ)
                 val definition = world.grid.cellAt(cellX, cellZ)
                 val material = materials.material(definition.groundMaterialId)
                 frame.set(
                     x = column,
                     y = row,
-                    glyph = materialSampler.glyph(material, worldX, worldZ, 0.0, timeSeconds, depth),
+                    glyph = materialSampler.glyph(material, worldX, worldZ, surfaceHeight, timeSeconds, depth),
                     foreground = materialSampler.foreground(
                         material,
                         side = null,
                         depth = depth,
                         worldX = worldX,
                         worldZ = worldZ,
-                        vertical = 0.0,
+                        vertical = surfaceHeight,
                         timeSeconds = timeSeconds,
                     ),
                     background = materialSampler.background(material, side = null),
@@ -135,6 +146,33 @@ class WorldAsciiRenderer(
                 )
             }
         }
+    }
+
+    private fun terrainDepthAtRow(
+        row: Int,
+        pose: ViewPose,
+        metrics: ProjectionMetrics,
+        directionX: Double,
+        directionZ: Double,
+    ): Double {
+        val distanceBelowHorizon = metrics.horizonRow - (row + 0.5)
+        if (distanceBelowHorizon <= 0.0) return Double.POSITIVE_INFINITY
+        var depth = metrics.groundDepthAtRow(row, pose.eyeHeight)
+        repeat(TERRAIN_INTERSECTION_STEPS) {
+            val worldX = pose.position.x + directionX * depth
+            val worldZ = pose.position.z + directionZ * depth
+            if (worldX < 0.0 || worldX > world.grid.width.toDouble() ||
+                worldZ < 0.0 || worldZ > world.grid.depth.toDouble()
+            ) {
+                return depth
+            }
+            val terrainHeight = world.grid.terrainHeightAt(worldX, worldZ)
+            val nextDepth = (pose.eyeHeight - terrainHeight) * metrics.focalRows / distanceBelowHorizon
+            if (!nextDepth.isFinite() || nextDepth <= MINIMUM_DEPTH) return Double.POSITIVE_INFINITY
+            if (abs(nextDepth - depth) < TERRAIN_INTERSECTION_EPSILON) return nextDepth
+            depth = nextDepth
+        }
+        return depth
     }
 
     private fun renderCeiling(frame: AsciiFrame, pose: ViewPose, metrics: ProjectionMetrics, timeSeconds: Double) {
@@ -241,16 +279,18 @@ class WorldAsciiRenderer(
             if (!definition.opaque || definition.height <= 0) return true
             if (PARK_FIXTURE_TAG in definition.tags) return true
             stats.wallHits += 1
-            val bottom = metrics.projectWorldHeight(0.0, pose.eyeHeight, distance)
-            val top = metrics.projectWorldHeight(definition.height.toDouble(), pose.eyeHeight, distance)
+            val hitWorldX = pose.position.x + directionX * distance
+            val hitWorldZ = pose.position.z + directionZ * distance
+            val groundHeight = world.grid.terrainHeightAt(hitWorldX, hitWorldZ)
+            val topHeight = groundHeight + definition.height
+            val bottom = metrics.projectWorldHeight(groundHeight, pose.eyeHeight, distance)
+            val top = metrics.projectWorldHeight(topHeight, pose.eyeHeight, distance)
             val firstRow = ceil(bottom).toInt().coerceAtLeast(0)
             val lastRow = floor(top).toInt().coerceAtMost(frame.height - 1)
             if (firstRow <= lastRow) {
                 val material = materials.material(definition.facadeMaterialId)
                 val isTree = TREE_TAG in definition.tags
                 val isPine = PINE_TAG in definition.tags
-                val hitWorldX = pose.position.x + directionX * distance
-                val hitWorldZ = pose.position.z + directionZ * distance
                 val facadeFace = FacadeFace.fromRayHit(side, directionX, directionZ)
                 for (row in firstRow..lastRow) {
                     val vertical = pose.eyeHeight +
@@ -258,7 +298,7 @@ class WorldAsciiRenderer(
                     val treePart = if (isTree) {
                         TreeSilhouette.partAt(
                             faceCoordinate,
-                            vertical,
+                            vertical - groundHeight,
                             definition.height.toDouble(),
                             pine = isPine,
                         ) ?: continue
@@ -269,7 +309,7 @@ class WorldAsciiRenderer(
                         face = facadeFace,
                         side = side,
                         faceCoordinate = faceCoordinate,
-                        vertical = vertical,
+                        vertical = vertical - groundHeight,
                         depth = distance,
                         timeSeconds = timeSeconds,
                         output = facadeSignSample,
@@ -281,7 +321,7 @@ class WorldAsciiRenderer(
                             material,
                             hitWorldX,
                             hitWorldZ,
-                            vertical,
+                            vertical - groundHeight,
                             timeSeconds,
                             distance,
                         )
@@ -297,7 +337,7 @@ class WorldAsciiRenderer(
                             depth = distance,
                             worldX = hitWorldX,
                             worldZ = hitWorldZ,
-                            vertical = vertical,
+                            vertical = vertical - groundHeight,
                             timeSeconds = timeSeconds,
                         )
                     }
@@ -326,7 +366,7 @@ class WorldAsciiRenderer(
         }
 
         private fun allPossibleWallRowsCovered(distance: Double): Boolean {
-            val possibleBottom = ceil(metrics.projectWorldHeight(0.0, pose.eyeHeight, distance))
+            val possibleBottom = ceil(metrics.projectWorldHeight(minWorldHeight, pose.eyeHeight, distance))
                 .toInt().coerceAtLeast(0)
             val possibleTop = floor(metrics.projectWorldHeight(maxWorldHeight, pose.eyeHeight, distance))
                 .toInt().coerceAtMost(frame.height - 1)
@@ -370,6 +410,8 @@ class WorldAsciiRenderer(
 
     companion object {
         private const val MINIMUM_DEPTH = 1e-6
+        private const val TERRAIN_INTERSECTION_STEPS = 8
+        private const val TERRAIN_INTERSECTION_EPSILON = 1e-4
         private const val TREE_TAG = "tree"
         private const val PINE_TAG = "pine"
         private const val PARK_FIXTURE_TAG = "fixture"

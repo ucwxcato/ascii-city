@@ -1,5 +1,7 @@
 package com.asciicity.render
 
+import com.asciicity.world.WorldGrid
+
 import kotlin.math.floor
 import kotlin.math.hypot
 
@@ -7,6 +9,7 @@ import kotlin.math.hypot
 internal class FacadeLabelRenderer(
     signs: Collection<FacadeSign>,
     private val materialSampler: MaterialSampler,
+    private val grid: WorldGrid,
 ) {
     private val labeledSigns = signs.filter { it.label != null }.toTypedArray()
 
@@ -49,7 +52,7 @@ internal class FacadeLabelRenderer(
         val label = checkNotNull(sign.label)
         // The label belongs in the center band of the marquee, not at street level
         // beneath it. Players look up at a tall sign to read its attached wording.
-        val labelHeight = sign.bottom + sign.height * LABEL_HEIGHT_FRACTION
+        val labelHeight = grid.terrainHeightAt(surfaceX, surfaceZ) + sign.bottom + sign.height * LABEL_HEIGHT_FRACTION
         val tangentX = when (sign.face) {
             FacadeFace.NORTH -> -1.0
             FacadeFace.SOUTH -> 1.0
