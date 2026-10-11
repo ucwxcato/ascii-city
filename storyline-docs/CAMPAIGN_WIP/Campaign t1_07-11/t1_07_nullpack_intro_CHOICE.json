@@ -1,0 +1,353 @@
+{
+  "mission_meta": {
+    "id": "t1_07_nullpack_intro",
+    "title": "Burning Down the House",
+    "category": "arc_01",
+    "is_sequential": true,
+    "order": 7,
+    "prerequisites": ["t1_06_job_board"],
+    "difficulty": 1,
+    "reward_credits": 500,
+    "reward_reputation": 25,
+    "client": "NullPack",
+    "is_mandatory": false,
+    "architect_persona": "observer",
+    "description": "Your first faction job. NullPack has found dirt on a corrupt corporation. Leak it or sell it back - your call.",
+    "story_flags": {
+      "sets": ["metNullPack"]
+    },
+    "reputation_rewards": [
+      {
+        "faction": "nullpack",
+        "amount": 25
+      }
+    ]
+  },
+  "briefing": {
+    "email_subject": "LEAK EVERYTHING",
+    "email_body": "yo.\n\nsaw your work on the job boards. not bad for a rookie.\n\nwe found something that needs to see the daylight.\n\nomnicorp is sitting on a dirt sheet that would DESTROY them if it goes public. turns out their \"eco-friendly\" waste processing has been dumping toxic sludge into residential water tables for three years.\n\nthey covered it up. paid off inspectors. people are getting sick and dying.\n\nwe have proof on their secure server. your job:\n\n1. ssh into omnicorp's datacenter\n2. find and download the evidence files\n3. make a choice\n\nOPTION A: leak publicly. chaos, headlines, justice. we pay 500 credits.\n\nOPTION B: sell it back to them. profit, they learn nothing. they'll pay double to keep it quiet.\n\nyour call. that's how nullpack works - we give you the target, you pull the trigger your way.\n\nstay frosty.\n\n- ZeroCool\n\nP.S. architect's been watching you. told her you might be ready for some REAL work.",
+    "sender": "nullpack@retro-sim.net"
+  },
+  "nodes": [
+    {
+      "node_id": "homebase",
+      "hostname": "kitten-terminal",
+      "ip_address": "127.0.0.1",
+      "ssh_password": "",
+      "files": {
+        "home": {
+          "type": "directory",
+          "name": "home",
+          "children": {
+            "user": {
+              "type": "directory",
+              "name": "user",
+              "children": {
+                "nullpack_brief.txt": {
+                  "type": "file",
+                  "name": "nullpack_brief.txt",
+                  "content": "NULLPACK MISSION BRIEF\n======================\n\nFrom: ZeroCool <nullpack@retro-sim.net>\nSubject: LEAK EVERYTHING\n\nTarget: Omnicorp Datacenter\nIP: 198.51.100.20\nSSH Password: 0mn1c0rp2025!\n\nMISSION:\nOmnicorp is sitting on a dirt sheet that would DESTROY them.\n\nTheir \"eco-friendly\" waste processing has been dumping toxic sludge into residential water tables for three years.\n\nPeople are getting sick. People are dying.\n\nWe have proof on their secure server. Your job:\n1. SSH into their datacenter\n2. Find and download the evidence files\n3. Make a choice: Leak publicly OR sell back to them\n\nNullPack gives you the target. You pull the trigger your way.\n\nStay frosty.\n\n---\nHINT: Use 'ssh 198.51.100.20' with password '0mn1c0rp2025!' to connect.",
+                  "size": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "node_id": "omnicorp_datacenter",
+      "hostname": "omnicorp-secure",
+      "ip_address": "198.51.100.20",
+      "ssh_password": "0mn1c0rp2025!",
+      "files": {
+        "home": {
+          "type": "directory",
+          "name": "home",
+          "children": {
+            "guest": {
+              "type": "directory",
+              "name": "guest",
+              "children": {
+                "readme.txt": {
+                  "type": "file",
+                  "name": "readme.txt",
+                  "content": "Omnicorp Secure Data Center\n\nAuthorized personnel only. All activity is monitored.\nGuest access limited to /home/guest directory.\n\nRemember: Omnicorp Cares. (TM)",
+                  "size": 1
+                }
+              }
+            },
+            "compliance": {
+              "type": "directory",
+              "name": "compliance",
+              "children": {
+                "quarterly_report.txt": {
+                  "type": "file",
+                  "name": "quarterly_report.txt",
+                  "content": "OMNICORP QUARTERLY COMPLIANCE REPORT\n======================================\nQ4 2025\n\nWaste Processing: 99.7% compliant (up from 98.2%)\nEnvironmental Impact: MINIMAL (per independent audit)\nCommunity Relations: EXCELLENT\n\nOmnicorp remains committed to sustainable practices and environmental stewardship.\n\n---\nThis report has been reviewed and approved by:\n- Internal Compliance Division\n- External Auditor: Smith & Associates (paid consultant)\n- Corporate Communications Division",
+                  "size": 1
+                }
+              }
+            },
+            "executive": {
+              "type": "directory",
+              "name": "executive",
+              "children": {
+                ".internal_memo.txt": {
+                  "type": "file",
+                  "name": ".internal_memo.txt",
+                  "content": "INTERNAL MEMO - EYES ONLY\n========================\nTo: Regional Directors\nFrom: VP Operations\nDate: 2025-01-15\nSubject: RESIDENTIAL CONTAMINATION\n\nThe water table situation in Sector 7 is deteriorating faster than projected. Three new cancer clusters confirmed last month.\n\nACTION ITEMS:\n- Continue paying off inspectors (budget increased 50%)\n- Accelerated relocation buyouts for affected families (standard NDAs)\n- DO NOT discuss this outside secure channels\n- Corporate PR has been notified - they're handling the media angle\n\nProjected containment: 18 months before this becomes unmanagable.\n\nKeep it buried until then.\n\n---\nRemember: Shareholder value comes first. Always.",
+                  "size": 1
+                },
+                "evidence_dossier.txt": {
+                  "type": "file",
+                  "name": "evidence_dossier.txt",
+                  "content": "EVIDENCE DOSSIER - WASTE DUMPING COVERUP\n========================================\nCompiled by: Whistleblower ( deceased )\nDate: 2024-11-02\n\nEVIDENCE ITEM 1: Toxic sludge detected in 7 residential water tables\nEVIDENCE ITEM 2: 127 confirmed illness cases linked to contamination\nEVIDENCE ITEM 3: Cancer cluster in Sector 7 (400% above national average)\nEVIDENCE ITEM 4: Internal memos authorizing illegal dumping (see attachments)\nEVIDENCE ITEM 5: Bribery records for 3 city inspectors\nEVIDENCE ITEM 6: Executive-approved coverup strategy\n\nCORPORATE LIABILITY: Estimated $2.3 billion in fines + criminal charges\nEXECUTIVE EXPOSURE: Multiple C-suite officers face prison time\n\nPUBLIC RELATIONS IMPACT: \"Catastrophic\" - per internal risk assessment\n\n---\nThis dossier was compiled by my predecessor. They died in a \"car accident\" two weeks after submitting this to ethics.\n\nI'm sending it everywhere. If this disappears, I disappear.\n\nThe truth will come out.",
+                  "size": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "guide": [
+    {
+      "id": "step1",
+      "message": "Read the Nullpack brief on your current directory to see what NullPack wants you to do. :3"
+    },
+    {
+      "id": "step2",
+      "message": "Toxic dumping. People dying. This is why NullPack does what they do. Connect to 'ssh 198.51.100.20' with password '0mn1c0rp2025!'"
+    },
+    {
+      "id": "step3",
+      "message": "You're in as a guest. Use 'ls -a' to explore. Start by checking the compliance directory to see their public story - 'cd /home/compliance'"
+    },
+    {
+      "id": "step4",
+      "message": "The quarterly report looks clean. TOO clean. Check the executive directory for the real story - 'cd /home/executive'"
+    },
+    {
+      "id": "step5",
+      "message": "The internal memo proves the cover-up. Read the evidence dossier to see the full scope."
+    },
+    {
+      "id": "step6",
+      "message": "The evidence dossier proves everything - people are dying while they lie. Download it with 'download evidence_dossier.txt'. Then decide: leak or sell?"
+    }
+  ],
+  "win_conditions": {
+    "is_sequential": true,
+    "sequence": [
+      {
+        "type": "file_read",
+        "target_node": "homebase",
+        "target_path": "/home/user/nullpack_brief.txt",
+        "description": "Read mission brief"
+      },
+      {
+        "type": "node_connected",
+        "target_node": "omnicorp_datacenter",
+        "description": "Connect to omnicorp datacenter"
+      },
+      {
+        "type": "file_read",
+        "target_node": "omnicorp_datacenter",
+        "target_path": "/home/compliance/quarterly_report.txt",
+        "description": "Read compliance report"
+      },
+      {
+        "type": "file_read",
+        "target_node": "omnicorp_datacenter",
+        "target_path": "/home/executive/.internal_memo.txt",
+        "description": "Find internal memo"
+      },
+      {
+        "type": "file_read",
+        "target_node": "omnicorp_datacenter",
+        "target_path": "/home/executive/evidence_dossier.txt",
+        "description": "Read evidence dossier"
+      },
+      {
+        "type": "file_downloaded",
+        "target_node": "omnicorp_datacenter",
+        "target_path": "/home/executive/evidence_dossier.txt",
+        "description": "Download evidence"
+      },
+      {
+        "type": "player_choice",
+        "choice_prompt": "ZeroCool's email gave you a choice. What do you do with the evidence?",
+        "choice_options": [
+          {
+            "id": "leak_publicly",
+            "description": "Leak publicly (500 credits, chaos, justice)"
+          },
+          {
+            "id": "sell_back",
+            "description": "Sell back to Omnicorp (1000 credits, they learn nothing)"
+          }
+        ]
+      }
+    ]
+  },
+  "script_events": {
+    "on_start": [
+      {
+        "speaker": "architect",
+        "text": "[pause 4000] Oh? You got an email from NullPack... ZeroCool, wasn't it?"
+      },
+      {
+        "speaker": "architect",
+        "text": "Interesting faction. Chaotic, but... principled in their own way~"
+      },
+      {
+        "speaker": "architect",
+        "text": "They believe information should be free. Secrets are weapons, and weapons belong to everyone, not just the powerful."
+      },
+      {
+        "speaker": "architect",
+        "text": "This mission... [pause 600] it's not just a job. It's a test. They want to see what kind of hacker you are."
+      },
+      {
+        "speaker": "architect",
+        "text": "The choice is yours. I'll be watching, but I won't interfere with your decision. This is your world now~"
+      }
+    ],
+    "on_objective_complete": {
+      "0": [
+        {
+          "speaker": "architect",
+          "text": "ZeroCool's brief... this isn't just a job. People are dying. NullPack doesn't do things halfway..."
+        }
+      ],
+      "1": [
+        {
+          "speaker": "architect",
+          "text": "Connected. Omnicorp... one of the old guard. They've been hurting people for decades."
+        }
+      ],
+      "2": [
+        {
+          "speaker": "architect",
+          "text": "The quarterly report... '99.7% compliant.' 'Minimal impact.' Lies. All of it."
+        }
+      ],
+      "3": [
+        {
+          "speaker": "architect",
+          "text": "The internal memo... 'shareholder value comes first.' That's corporate talk for 'people don't matter.'"
+        }
+      ],
+      "4": [
+        {
+          "speaker": "architect",
+          "text": "And the evidence dossier. Someone died compiling this. A whistleblower who believed the truth mattered."
+        }
+      ],
+      "5": [
+        {
+          "speaker": "architect",
+          "text": "Now the choice. Leaking means justice, but less money. Selling means profit, but they'll do it again. What matters more to you~?"
+        }
+      ]
+    },
+    "on_choice": {
+      "leak_publicly": [
+        {
+          "speaker": "faction",
+          "faction": "nullpack",
+          "speakerName": "ZeroCool",
+          "text": "hell yeah. that's what i'm talking about."
+        },
+        {
+          "speaker": "faction",
+          "faction": "nullpack",
+          "speakerName": "ZeroCool",
+          "text": "headlines are already breaking. omnicorp stock is in freefall. people are organizing."
+        },
+        {
+          "speaker": "faction",
+          "faction": "nullpack",
+          "speakerName": "ZeroCool",
+          "text": "you did good. real good. we'll be in touch - there's always more work for someone who understands the assignment."
+        },
+        {
+          "type": "reputation_change",
+          "faction": "nullpack",
+          "amount": 10,
+          "reason": "Chose to leak publicly - chaos path"
+        },
+        {
+          "type": "reputation_change",
+          "faction": "the_circle",
+          "amount": -10,
+          "reason": "Disrupted corporate interests"
+        },
+        {
+          "speaker": "architect",
+          "text": "You leaked it. Justice over profit. NullPack's going to love you, nya~"
+        },
+        {
+          "speaker": "architect",
+          "text": "(softly) That was the right choice. I think... I think the whistleblower would agree."
+        }
+      ],
+      "sell_back": [
+        {
+          "speaker": "faction",
+          "faction": "nullpack",
+          "speakerName": "ZeroCool",
+          "text": "..."
+        },
+        {
+          "speaker": "faction",
+          "faction": "nullpack",
+          "speakerName": "ZeroCool",
+          "text": "look, i said it was your call. nullpack respects that."
+        },
+        {
+          "speaker": "faction",
+          "faction": "nullpack",
+          "speakerName": "ZeroCool",
+          "text": "but i'm not gonna lie - i'm disappointed. money's good, sure. but they'll just do it again. and now they know you can be bought."
+        },
+        {
+          "type": "reputation_change",
+          "faction": "nullpack",
+          "amount": -5,
+          "reason": "Sold out - chose profit over principles"
+        },
+        {
+          "type": "reputation_change",
+          "faction": "the_circle",
+          "amount": 15,
+          "reason": "Corporate-friendly outcome"
+        },
+        {
+          "speaker": "architect",
+          "text": "You sold it back. The money's good... but they'll do it again. They always do."
+        },
+        {
+          "speaker": "architect",
+          "text": "(quietly) I'm not judging, kitten~. We all make choices we have to live with."
+        }
+      ]
+    },
+    "on_complete": [
+      {
+        "speaker": "architect",
+        "text": "First faction job complete. You've officially entered the big leagues, nya~"
+      },
+      {
+        "speaker": "architect",
+        "text": "NullPack's just one of many factions out there. Each with their own agenda. Each with their own price."
+      },
+      {
+        "speaker": "architect",
+        "text": "Choose carefully who you trust. In this world... alliances can save you, or destroy you."
+      }
+    ]
+  }
+}

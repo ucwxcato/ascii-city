@@ -1,0 +1,270 @@
+{
+  "mission_meta": {
+    "id": "t1_08_circle_intro",
+    "title": "Circle of Trust",
+    "category": "arc_01",
+    "is_sequential": true,
+    "order": 8,
+    "prerequisites": ["t1_07_nullpack_intro"],
+    "difficulty": 1,
+    "reward_credits": 750,
+    "reward_reputation": 25,
+    "client": "The Circle",
+    "is_mandatory": false,
+    "architect_persona": "observer",
+    "description": "The Circle has a simple acquisition task. Retrieve R&D blueprints from a competitor. Corporate espionage at its cleanest.",
+    "story_flags": {
+      "sets": ["metCircle"]
+    },
+    "reputation_rewards": [
+      {
+        "faction": "the_circle",
+        "amount": 25
+      }
+    ]
+  },
+  "briefing": {
+    "email_subject": "Consultancy Opportunity: Project Chimera",
+    "email_body": "Greetings,\n\nYour recent performance has come to our attention. The Circle requires acquisition of sensitive documentation from a competitor.\n\nTarget: Apex Innovations\nObjective: Retrieve next-generation prototype blueprints from their secure R&D server\nCompensation: 750 credits, with potential for ongoing contract work\n\nTarget specifications:\n- Apex Innovation uses a hardened datacenter\n- Blueprints are stored in their R&D division\n- Standard corporate security protocols apply\n\nDiscretion is appreciated. This relationship could prove mutually profitable.\n\nWe look forward to a productive arrangement.\n\nRegards,\n\nVesper\nAcquisition Division\nThe Circle",
+    "sender": "vesper@the-circle.io"
+  },
+  "nodes": [
+    {
+      "node_id": "homebase",
+      "hostname": "kitten-terminal",
+      "ip_address": "127.0.0.1",
+      "ssh_password": "",
+      "files": {
+        "home": {
+          "type": "directory",
+          "name": "home",
+          "children": {
+            "user": {
+              "type": "directory",
+              "name": "user",
+              "children": {
+                "circle_brief.txt": {
+                  "type": "file",
+                  "name": "circle_brief.txt",
+                  "content": "THE CIRCLE - ACQUISITION BRIEF\n==============================\n\nFrom: Vesper <vesper@the-circle.io>\nSubject: Consultancy Opportunity: Project Chimera\n\nTarget: Apex Innovations R&D Division\nIP: 198.51.100.35\nSSH Password: Ap3xR&D2025!\n\nOBJECTIVE:\nRetrieve next-generation prototype blueprints from their secure R&D server.\n\nTARGET SPECIFICATIONS:\n- Apex uses a hardened datacenter\n- Blueprints stored in R&D division\n- Standard corporate security applies\n\nCOMPENSATION: 750 credits, with potential for ongoing contract work\n\nDiscretion is appreciated. This relationship could prove mutually profitable.\n\n---\nHINT: Use 'ssh 198.51.100.35' with password 'Ap3xR&D2025!' to connect.\n\nWe look forward to a productive arrangement.\n- Vesper, Acquisition Division",
+                  "size": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "node_id": "apex_innovations",
+      "hostname": "apex-rnd",
+      "ip_address": "198.51.100.35",
+      "ssh_password": "Ap3xR&D2025!",
+      "files": {
+        "home": {
+          "type": "directory",
+          "name": "home",
+          "children": {
+            "guest": {
+              "type": "directory",
+              "name": "guest",
+              "children": {
+                "welcome.txt": {
+                  "type": "file",
+                  "name": "welcome.txt",
+                  "content": "Apex Innovations R&D Division\n\nAuthorized personnel only. Guest access limited to current directory.\n\nInnovation. Excellence. Profit.",
+                  "size": 1
+                }
+              }
+            },
+            "rnd": {
+              "type": "directory",
+              "name": "rnd",
+              "children": {
+                "project_notes.txt": {
+                  "type": "file",
+                  "name": "project_notes.txt",
+                  "content": "PROJECT CHIMERA - STATUS REPORT\n================================\nLead: Dr. Morrison\nPhase: Prototype Testing\nBudget: $15M allocated\n\nNext-generation neural interface progressing ahead of schedule.\n\nProjected ROI: $300M annually upon market release.\n\nCompetitive analysis shows we are 18 months ahead of nearest competitor.\n\n---\nThis project is the future of Apex Innovations.",
+                  "size": 1
+                }
+              }
+            },
+            "secure": {
+              "type": "directory",
+              "name": "secure",
+              "children": {
+                ".blueprints.txt": {
+                  "type": "file",
+                  "name": ".blueprints.txt",
+                  "content": "PROJECT CHIMERA - TECHNICAL BLUEPRINTS\n========================================\nCONFIDENTIAL - APEX INNOVATIONS PROPRIETARY\n\n[DOCUMENT CONTAINS DETAILED TECHNICAL SPECIFICATIONS]\n\nNeural Interface Architecture:\n- Direct cortex integration via quantum tunneling\n- Latency: 0.3ms (industry leading)\n- Bandwidth: 10TB/s bidirectional\n\nPower Requirements:\n- 50W active, 2W standby\n- Battery life: 72 hours continuous use\n\nPatent Applications Filed:\n- US-2025-CHIMERA-001 through 047\n- EU-2025-CHIMERA-001 through 032\n- Asia-Pacific filings pending\n\nMarket Analysis:\n- Projected market share: 35% within 2 years\n- Revenue forecast: $2.3B over 5 years\n- Licensing potential: $800M\n\n---\nThis documentation represents $15M in R&D investment.\nUnauthorized distribution constitutes industrial espionage and will be prosecuted to the fullest extent of the law.\n\nCopyright 2025, Apex Innovations. All rights reserved.",
+                  "size": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "guide": [
+    {
+      "id": "step1",
+      "message": "The Circle. Corporate types. Read the acquisition brief on your terminal."
+    },
+    {
+      "id": "step2",
+      "message": "Corporate espionage. Clean, professional... and profitable. Connect to 'ssh 198.51.100.35' with password 'Ap3xR&D2025!'"
+    },
+    {
+      "id": "step3",
+      "message": "You're in as a guest. The Circle wants something from their R&D division. Explore to find it."
+    },
+    {
+      "id": "step4",
+      "message": "Found the R&D directory. Project Chimera... must be valuable. Let's see what they're working on."
+    },
+    {
+      "id": "step5",
+      "message": "A neural interface with quantum tunneling? That's cutting edge. The secure directory likely has the blueprints. Use 'cd /home/secure'."
+    },
+    {
+      "id": "step6",
+      "message": "There it is. $15M in R&D, stolen in seconds. Download with 'download .blueprints.txt' to complete the acquisition."
+    }
+  ],
+  "win_conditions": {
+    "is_sequential": true,
+    "sequence": [
+      {
+        "type": "file_read",
+        "target_node": "homebase",
+        "target_path": "/home/user/circle_brief.txt",
+        "description": "Read acquisition brief"
+      },
+      {
+        "type": "node_connected",
+        "target_node": "apex_innovations",
+        "description": "Connect to Apex Innovations R&D server"
+      },
+      {
+        "type": "file_read",
+        "target_node": "apex_innovations",
+        "target_path": "/home/rnd/project_notes.txt",
+        "description": "Read project notes"
+      },
+      {
+        "type": "file_read",
+        "target_node": "apex_innovations",
+        "target_path": "/home/secure/.blueprints.txt",
+        "description": "Access blueprints"
+      },
+      {
+        "type": "file_downloaded",
+        "target_node": "apex_innovations",
+        "target_path": "/home/secure/.blueprints.txt",
+        "description": "Download blueprints"
+      }
+    ]
+  },
+  "script_events": {
+    "on_start": [
+      {
+        "speaker": "architect",
+        "text": "Oh? The Circle... interesting, nya~."
+      },
+      {
+        "speaker": "architect",
+        "text": "Corporate types. Polite, professional... and absolutely ruthless behind closed doors."
+      },
+      {
+        "speaker": "architect",
+        "text": "They call themselves 'acquisition specialists.' I call them... well, let's just say they know the value of information."
+      },
+      {
+        "speaker": "architect",
+        "text": "Vesper runs their Acquisition Division. Former corporate VP, now... whatever she is now."
+      },
+      {
+        "speaker": "architect",
+        "text": "They're not as chaotic as NullPack. But that doesn't mean they're not dangerous, kitten~"
+      }
+    ],
+    "on_objective_complete": {
+      "0": [
+        {
+          "speaker": "architect",
+          "text": "Vesper's brief... polite, professional. That's The Circle's way. They'll smile while picking your pocket, nya~"
+        }
+      ],
+      "1": [
+        {
+          "speaker": "architect",
+          "text": "Apex Innovations. One of the old tech giants. They've been around since before Oracle changed everything."
+        }
+      ],
+      "2": [
+        {
+          "speaker": "architect",
+          "text": "Project Chimera. Neural interfaces. The kind of technology that could change everything... or destroy everything."
+        }
+      ],
+      "3": [
+        {
+          "speaker": "architect",
+          "text": "$15M in R&D. That's what you're stealing. The Circle will make billions off it. Apex will lose everything."
+        }
+      ],
+      "4": [
+        {
+          "speaker": "architect",
+          "text": "Done. The blueprints are yours. Or well, The Circle's. You're just the delivery mechanism, nya~"
+        }
+      ]
+    },
+    "on_complete": [
+      {
+        "speaker": "the_circle",
+        "speakerName": "Vesper",
+        "text": "Excellent work. The blueprints have been verified and our legal team is already preparing derivative filings."
+      },
+      {
+        "speaker": "the_circle",
+        "speakerName": "Vesper",
+        "text": "We at The Circle believe in recognizing talent. Your performance suggests you would be an asset to our ongoing operations."
+      },
+      {
+        "speaker": "the_circle",
+        "speakerName": "Vesper",
+        "text": "We will be in touch regarding future opportunities. We suspect this could be the beginning of a profitable relationship."
+      },
+      {
+        "type": "reputation_change",
+        "faction": "the_circle",
+        "amount": 10,
+        "reason": "Completed corporate acquisition"
+      },
+      {
+        "type": "reputation_change",
+        "faction": "nullpack",
+        "amount": -10,
+        "reason": "Helped corporate interests steal from another corp"
+      },
+      {
+        "speaker": "architect",
+        "text": "And just like that, you've done corporate espionage, nya~."
+      },
+      {
+        "speaker": "architect",
+        "text": "Notice how polite they were? How professional? That's The Circle's way. They'll smile while they pick your pocket."
+      },
+      {
+        "speaker": "architect",
+        "text": "Still... they pay well. And they protect their own. There are worse allies in this world."
+      },
+      {
+        "speaker": "architect",
+        "text": "(quietly) Apex Innovations won't be the same after this. When The Circle is done with them, they'll be lucky to exist as a subsidiary..."
+      }
+    ]
+  }
+}

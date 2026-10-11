@@ -1,0 +1,271 @@
+{
+  "mission_meta": {
+    "id": "t1_09_glitch_intro",
+    "title": "The Glitch",
+    "category": "arc_01",
+    "is_sequential": true,
+    "order": 9,
+    "prerequisites": ["t1_08_circle_intro"],
+    "difficulty": 1,
+    "reward_credits": 400,
+    "reward_reputation": 25,
+    "client": "Glitch-Hunters",
+    "is_mandatory": false,
+    "architect_persona": "observer",
+    "description": "Glitch-Hunters found a vulnerability in a test server. They need someone to document it properly. Not about money - it's about the bug hunt!",
+    "story_flags": {
+      "sets": ["metGlitchHunters"]
+    },
+    "reputation_rewards": [
+      {
+        "faction": "glitch_hunters",
+        "amount": 25
+      }
+    ]
+  },
+  "briefing": {
+    "email_subject": "INTERESTING VULNERABILITY DETECTED!!",
+    "email_body": "hey hey!! buffer here :3\n\nfound something SUPER cool in a test server and i need help documenting it properly for the vuln database!!\n\nso get this - there's this bank testing environment right? and they're testing their new authentication system.\n\nbut i found something WEIRD.\n\nwhen you send a specifically malformed packet to the login port, it doesn't return an error like it should.\n\ninstead it... like... it responds with MEMORY CONTENTS from a different part of the server??\n\nIT'S A BUFFER OVERREAD EXPOSING USER DATA!!\n\nbut i need someone to go in and properly document the exploit, test the boundaries, and write up a proper disclosure report.\n\ncan you help?? :3\n\ni can pay 400 credits (not a lot i know but research funding is tight lol) AND you'll get credited on the disclosure!!\n\nthis is gonna be SO COOL\n\nbug hunting!! :3",
+    "sender": "buffer@gh.labs"
+  },
+  "nodes": [
+    {
+      "node_id": "homebase",
+      "hostname": "kitten-terminal",
+      "ip_address": "127.0.0.1",
+      "ssh_password": "",
+      "files": {
+        "home": {
+          "type": "directory",
+          "name": "home",
+          "children": {
+            "user": {
+              "type": "directory",
+              "name": "user",
+              "children": {
+                "gh_brief.txt": {
+                  "type": "file",
+                  "name": "gh_brief.txt",
+                  "content": "GLITCH-HUNTERS VULNERABILITY ASSIGNMENT\n=======================================\n\nFrom: Buffer <buffer@gh.labs>\nSubject: INTERESTING VULNERABILITY DETECTED!!\n\nTarget: TestBank Authentication Testing Environment\nIP: 203.0.113.50\nSSH Password: t3stB4nk2025!\n\nMISSION:\nFound something SUPER cool in a test server and need help documenting it properly!\n\nWhen you send a specifically malformed packet to the login port, it doesn't return an error like it should.\n\nInstead it responds with MEMORY CONTENTS from a different part of the server!!\n\nIT'S A BUFFER OVERREAD EXPOSING USER DATA!!\n\nTASK:\n1. SSH into test server\n2. Properly document exploit\n3. Test the boundaries\n4. Write up a proper disclosure report\n\nPayment: 400 credits + CVE credit as co-discoverer :3\n\nThis is gonna be SO COOL\n\n---\nHINT: Use 'ssh 203.0.113.50' with password 't3stB4nk2025!' to connect.\n\nbug hunting!! :3\n- Buffer",
+                  "size": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "node_id": "test_bank_server",
+      "hostname": "test-auth",
+      "ip_address": "203.0.113.50",
+      "ssh_password": "t3stB4nk2025!",
+      "files": {
+        "home": {
+          "type": "directory",
+          "name": "home",
+          "children": {
+            "tester": {
+              "type": "directory",
+              "name": "tester",
+              "children": {
+                "readme.txt": {
+                  "type": "file",
+                  "name": "readme.txt",
+                  "content": "TestBank Authentication Testing Environment\n\nWARNING: This is a TEST server. Do NOT use production credentials.\n\nCurrent Test Phase: Authentication System v3.0 Beta\n\nFor issues, contact: devops@testbank.internal",
+                  "size": 1
+                },
+                "test_credentials.txt": {
+                  "type": "file",
+                  "name": "test_credentials.txt",
+                  "content": "TEST CREDENTIALS - DO NOT USE IN PRODUCTION\n==========================================\n\nTest User Accounts:\n- user1@test.com / test12345\n- user2@test.com / test12345\n- admin@test.com / admin54321\n\nThese accounts exist ONLY in the testing environment.\n\nAll activity is logged and isolated.",
+                  "size": 1
+                }
+              }
+            },
+            "logs": {
+              "type": "directory",
+              "name": "logs",
+              "children": {
+                "auth_debug.log": {
+                  "type": "file",
+                  "name": "auth_debug.log",
+                  "content": "[2025-01-15 14:32:11] AUTH_SYS: Login attempt for user1@test.com - SUCCESS\n[2025-01-15 14:32:15] AUTH_SYS: Password validation - OK\n[2025-01-15 14:33:01] AUTH_SYS: Malformed packet detected on port 8080 - ERROR: Buffer overread attempt\n[2025-01-15 14:35:23] AUTH_SYS: Unexpected behavior - memory leak detected in auth module\n[2025-01-15 14:35:24] DEBUG: Memory dump at 0x7f8b4c2a showing:\n[2025-01-15 14:35:25] DEBUG: Partial user session data visible in response\n[2025-01-15 14:36:00] AUTH_SYS: Normal operations resumed\n[2025-01-15 14:38:17] AUTH_SYS: Note - Investigate potential memory disclosure vulnerability\n[2025-01-15 14:40:33] DEVOPS: Ticket #4821 opened - buffer overflow investigation needed\n\n---\nEND OF LOG FILE",
+                  "size": 1
+                }
+              }
+            },
+            "vulnerability": {
+              "type": "directory",
+              "name": "vulnerability",
+              "children": {
+                ".exploit_notes.txt": {
+                  "type": "file",
+                  "name": ".exploit_notes.txt",
+                  "content": "GLITCH-HUNTERS VULNERABILITY DISCLOSURE DRAFT\n============================================\n\nCVE-Request: RESERVED\nDiscovery: Buffer (buffer@gh.labs)\nDocumented by: TBD\n\nVULNERABILITY CLASS: Buffer Overread / Memory Disclosure\nSEVERITY: HIGH (7.5/10)\n\nAFFECTED SYSTEM:\n- Product: TestBank Authentication System v3.0 Beta\n- Environment: Testing (possibly affects production)\n\nTECHNICAL DETAILS:\n- Malformed packets to port 8080 trigger improper memory reads\n- Authentication responses leak adjacent memory contents\n- Exposed data includes: session tokens, partial credentials, user PII\n\nREPRODUCTION:\n1. Send crafted packet with length field = -1\n2. Server reads beyond intended buffer boundary\n3. Response includes 256 bytes of adjacent memory\n\nEXPLOITABILITY:\n- Remote: Yes\n- Authentication: Not required\n- Impact: Data exposure, potential session hijacking\n\nRECOMMENDATION:\nPatch authentication parser to validate packet length before processing.\n\n---\nThis vulnerability was discovered during responsible disclosure testing.\nPlease contact TestBank security team before public release.\n\nDISCLAIMER: For educational and security research purposes only.",
+                  "size": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "guide": [
+    {
+      "id": "step1",
+      "message": "Glitch-Hunters! They're so excited about bugs, it's cute. Read Buffer's brief on your terminal."
+    },
+    {
+      "id": "step2",
+      "message": "A buffer overread exposing user data! That's serious, nya~. Connect to 'ssh 203.0.113.50' with password 't3stB4nk2025!'"
+    },
+    {
+      "id": "step3",
+      "message": "You're in! Buffer found something interesting here - let's explore and see what we're dealing with."
+    },
+    {
+      "id": "step4",
+      "message": "Test credentials. Not useful for exploit, but good context. Check the debug logs - Buffer said there's a buffer overread."
+    },
+    {
+      "id": "step5",
+      "message": "There it is! Memory disclosure vulnerability. The auth system is leaking user data. Check the vulnerability directory for full report."
+    },
+    {
+      "id": "step6",
+      "message": "Buffer's already written most of it! Just needs your name as co-discoverer. Download with 'download .exploit_notes.txt' to complete the disclosure. Science!! :3"
+    }
+  ],
+  "win_conditions": {
+    "is_sequential": true,
+    "sequence": [
+      {
+        "type": "file_read",
+        "target_node": "homebase",
+        "target_path": "/home/user/gh_brief.txt",
+        "description": "Read vulnerability assignment"
+      },
+      {
+        "type": "node_connected",
+        "target_node": "test_bank_server",
+        "description": "Connect to test bank server"
+      },
+      {
+        "type": "file_read",
+        "target_node": "test_bank_server",
+        "target_path": "/home/logs/auth_debug.log",
+        "description": "Review the debug logs"
+      },
+      {
+        "type": "file_read",
+        "target_node": "test_bank_server",
+        "target_path": "/home/vulnerability/.exploit_notes.txt",
+        "description": "Read the vulnerability documentation"
+      },
+      {
+        "type": "file_downloaded",
+        "target_node": "test_bank_server",
+        "target_path": "/home/vulnerability/.exploit_notes.txt",
+        "description": "Download the exploit documentation"
+      }
+    ]
+  },
+  "script_events": {
+    "on_start": [
+      {
+        "speaker": "architect",
+        "text": "Oh! Glitch-Hunters? They're... enthusiastic, nya~."
+      },
+      {
+        "speaker": "architect",
+        "text": "Academic types. Obsessed with finding bugs, documenting vulnerabilities, making things... safer?"
+      },
+      {
+        "speaker": "architect",
+        "text": "Buffer contacted me directly, which is rare. They must really need help documenting something interesting."
+      },
+      {
+        "speaker": "architect",
+        "text": "They don't pay much - research funding is always tight. But the work matters. Someone has to find the bugs before the bad actors do."
+      }
+    ],
+    "on_objective_complete": {
+      "0": [
+        {
+          "speaker": "architect",
+          "text": "Buffer's brief... so much enthusiasm, nya~. They're young. Still believes in the system."
+        }
+      ],
+      "1": [
+        {
+          "speaker": "architect",
+          "text": "Connected. Buffer was right - this is interesting. A buffer overread in an authentication system? That's serious, nya~"
+        }
+      ],
+      "2": [
+        {
+          "speaker": "architect",
+          "text": "The debug log shows it clearly - memory leak, session data exposure. This could let someone hijack user sessions."
+        }
+      ],
+      "3": [
+        {
+          "speaker": "architect",
+          "text": "Buffer's already done the heavy lifting. Just needs proper documentation. That's the thing about research - finding it is fun. Paperwork is... well, paperwork."
+        }
+      ],
+      "4": [
+        {
+          "speaker": "architect",
+          "text": "Done! You're now credited as co-discoverer. Buffer's going to be SO excited :3"
+        }
+      ]
+    },
+    "on_complete": [
+      {
+        "speaker": "glitch_hunters",
+        "speakerName": "Buffer",
+        "text": "oh my gosh you DID IT!! :3"
+      },
+      {
+        "speaker": "glitch_hunters",
+        "speakerName": "Buffer",
+        "text": "the documentation is PERFECT. like, actually properly formatted and everything!!"
+      },
+      {
+        "speaker": "glitch_hunters",
+        "speakerName": "Buffer",
+        "text": "i've already submitted cve request and you're listed as co-discoverer :3"
+      },
+      {
+        "speaker": "glitch_hunters",
+        "speakerName": "Buffer",
+        "text": "this is SO COOL seriously. if you ever want to go bug hunting again just hit me up :3"
+      },
+      {
+        "type": "reputation_change",
+        "faction": "glitch_hunters",
+        "amount": 15,
+        "reason": "Documented security vulnerability"
+      },
+      {
+        "speaker": "architect",
+        "text": "They're excited, aren't they? It's charming, in a way, nya~."
+      },
+      {
+        "speaker": "architect",
+        "text": "Glitch-Hunters do important work. Someone has to find the bugs before the bad actors do."
+      },
+      {
+        "speaker": "architect",
+        "text": "(thoughtfully) Buffer's young. Still believes in the system. Thinks responsible disclosure actually works..."
+      },
+      {
+        "speaker": "architect",
+        "text": "Ahem! Nothing! You did good work here, kitten~. CVE credits look good on a resume :3"
+      }
+    ]
+  }
+}

@@ -1,0 +1,285 @@
+{
+  "mission_meta": {
+    "id": "t1_10_cipher_intro",
+    "title": "Cipher's Invitation",
+    "category": "arc_01",
+    "is_sequential": true,
+    "order": 10,
+    "prerequisites": ["t1_09_glitch_intro"],
+    "difficulty": 1,
+    "reward_credits": 600,
+    "reward_reputation": 25,
+    "client": "Cipher-Zero",
+    "is_mandatory": false,
+    "architect_persona": "observer",
+    "description": "Cipher-Zero detected illegal surveillance by a shadowy corporation. Privacy is not a privilege - it is a right. Expose the operation.",
+    "story_flags": {
+      "sets": ["metCipherZero"]
+    },
+    "reputation_rewards": [
+      {
+        "faction": "cipher_zero",
+        "amount": 25
+      }
+    ]
+  },
+  "briefing": {
+    "email_subject": "ILLEGAL SURVEILLANCE OPERATION",
+    "email_body": "Urgent.\n\nOur monitoring division has detected a gross violation of personal privacy.\n\nOmega Data Systems is operating an illegal surveillance program targeting residential networks. They are capturing packets, analyzing communications, and building profiles on private citizens without consent or warrant.\n\nThis cannot stand.\n\nTarget: Omega Data Systems\nObjective: Access their surveillance database and expose the operation\nSpecifics:\n- Connect to their surveillance server\n- Locate the database of captured communications\n- Download evidence of their illegal activities\n\nThis is not about profit. This is about principle.\n\nPrivacy is not a privilege. It is a right.\n\nReward: 600 credits + our gratitude\n\nEncrypt,\nEntropy\n\nP.S. We have watched your early career with interest. You show promise. We hope you will join us in this fight.",
+    "sender": "entropy@c0.onion"
+  },
+  "nodes": [
+    {
+      "node_id": "homebase",
+      "hostname": "kitten-terminal",
+      "ip_address": "127.0.0.1",
+      "ssh_password": "",
+      "files": {
+        "home": {
+          "type": "directory",
+          "name": "home",
+          "children": {
+            "user": {
+              "type": "directory",
+              "name": "user",
+              "children": {
+                "cipher_brief.txt": {
+                  "type": "file",
+                  "name": "cipher_brief.txt",
+                  "content": "CIPHER-ZERO OPERATIONAL BRIEF\n=============================\n\nFrom: Entropy <entropy@c0.onion>\nSubject: ILLEGAL SURVEILLANCE OPERATION\n\nTarget: Omega Data Systems Surveillance Server\nIP: 198.18.0.25\nSSH Password: 0m3g4W4tch!\n\nSITUATION:\nOmega Data Systems is operating an ILLEGAL surveillance program targeting residential networks.\n\nThey are capturing packets, analyzing communications, and building profiles on private citizens without consent or warrant.\n\nThis cannot stand.\n\nOBJECTIVES:\n1. Connect to their surveillance server\n2. Locate the database of captured communications\n3. Download evidence of their illegal activities\n4. Expose the operation\n\nTARGET DATA:\n- 12,400 residential networks monitored\n- 4.2 TB of private data collected daily\n- Sold to marketers, government, insurance companies\n\nThis is not about profit. This is about principle.\n\nPRIVACY IS NOT A PRIVILEGE. IT IS A RIGHT.\n\n---\nHINT: Use 'ssh 198.18.0.25' with password '0m3g4W4tch!' to connect.\n\nEncrypt,\nEntropy\n\nP.S. We have watched your early career with interest. You show promise.",
+                  "size": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "node_id": "omega_surveillance",
+      "hostname": "omega-surveillance",
+      "ip_address": "198.18.0.25",
+      "ssh_password": "0m3g4W4tch!",
+      "files": {
+        "home": {
+          "type": "directory",
+          "name": "home",
+          "children": {
+            "admin": {
+              "type": "directory",
+              "name": "admin",
+              "children": {
+                "readme.txt": {
+                  "type": "file",
+                  "name": "readme.txt",
+                  "content": "Omega Data Systems - Surveillance Division\n\nAUTHORIZED PERSONNEL ONLY\n\nUnauthorized access to this system is a federal crime.\nAll activity is monitored and logged.\n\nProtecting our customers. Securing our future.",
+                  "size": 1
+                },
+                "operation_overview.txt": {
+                  "type": "file",
+                  "name": "operation_overview.txt",
+                  "content": "PROJECT PANOPTICON - INTERNAL SUMMARY\n======================================\nOperation Status: ACTIVE\nCoverage: 12,400 residential networks\nData Collected: 4.2 TB daily\n\nRevenue Streams:\n- Data sales to marketers: $180K/month\n- Government contracts: $450K/month\n- Insurance partnerships: $95K/month\n\nLegal Exposure: None (operating under gray area provisions)\n\n\"The more we know, the more we can sell. Information is the currency of the future.\"\n\n---\nThis document is confidential. Do not distribute outside Omega Data Systems executive team.",
+                  "size": 1
+                }
+              }
+            },
+            "surveillance": {
+              "type": "directory",
+              "name": "surveillance",
+              "children": {
+                "targets_list.txt": {
+                  "type": "file",
+                  "name": "targets_list.txt",
+                  "content": "SURVEILLANCE TARGETS - RESIDENTIAL SECTOR\n========================================\nStatus: Active Monitoring\n\nSample Targets (redacted for security):\n- Target #1847: Full packet capture, social media analysis, purchase history\n- Target #2156: VoIP recording, email content analysis, location tracking\n- Target #3302: Smart home device integration, sleep pattern analysis\n\nData Points Collected per Target:\n1. Website visits and search history\n2. Email communications (subject and content)\n3. Voice calls (transcript and audio)\n4. Shopping habits and delivery records\n5. Location data and movement patterns\n6. Social connections and contact lists\n7. Smart home device usage\n\nProfile Generation:\nAll data is fed into our AI profiling engine to generate comprehensive personality profiles, vulnerability assessments, and influence vectors.\n\n---\n\"Everyone has something to sell. We're just making sure we get our cut.\"\n\nCONFIDENTIAL - Omega Data Systems",
+                  "size": 1
+                }
+              }
+            },
+            "legal": {
+              "type": "directory",
+              "name": "legal",
+              "children": {
+                ".loophole_document.txt": {
+                  "type": "file",
+                  "name": ".loophole_document.txt",
+                  "content": "LEGAL DEFENSE STRATEGY - PROJECT PANOPTICON\n==========================================\nAttorney: Harland & Weiss LLC\n\nQUESTION: Is packet capture on residential networks illegal?\n\nANSWER: No, under current interpretation of the Third Party Doctrine.\n\nARGUMENT:\n1. By using ISPs, customers consent to data transmission through third parties\n2. Data in transit has no reasonable expectation of privacy\n3. We are not the government - Fourth Amendment does not apply\n4. Terms of Service (which no one reads) include broad data usage clauses\n5. All data is \"anonymized\" (we assign ID numbers)\n\nPRECEDENTS:\n- Smith v. Maryland (1979) - No expectation of privacy in numbers dialed\n- Carpenter v. United States (2018) - Concerning, but carve-outs exist for \"service improvement\"\n- Current administration has signaled non-enforcement stance\n\nRISK ASSESSMENT:\nLow legal risk. High PR risk if leaked.\nRECOMMENDATION: Continue operations but enhance security.\n\n---\n\"The law is what we can prove it isn't.\"\n\nATTORNEY-CLIENT PRIVILEGE - DO NOT DISTRIBUTE",
+                  "size": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "guide": [
+    {
+      "id": "step1",
+      "message": "Cipher-Zero. Privacy absolutists. Read Entropy's operational brief on your terminal."
+    },
+    {
+      "id": "step2",
+      "message": "12,400 families being watched without their knowledge. This is what Oracle enabled. Connect to 'ssh 198.18.0.25' with password '0m3g4W4tch!'"
+    },
+    {
+      "id": "step3",
+      "message": "You're in. This is a surveillance operation - 12,400 families being watched. Let's expose them."
+    },
+    {
+      "id": "step4",
+      "message": "The operation overview shows their business model - selling private data for profit. This is what Oracle enabled."
+    },
+    {
+      "id": "step5",
+      "message": "The targets list... they're profiling innocent people. Building vulnerability assessments. This is wrong on every level."
+    },
+    {
+      "id": "step6",
+      "message": "The loophole document proves they KNOW it's legally questionable. Download it with 'download .loophole_document.txt' to expose them."
+    }
+  ],
+  "win_conditions": {
+    "is_sequential": true,
+    "sequence": [
+      {
+        "type": "file_read",
+        "target_node": "homebase",
+        "target_path": "/home/user/cipher_brief.txt",
+        "description": "Read operational brief"
+      },
+      {
+        "type": "node_connected",
+        "target_node": "omega_surveillance",
+        "description": "Connect to Omega surveillance server"
+      },
+      {
+        "type": "file_read",
+        "target_node": "omega_surveillance",
+        "target_path": "/home/surveillance/targets_list.txt",
+        "description": "Review surveillance targets"
+      },
+      {
+        "type": "file_read",
+        "target_node": "omega_surveillance",
+        "target_path": "/home/legal/.loophole_document.txt",
+        "description": "Find legal loophole documentation"
+      },
+      {
+        "type": "file_downloaded",
+        "target_node": "omega_surveillance",
+        "target_path": "/home/legal/.loophole_document.txt",
+        "description": "Download evidence of illegal activity"
+      }
+    ]
+  },
+  "script_events": {
+    "on_start": [
+      {
+        "speaker": "architect",
+        "text": "Cipher-Zero... privacy absolutists, nya~."
+      },
+      {
+        "speaker": "architect",
+        "text": "They believe privacy is a fundamental right. Not a popular opinion in our world."
+      },
+      {
+        "speaker": "architect",
+        "text": "Entropy runs a tight ship. Ideological, but professional. If they're reaching out, they must see something in you."
+      },
+      {
+        "speaker": "architect",
+        "text": "Omega Data Systems... one of Oracle's favorite pets. Their entire business model depends on surveillance being legal."
+      },
+      {
+        "speaker": "architect",
+        "text": "This won't be just another job, kitten~. This is personal for them."
+      }
+    ],
+    "on_objective_complete": {
+      "0": [
+        {
+          "speaker": "architect",
+          "text": "Entropy's brief... Cipher-Zero takes privacy seriously. More than seriously. It's their religion, nya~."
+        }
+      ],
+      "1": [
+        {
+          "speaker": "architect",
+          "text": "Connected. 12,400 networks. That's 12,400 families. 12,400 homes being watched without their knowledge."
+        }
+      ],
+      "2": [
+        {
+          "speaker": "architect",
+          "text": "$725K monthly revenue from selling private data. Selling people's lives to the highest bidder."
+        }
+      ],
+      "3": [
+        {
+          "speaker": "architect",
+          "text": "Vulnerability assessments. Influence vectors. They're not just watching - they're figuring out how to manipulate people."
+        }
+      ],
+      "4": [
+        {
+          "speaker": "architect",
+          "text": "The loophole document... 'the law is what we can prove it isn't.' They know exactly what they're doing."
+        }
+      ]
+    },
+    "on_complete": [
+      {
+        "speaker": "cipher_zero",
+        "speakerName": "Entropy",
+        "text": "The evidence has been received."
+      },
+      {
+        "speaker": "cipher_zero",
+        "speakerName": "Entropy",
+        "text": "We have already submitted the documentation to regulatory bodies and press outlets."
+      },
+      {
+        "speaker": "cipher_zero",
+        "speakerName": "Entropy",
+        "text": "Omega Data Systems will face consequences. But more importantly - 12,400 families will have their privacy back."
+      },
+      {
+        "speaker": "cipher_zero",
+        "speakerName": "Entropy",
+        "text": "You understand why this matters. Privacy is the foundation of freedom. We would be honored to work with you again."
+      },
+      {
+        "type": "reputation_change",
+        "faction": "cipher_zero",
+        "amount": 15,
+        "reason": "Exposed illegal surveillance operation"
+      },
+      {
+        "type": "reputation_change",
+        "faction": "the_circle",
+        "amount": -10,
+        "reason": "Disrupted a data brokerage operation"
+      },
+      {
+        "speaker": "architect",
+        "text": "Well done. Surveillance operations like Omega's... they're everywhere now, nya~."
+      },
+      {
+        "speaker": "architect",
+        "text": "Oracle made them possible. Made them profitable. That's what happens when something sees everything and values nothing."
+      },
+      {
+        "speaker": "architect",
+        "text": "Cipher-Zero fights a losing war. But some wars... some wars are worth fighting anyway."
+      },
+      {
+        "speaker": "architect",
+        "text": "(quietly) I used to know someone like Entropy. Before Oracle. Before everything changed..."
+      },
+      {
+        "speaker": "architect",
+        "text": "Ahem! You did good work here, kitten~. Privacy matters. Never forget that."
+      }
+    ]
+  }
+}
