@@ -280,6 +280,8 @@ namespace AsciiCity.WorldAuthoring
             }
             EditorGUILayout.HelpBox("Rows are north-to-south. Grid cell (x, row) maps to world position (x + 0.5, z = depth - row - 0.5).", MessageType.None);
             EditorGUILayout.HelpBox("Unity scene meshes preview map surfaces and assets. The Scene view stores terrain corner elevations; Save / export writes the game footprint and elevation data.", MessageType.Info);
+            if (GUILayout.Button("Export placements to game", GUILayout.Height(26f)))
+                ExportPlacements();
         }
 
         private void DrawTerrainElevationTools()
@@ -446,8 +448,6 @@ namespace AsciiCity.WorldAuthoring
             EditorGUILayout.LabelField("Move, rotate, or scale each placed root in the Scene view. Save the scene, then export placements from this window.", EditorStyles.wordWrappedMiniLabel);
             using (new EditorGUILayout.HorizontalScope())
             {
-                if (GUILayout.Button("Export scene placements", GUILayout.Width(170f)))
-                    ExportPlacements();
                 if (GUILayout.Button("Focus map in Scene view", GUILayout.Width(170f)))
                     FocusMapInSceneView();
             }
@@ -566,7 +566,7 @@ namespace AsciiCity.WorldAuthoring
             EnsureAssetFolder("Assets", "ASCII City");
             EnsureAssetFolder("Assets/ASCII City", "Placeable Assets");
             CreateCyberpunkShopMeshIfMissing();
-            bool createdAny = false;
+            bool changedAny = false;
             foreach (PlaceableModelDefinition definition in BuiltInPlaceableModels)
             {
                 string meshPath = "Assets/ASCII City/Generated Meshes/" + definition.meshName + ".asset";
@@ -589,33 +589,61 @@ namespace AsciiCity.WorldAuthoring
                     : new GameObject(definition.displayName);
                 try
                 {
-                    GameObjectUtility.RemoveMonoBehavioursWithMissingScript(model);
-                    model.name = definition.displayName;
+                    bool changed = !prefabExists || GameObjectUtility.RemoveMonoBehavioursWithMissingScript(model) > 0;
+                    if (model.name != definition.displayName)
+                    {
+                        model.name = definition.displayName;
+                        changed = true;
+                    }
                     MeshFilter filter = model.GetComponent<MeshFilter>();
-                    if (filter == null) filter = model.AddComponent<MeshFilter>();
-                    filter.sharedMesh = mesh;
+                    if (filter == null)
+                    {
+                        filter = model.AddComponent<MeshFilter>();
+                        changed = true;
+                    }
+                    if (filter.sharedMesh != mesh)
+                    {
+                        filter.sharedMesh = mesh;
+                        changed = true;
+                    }
                     MeshRenderer renderer = model.GetComponent<MeshRenderer>();
-                    if (renderer == null) renderer = model.AddComponent<MeshRenderer>();
-                    renderer.sharedMaterials = materials;
+                    if (renderer == null)
+                    {
+                        renderer = model.AddComponent<MeshRenderer>();
+                        changed = true;
+                    }
+                    if (!renderer.sharedMaterials.SequenceEqual(materials))
+                    {
+                        renderer.sharedMaterials = materials;
+                        changed = true;
+                    }
                     AsciiCityAssetPlacement placement = model.GetComponent<AsciiCityAssetPlacement>();
-                    if (placement == null) placement = model.AddComponent<AsciiCityAssetPlacement>();
-                    placement.assetId = definition.assetId;
-                    placement.blocksMovement = definition.blocksMovement;
-                    placement.collisionRadius = definition.collisionRadius;
-                    PrefabUtility.SaveAsPrefabAsset(model, prefabPath);
+                    if (placement == null)
+                    {
+                        placement = model.AddComponent<AsciiCityAssetPlacement>();
+                        changed = true;
+                    }
+                    if (placement.assetId != definition.assetId || placement.blocksMovement != definition.blocksMovement ||
+                        !Mathf.Approximately(placement.collisionRadius, definition.collisionRadius))
+                    {
+                        placement.assetId = definition.assetId;
+                        placement.blocksMovement = definition.blocksMovement;
+                        placement.collisionRadius = definition.collisionRadius;
+                        changed = true;
+                    }
+                    if (changed)
+                    {
+                        PrefabUtility.SaveAsPrefabAsset(model, prefabPath);
+                        changedAny = true;
+                    }
                 }
                 finally
                 {
                     if (prefabExists) PrefabUtility.UnloadPrefabContents(model);
                     else DestroyImmediate(model);
                 }
-                createdAny = true;
             }
-            if (createdAny)
-            {
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
-            }
+            if (changedAny) AssetDatabase.SaveAssets();
         }
 
         private int Width => rows.Length == 0 ? 0 : rows[0].Length;
@@ -954,6 +982,80 @@ namespace AsciiCity.WorldAuthoring
             EditorUtility.DisplayDialog("Scene ready", "The 3D map scene is ready. Select a whole prefab asset to paint or place it, then edit its transform in the Scene view.", "OK");
         }
 
+        [MenuItem("Tools/ASCII City/Refresh all saved map surfaces %#u")]
+        private static void RefreshAllSavedMapSurfaces()
+        {
+            AsciiCityWorldWindow window = GetWindow<AsciiCityWorldWindow>();
+            window.RefreshMaps();
+            if (window.mapIds.Length == 0) return;
+            window.refreshedMeshes.Clear();
+
+            string originalMap = window.selectedMap;
+            Scene originalActiveScene = SceneManager.GetActiveScene();
+            foreach (string mapId in window.mapIds)
+                window.RefreshMapSurface(mapId);
+
+            if (!string.IsNullOrEmpty(originalMap)) window.LoadMap(originalMap);
+            if (originalActiveScene.IsValid() && originalActiveScene.isLoaded)
+                SceneManager.SetActiveScene(originalActiveScene);
+            Debug.Log("ASCII City: refreshed terrain surfaces for " + window.mapIds.Length + " saved maps without rebuilding authored scene objects.");
+        }
+
+        private void RefreshMapSurface(string mapId)
+        {
+            LoadMap(mapId);
+            string scenePath = "Assets/ASCII City/Maps/" + mapId + ".unity";
+            Scene scene = SceneManager.GetSceneByPath(scenePath);
+            bool openedForRefresh = !scene.IsValid() || !scene.isLoaded;
+            if (openedForRefresh)
+                scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
+
+            try
+            {
+                AsciiCityMapPreview preview = scene.GetRootGameObjects()
+                    .SelectMany(root => root.GetComponentsInChildren<AsciiCityMapPreview>(true))
+                    .FirstOrDefault(item => item.mapId == mapId);
+                if (preview == null) return;
+
+                selectedMap = mapId;
+                rows = (string[])preview.rowsNorthToSouth.Clone();
+                terrainVertexHeights = preview.terrainVertexHeightsSouthToNorth == null
+                    ? new float[0]
+                    : (float[])preview.terrainVertexHeightsSouthToNorth.Clone();
+                EnsureTerrainVertexHeights();
+
+                Transform details = preview.transform.Find("__Authored Details");
+                if (details == null)
+                {
+                    GameObject detailsRoot = new GameObject("__Authored Details");
+                    detailsRoot.transform.SetParent(preview.transform, false);
+                    details = detailsRoot.transform;
+                }
+                BuildTerrainSurface(details);
+                BuildRoadSurface(details);
+
+                Transform oldPond = details.Find("Continuous Pond Surface");
+                if (oldPond != null)
+                {
+                    MeshRenderer oldPondRenderer = oldPond.GetComponent<MeshRenderer>();
+                    if (oldPondRenderer != null && oldPondRenderer.enabled)
+                    {
+                        oldPondRenderer.enabled = false;
+                        EditorUtility.SetDirty(oldPondRenderer);
+                    }
+                }
+
+                EditorUtility.SetDirty(preview);
+                EditorSceneManager.MarkSceneDirty(scene);
+                EditorSceneManager.SaveScene(scene);
+            }
+            finally
+            {
+                if (openedForRefresh && scene.IsValid() && scene.isLoaded)
+                    EditorSceneManager.CloseScene(scene, true);
+            }
+        }
+
         private void RebuildAuthoredDetails(AsciiCityMapPreview preview)
         {
             refreshedMeshes.Clear();
@@ -1068,6 +1170,7 @@ namespace AsciiCity.WorldAuthoring
                 }
             }
             BuildTerrainSurface(parent);
+            BuildRoadSurface(parent);
         }
 
         private void BuildTerrainSurface(Transform parent)
@@ -1095,32 +1198,178 @@ namespace AsciiCity.WorldAuthoring
                     float offset = role == "water" ? 0.035f : 0.008f;
                     int first = vertices.Count;
                     vertices.Add(new Vector3(x, terrainVertexHeights[worldZ * stride + x] + offset, worldZ));
-                    vertices.Add(new Vector3(x, terrainVertexHeights[worldZ * stride + x + 1] + offset, worldZ));
+                    vertices.Add(new Vector3(x + 1, terrainVertexHeights[worldZ * stride + x + 1] + offset, worldZ));
                     vertices.Add(new Vector3(x + 1, terrainVertexHeights[(worldZ + 1) * stride + x + 1] + offset, worldZ + 1));
-                    vertices.Add(new Vector3(x + 1, terrainVertexHeights[(worldZ + 1) * stride + x] + offset, worldZ + 1));
+                    vertices.Add(new Vector3(x, terrainVertexHeights[(worldZ + 1) * stride + x] + offset, worldZ + 1));
                     triangles.Add(first);
                     triangles.Add(first + 3);
                     triangles.Add(first + 1);
                     triangles.Add(first + 1);
                     triangles.Add(first + 3);
                     triangles.Add(first + 2);
+
+                    if (role == "road")
+                    {
+                        bool leftSidewalk = TerrainTokenAtWorld(x - 1, worldZ) == ',';
+                        bool rightSidewalk = TerrainTokenAtWorld(x + 1, worldZ) == ',';
+                        bool southSidewalk = TerrainTokenAtWorld(x, worldZ - 1) == ',';
+                        bool northSidewalk = TerrainTokenAtWorld(x, worldZ + 1) == ',';
+                        if (leftSidewalk || rightSidewalk || southSidewalk || northSidewalk)
+                        {
+                            List<int> curbTriangles;
+                            if (!trianglesByRole.TryGetValue("road-curb", out curbTriangles))
+                            {
+                                curbTriangles = new List<int>();
+                                trianglesByRole.Add("road-curb", curbTriangles);
+                                colorsByRole.Add("road-curb", TerrainSurfaceColor("road-curb"));
+                            }
+                            float curbInset = 0.035f;
+                            float curbWidth = 0.09f;
+                            if (southSidewalk) AddTerrainFeatureQuad(vertices, curbTriangles, x, worldZ + curbInset, x + 1f, worldZ + curbInset + curbWidth);
+                            if (northSidewalk) AddTerrainFeatureQuad(vertices, curbTriangles, x, worldZ + 1f - curbInset - curbWidth, x + 1f, worldZ + 1f - curbInset);
+                            if (leftSidewalk) AddTerrainFeatureQuad(vertices, curbTriangles, x + curbInset, worldZ, x + curbInset + curbWidth, worldZ + 1f);
+                            if (rightSidewalk) AddTerrainFeatureQuad(vertices, curbTriangles, x + 1f - curbInset - curbWidth, worldZ, x + 1f - curbInset, worldZ + 1f);
+                        }
+
+                        bool straightHorizontal = TerrainTokenAtWorld(x - 1, worldZ) == '.' && TerrainTokenAtWorld(x + 1, worldZ) == '.' &&
+                            TerrainTokenAtWorld(x, worldZ - 1) != '.' && TerrainTokenAtWorld(x, worldZ + 1) != '.';
+                        bool straightVertical = TerrainTokenAtWorld(x, worldZ - 1) == '.' && TerrainTokenAtWorld(x, worldZ + 1) == '.' &&
+                            TerrainTokenAtWorld(x - 1, worldZ) != '.' && TerrainTokenAtWorld(x + 1, worldZ) != '.';
+                        if (straightHorizontal || straightVertical)
+                        {
+                            List<int> markingTriangles;
+                            if (!trianglesByRole.TryGetValue("road-marking", out markingTriangles))
+                            {
+                                markingTriangles = new List<int>();
+                                trianglesByRole.Add("road-marking", markingTriangles);
+                                colorsByRole.Add("road-marking", TerrainSurfaceColor("road-marking"));
+                            }
+                            if (straightHorizontal)
+                                AddTerrainFeatureQuad(vertices, markingTriangles, x + 0.25f, worldZ + 0.46f, x + 0.75f, worldZ + 0.54f);
+                            else
+                                AddTerrainFeatureQuad(vertices, markingTriangles, x + 0.46f, worldZ + 0.25f, x + 0.54f, worldZ + 0.75f);
+                        }
+                    }
                 }
             }
 
             List<string> roles = trianglesByRole.Keys.OrderBy(value => value, StringComparer.Ordinal).ToList();
-            Mesh mesh = new Mesh { name = MakeAssetId(selectedMap + "-terrain-surface") };
+            Transform existingSurface = parent.Find("Painted Terrain Surface");
+            GameObject surface = existingSurface == null ? new GameObject("Painted Terrain Surface") : existingSurface.gameObject;
+            if (existingSurface == null) surface.transform.SetParent(parent, false);
+            surface.transform.localPosition = Vector3.zero;
+            MeshFilter surfaceFilter = surface.GetComponent<MeshFilter>();
+            MeshRenderer surfaceRenderer = surface.GetComponent<MeshRenderer>();
+            if (surfaceFilter != null) UnityEngine.Object.DestroyImmediate(surfaceFilter);
+            if (surfaceRenderer != null) UnityEngine.Object.DestroyImmediate(surfaceRenderer);
+
+            HashSet<string> retainedObjects = new HashSet<string>(StringComparer.Ordinal);
+            foreach (string role in roles)
+            {
+                string objectName = TerrainSurfaceObjectName(role);
+                retainedObjects.Add(objectName);
+                Mesh mesh = new Mesh { name = MakeAssetId(selectedMap + "-" + role + "-surface") };
+                mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+                mesh.SetVertices(vertices);
+                mesh.SetTriangles(trianglesByRole[role], 0, false);
+                mesh.RecalculateNormals();
+                mesh.RecalculateBounds();
+                Mesh saved = SaveGeneratedMesh(mesh, selectedMap + "-" + role + "-surface");
+
+                Transform existing = surface.transform.Find(objectName);
+                GameObject terrainPiece = existing == null ? new GameObject(objectName) : existing.gameObject;
+                if (existing == null) terrainPiece.transform.SetParent(surface.transform, false);
+                terrainPiece.transform.localPosition = Vector3.zero;
+                MeshFilter filter = terrainPiece.GetComponent<MeshFilter>();
+                if (filter == null) filter = terrainPiece.AddComponent<MeshFilter>();
+                filter.sharedMesh = saved;
+                MeshRenderer renderer = terrainPiece.GetComponent<MeshRenderer>();
+                if (renderer == null) renderer = terrainPiece.AddComponent<MeshRenderer>();
+                renderer.sharedMaterial = PreviewMaterial(colorsByRole[role], false, "Terrain " + role);
+            }
+
+            for (int childIndex = surface.transform.childCount - 1; childIndex >= 0; childIndex--)
+            {
+                Transform child = surface.transform.GetChild(childIndex);
+                if (child.name.EndsWith(" Surface", StringComparison.Ordinal) && !retainedObjects.Contains(child.name))
+                    UnityEngine.Object.DestroyImmediate(child.gameObject);
+            }
+        }
+
+        private static string TerrainSurfaceObjectName(string role)
+        {
+            string[] words = role.Split('-');
+            for (int i = 0; i < words.Length; i++)
+                if (words[i].Length > 0)
+                    words[i] = char.ToUpperInvariant(words[i][0]) + words[i].Substring(1);
+            return string.Join(" ", words) + " Surface";
+        }
+
+        private void BuildRoadSurface(Transform parent)
+        {
+            List<Vector3> vertices = new List<Vector3>();
+            List<int> triangles = new List<int>();
+            int stride = Width + 1;
+            EnsureTerrainVertexHeights();
+            for (int rowIndex = 0; rowIndex < rows.Length; rowIndex++)
+            {
+                int worldZ = rows.Length - 1 - rowIndex;
+                for (int x = 0; x < Width; x++)
+                {
+                    if (rows[rowIndex][x] != '.') continue;
+                    int first = vertices.Count;
+                    float h00 = terrainVertexHeights[worldZ * stride + x];
+                    float h10 = terrainVertexHeights[worldZ * stride + x + 1];
+                    float h11 = terrainVertexHeights[(worldZ + 1) * stride + x + 1];
+                    float h01 = terrainVertexHeights[(worldZ + 1) * stride + x];
+                    vertices.Add(new Vector3(x, h00 + 0.06f, worldZ));
+                    vertices.Add(new Vector3(x + 1f, h10 + 0.06f, worldZ));
+                    vertices.Add(new Vector3(x + 1f, h11 + 0.06f, worldZ + 1f));
+                    vertices.Add(new Vector3(x, h01 + 0.06f, worldZ + 1f));
+                    vertices.Add(new Vector3(x, h00 - 0.04f, worldZ));
+                    vertices.Add(new Vector3(x + 1f, h10 - 0.04f, worldZ));
+                    vertices.Add(new Vector3(x + 1f, h11 - 0.04f, worldZ + 1f));
+                    vertices.Add(new Vector3(x, h01 - 0.04f, worldZ + 1f));
+                    AddRoadQuad(triangles, first, first + 3, first + 1, first + 2);
+                    AddRoadQuad(triangles, first + 4, first + 5, first + 1, first);
+                    AddRoadQuad(triangles, first + 5, first + 6, first + 2, first + 1);
+                    AddRoadQuad(triangles, first + 6, first + 7, first + 3, first + 2);
+                    AddRoadQuad(triangles, first + 7, first + 4, first, first + 3);
+                }
+            }
+
+            Transform existing = parent.Find("Road Surface");
+            if (vertices.Count == 0)
+            {
+                if (existing != null) existing.gameObject.SetActive(false);
+                return;
+            }
+            Mesh mesh = new Mesh { name = MakeAssetId(selectedMap + "-road-surface") };
             mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
             mesh.SetVertices(vertices);
-            mesh.subMeshCount = roles.Count;
-            for (int subMesh = 0; subMesh < roles.Count; subMesh++)
-                mesh.SetTriangles(trianglesByRole[roles[subMesh]], subMesh, false);
+            mesh.SetTriangles(triangles, 0);
             mesh.RecalculateNormals();
             mesh.RecalculateBounds();
-            Mesh saved = SaveGeneratedMesh(mesh, selectedMap + "-terrain-surface");
-            GameObject surface = CreateMeshObject(parent, "Painted Terrain Surface", saved, Vector3.zero, Color.white);
-            surface.GetComponent<MeshRenderer>().sharedMaterials = roles
-                .Select(role => PreviewMaterial(colorsByRole[role], false, "Terrain " + role))
-                .ToArray();
+            Mesh saved = SaveGeneratedMesh(mesh, selectedMap + "-road-surface");
+            GameObject road = existing == null ? new GameObject("Road Surface") : existing.gameObject;
+            if (existing == null) road.transform.SetParent(parent, false);
+            road.SetActive(true);
+            road.transform.localPosition = Vector3.zero;
+            MeshFilter filter = road.GetComponent<MeshFilter>();
+            if (filter == null) filter = road.AddComponent<MeshFilter>();
+            filter.sharedMesh = saved;
+            MeshRenderer renderer = road.GetComponent<MeshRenderer>();
+            if (renderer == null) renderer = road.AddComponent<MeshRenderer>();
+            renderer.enabled = true;
+            renderer.sharedMaterial = PreviewMaterial(new Color(0.09f, 0.10f, 0.12f), false, "Road Asphalt");
+        }
+
+        private static void AddRoadQuad(List<int> triangles, int a, int b, int c, int d)
+        {
+            triangles.Add(a); triangles.Add(b); triangles.Add(c);
+            triangles.Add(c); triangles.Add(b); triangles.Add(d);
+            triangles.Add(c); triangles.Add(b); triangles.Add(a);
+            triangles.Add(d); triangles.Add(b); triangles.Add(c);
         }
 
         private static string TerrainSurfaceRole(char token)
@@ -1131,15 +1380,15 @@ namespace AsciiCity.WorldAuthoring
                 case ',': return "sidewalk";
                 case ':': return "alley";
                 case '_': return "plaza";
-                case 'p':
+                case 'p': return "grass";
                 case 'g':
                 case 'y':
                 case 'b':
                 case 'i':
                 case 'c':
                 case 'r': return "park-ground";
-                case '=':
-                case 'q': return "park-path";
+                case '=': return "park-path";
+                case 'q': return "nature-trail";
                 case 'h': return "bridge";
                 case '~':
                 case 'w': return "water";
@@ -1151,16 +1400,43 @@ namespace AsciiCity.WorldAuthoring
         {
             switch (role)
             {
-                case "road": return new Color(0.22f, 0.23f, 0.24f);
-                case "sidewalk": return new Color(0.38f, 0.39f, 0.40f);
-                case "alley": return new Color(0.23f, 0.19f, 0.25f);
-                case "plaza": return new Color(0.34f, 0.31f, 0.28f);
-                case "park-ground": return new Color(0.16f, 0.29f, 0.19f);
-                case "park-path": return new Color(0.35f, 0.30f, 0.23f);
+                case "road": return new Color(0.075f, 0.085f, 0.10f);
+                case "road-curb": return new Color(0.34f, 0.35f, 0.36f);
+                case "road-marking": return new Color(0.52f, 0.50f, 0.43f);
+                case "sidewalk": return new Color(0.46f, 0.47f, 0.48f);
+                case "alley": return new Color(0.09f, 0.09f, 0.11f);
+                case "plaza": return new Color(0.25f, 0.24f, 0.22f);
+                case "grass": return new Color(0.18f, 0.38f, 0.17f);
+                case "park-ground": return new Color(0.12f, 0.23f, 0.15f);
+                case "park-path": return new Color(0.40f, 0.31f, 0.20f);
+                case "nature-trail": return new Color(0.36f, 0.27f, 0.16f);
                 case "bridge": return new Color(0.32f, 0.25f, 0.18f);
-                case "water": return new Color(0.035f, 0.29f, 0.39f);
-                default: return new Color(0.10f, 0.11f, 0.13f);
+                case "water": return new Color(0.015f, 0.34f, 0.46f);
+                default: return new Color(0.15f, 0.16f, 0.18f);
             }
+        }
+
+        private char TerrainTokenAtWorld(int worldX, int worldZ)
+        {
+            int rowIndex = rows.Length - 1 - worldZ;
+            if (worldX < 0 || worldX >= Width || rowIndex < 0 || rowIndex >= rows.Length)
+                return '\0';
+            return rows[rowIndex][worldX];
+        }
+
+        private void AddTerrainFeatureQuad(List<Vector3> vertices, List<int> triangles, float x0, float z0, float x1, float z1)
+        {
+            int first = vertices.Count;
+            vertices.Add(new Vector3(x0, TerrainHeightAt((x0 + x1) * 0.5f, (z0 + z1) * 0.5f) + 0.03f, z0));
+            vertices.Add(new Vector3(x1, TerrainHeightAt((x0 + x1) * 0.5f, (z0 + z1) * 0.5f) + 0.03f, z0));
+            vertices.Add(new Vector3(x1, TerrainHeightAt((x0 + x1) * 0.5f, (z0 + z1) * 0.5f) + 0.03f, z1));
+            vertices.Add(new Vector3(x0, TerrainHeightAt((x0 + x1) * 0.5f, (z0 + z1) * 0.5f) + 0.03f, z1));
+            triangles.Add(first);
+            triangles.Add(first + 3);
+            triangles.Add(first + 1);
+            triangles.Add(first + 1);
+            triangles.Add(first + 3);
+            triangles.Add(first + 2);
         }
 
         private float TerrainHeightAt(float worldX, float worldZ)

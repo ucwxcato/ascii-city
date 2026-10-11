@@ -117,12 +117,16 @@ namespace AsciiCity.WorldAuthoring
         {
             Transform surface = transform.Find("__Authored Details/Painted Terrain Surface");
             if (surface == null) return false;
-            MeshFilter filter = surface.GetComponent<MeshFilter>();
-            MeshRenderer renderer = surface.GetComponent<MeshRenderer>();
-            if (filter == null || filter.sharedMesh == null || filter.sharedMesh.vertexCount < 4 || renderer == null ||
-                !renderer.enabled || !renderer.gameObject.activeInHierarchy)
-                return false;
-            return filter.sharedMesh.subMeshCount > 0;
+            MeshFilter[] filters = surface.GetComponentsInChildren<MeshFilter>(true);
+            foreach (MeshFilter filter in filters)
+            {
+                MeshRenderer renderer = filter.GetComponent<MeshRenderer>();
+                if (filter.sharedMesh != null && filter.sharedMesh.vertexCount >= 4 &&
+                    filter.sharedMesh.subMeshCount > 0 && renderer != null && renderer.enabled &&
+                    renderer.gameObject.activeInHierarchy)
+                    return true;
+            }
+            return false;
         }
 
         private static Color GroundColor(char token)
