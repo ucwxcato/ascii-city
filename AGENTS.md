@@ -23,7 +23,7 @@ Preserve these visual rules:
 - `DOCS/map-format.md`: authoritative map/content format rules.
 - `DOCS/rendering-contract.md`: first-person visual and projection contract.
 - `DOCS/verification-notes.md`: recorded runtime verification evidence.
-- `DOCS/devplans/`: implementation plan and completed work tracking. Archived roadmaps live in `DOCS/ARCHIVE/`: `DOCS/ARCHIVE/devplan-life-pass.md` owns optional ambient actors/traffic/wildlife; `DOCS/ARCHIVE/devplan-city-visual-density.md` owns the committed contrast, road/sidewalk detail, façade/street-detail, localized-light, required cell-aware composite, and dense-ASCII roadmap.
+- `DOCS/devplans/`: implementation plan and completed work tracking.
 
 ## Important architecture boundaries
 
@@ -35,7 +35,7 @@ Preserve these visual rules:
 - `AsciiPresenter` turns `AsciiFrame` cells into LibGDX draw calls. Maintain glyph-cell alignment and resize-safe viewport behavior.
 - `InputController` translates desktop input into `GameAction`/`GameCommand`; avoid reading keyboard state directly in gameplay systems.
 
-Use plain Kotlin classes and the current lightweight domain model. Do not introduce a general ECS, 3D model pipeline, shader stack, or external UI framework without an explicit request. The approved exception is the one depth-aware neon compositor required by `DOCS/ARCHIVE/devplan-city-visual-density.md`: it may use the existing presentation FBO path's low-resolution nearest-filtered ASCII color/depth/emissive inputs for bounded contact shade/local light/emissive halo, but it must not become a general effect chain or affect world/UI semantics.
+Use plain Kotlin classes and the current lightweight domain model. Do not introduce a general ECS, 3D model pipeline, shader stack, or external UI framework without an explicit request. The approved exception is the one depth-aware neon compositor described in `DOCS/rendering-contract.md`: it may use the existing presentation FBO path's low-resolution nearest-filtered ASCII color/depth/emissive inputs for bounded contact shade/local light/emissive halo, but it must not become a general effect chain or affect world/UI semantics.
 
 ## Content and rendering rules
 

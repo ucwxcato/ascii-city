@@ -4,7 +4,7 @@
 >
 > **Purpose:** Implement the supplied Kernel-Panic storyline as a choice-driven first-person ASCII exploration game.
 >
-> **Authority:** `storyline-docs/` is the narrative source of truth. The focused [walking storyline game plan](devplan-storyline-exploration.md) owns campaign implementation and locks the no-hacking-gameplay direction. This document records the existing first-person engine and its legacy `Last Packet` prototype. Retain the committed city visual-density roadmap in [devplan-city-visual-density.md](../ARCHIVE/devplan-city-visual-density.md). Optional ambient activity, including authored traffic, is documented in the archived [life-pass plan](../ARCHIVE/devplan-life-pass.md). Do not restore player-controlled cars or racing.
+> **Authority:** `storyline-docs/` is the narrative source of truth. The focused [walking storyline game plan](devplan-storyline-exploration.md) owns campaign implementation and locks the no-hacking-gameplay direction. This document records the existing first-person engine and its legacy `Last Packet` prototype. Do not restore player-controlled cars or racing.
 >
 > **Visual reference:** [A Walkable ASCII Cyberpunk City in One HTML File](https://www.youtube.com/watch?v=3YtygAx_C6A).
 >
@@ -33,7 +33,7 @@ The release target is one coherent 15 to 30 minute run across the authored maps,
 - The city should feel built from living data rather than static ASCII decoration. Roads carry directional data flow, facades stream and pulse, and restrained glitches vibrate through surfaces using deterministic animation channels.
 - Living-data animation is render-only: it samples stable world coordinates, IDs, depth, and time, and never changes the underlying footprint, collision, object placement, or save state.
 - The player has no visible `@` in the main first-person view. `@` may identify the player in an F3 debug minimap; this replaces the original overhead player-glyph requirement.
-- The renderer uses CPU software raycasting into a character grid, followed by `BitmapFont`/`SpriteBatch` presentation. It does not require 3D models, `ModelBatch`, or a `PerspectiveCamera`. The only approved presentation-shader exception is the bounded cell-aware composite pass required by [devplan-city-visual-density.md](../ARCHIVE/devplan-city-visual-density.md); it is not a general post-processing stack.
+- The renderer uses CPU software raycasting into a character grid, followed by `BitmapFont`/`SpriteBatch` presentation. It does not require 3D models, `ModelBatch`, or a `PerspectiveCamera`. The only approved presentation-shader exception is the bounded cell-aware composite pass described in the [rendering contract](../rendering-contract.md); it is not a general post-processing stack.
 - Buildings are vertical columns with data-defined heights and facade materials. A fixed map may optionally define one flat ceiling over its complete rectangular footprint; it is presentation geometry, not collision or a second floor. The MVP does not support arbitrary polygon meshes, sloped surfaces, partial ceiling masks, stacked walkable floors, or looking through windows.
 - A bounded multi-hit grid ray allows taller buildings behind shorter foreground structures to remain visible above them. Opaque nearer spans win through a per-character depth buffer.
 - The initial horizontal field of view is 75 degrees; yaw wraps continuously and pitch is initially clamped to ±55 degrees. These are tuning values, not save-schema contracts.
@@ -51,14 +51,14 @@ The release target is one coherent 15 to 30 minute run across the authored maps,
 - Early, repeated, or out-of-order interaction is safe and idempotent: it may show contextual text but cannot skip, duplicate, or reverse story progress.
 - Printable ASCII is the authored/rendered baseline. Unicode glyph support requires a later font-coverage and code-point task.
 - The bundled font and any optional audio must have redistribution-compatible licenses; system fonts are never assumed.
-- `LEARNING_STRATEGY.md` governs implementation sessions: the user drives/types, the assistant navigates, new Kotlin is taught in small Boring-Kotlin lessons, and each session targets at least three concrete micro-wins.
+- Implementation sessions are user-typed lessons: the user drives/types, the assistant navigates, new Kotlin is taught in small Boring-Kotlin lessons, and each session targets at least three concrete micro-wins (see `DOCS/implementation-workflow.md`).
 - Checkboxes are completed only after their source plus required test/runtime evidence exists; manual-only verification remains unchecked until observed.
 
 ### Status reconciliation (2026-08-20)
 
 - **Verified:** responsive desktop rendering from the 960×540 minimum through ultrawide/maximized client areas, fixed authored map loading, first-person projection, optional depth-tested whole-map ceilings, movement/look/collision, deterministic material animation, downward screen-space rain, street lamps, the spawn-adjacent park, the enclosed waterpark, the connected mandatory pine/campsite/river/waterfall nature spur, validated fog/contrast/reduced-flicker tuning, HUD/F3 diagnostics, center-ray targeting, terminal prompts/responses, modal-safe input, data-driven linear dialogue, the brief Phase 6 presentation route, the validated static ASCII sprite registry, camera-facing sprite projection/depth testing, Rin's typed stationary definition/live rendering/collision agreement, and visual-only authored traffic loops have source and required evidence.
 - **Authored but not story-complete:** `npc.rin` now resolves and visibly renders one blocking world entity, `sprite.rin`, west-facing metadata, display name, and introductory dialogue at the authored starting-route position. Rin and terminal interactions resolve validated speaker/line data through the shared modal `DialogueOverlay`; E/Enter advances, Escape closes, and resize retains the active line. The map also contains Cascade Relay `terminal.relay-01`, the archive terminal, and sealed-door placeholders, while Last Packet progression remains absent.
-- **Planned:** campaign implementation follows the focused [walking storyline game plan](devplan-storyline-exploration.md). The unstarted Phase 7 `Last Packet` loop is retained as legacy planning history, not the next story task. Optional ambient activity, including traffic, remains available under the [life pass](../ARCHIVE/devplan-life-pass.md); player-controlled vehicles remain removed.
+- **Planned:** campaign implementation follows the focused [walking storyline game plan](devplan-storyline-exploration.md). The unstarted Phase 7 `Last Packet` loop is retained as legacy planning history, not the next story task. Optional ambient activity, including traffic, remains available; player-controlled vehicles remain removed.
 
 ### Player-visible happy path
 
@@ -141,15 +141,15 @@ Story state advances once when the expected interaction is accepted, before its 
 | `AsciiFrame` | Primitive arrays | Glyph code, foreground/background packed color, depth for each output cell. | Assets or world ownership. |
 | `AsciiPresenter` | `SpriteBatch` + `BitmapFont` | Draw `AsciiFrame` pixel-aligned through an orthographic projection. | Raycasting. |
 | `EntitySpriteRenderer` | Plain projection helper | Project camera-facing NPC/world-object ASCII sprites and depth-test each visible character against world spans. | Sprite identity, entity iteration, or NPC behavior. |
-| `InteractionSystem` (proposed) | Plain Kotlin | Center-ray target selection, range/LOS validation, typed outcomes. | Dialogue widgets. |
-| `LastPacketSystem` (proposed) | Plain Kotlin | Current `LastPacketStage`, expected stable object IDs, objective target, idempotent progress transitions, archive unsealing, completion outcome. | Rendering, raw input, arbitrary quest graphs, inventory, or save files. |
+| `InteractionSystem` | Plain Kotlin | Center-ray target selection, range/LOS validation, typed outcomes. | Dialogue widgets. |
+| `LastPacketSystem` (legacy plan; not built) | Plain Kotlin | Current `LastPacketStage`, expected stable object IDs, objective target, idempotent progress transitions, archive unsealing, completion outcome. | Rendering, raw input, arbitrary quest graphs, inventory, or save files. |
 | `RainRenderer` | Plain Kotlin | Deterministic, allocation-free screen-space rain sampling and sky-only composition. | Map cells or collision. |
 | `StreetLampRenderer` | Plain Kotlin | Derived/authored lamp fixtures, depth-tested posts, and restrained local glow. | Collision or light simulation. |
 | `TreeSilhouette` / `ParkFixtureSilhouette` | Plain Kotlin | Visual masks for semantic trees, park fixtures, and casino slot-machine billboards. | Collision or map semantics. |
 | `Hud` / `DialogueOverlay` | Scene2D | Controls, pose/debug info, prompt, modal dialogue/input focus. | Authoritative state changes. |
 | `GameAssets` | `AssetManager` wrapper | Fonts, audio, palettes, data files, fallback/error policy. | Gameplay rules. |
 | `AudioService` | LibGDX audio wrapper | Crossfaded music, independent rain/waterfall/SFX levels, no-audio fallback, lifecycle. | Interaction decisions or rendered-glyph proximity. |
-| `SaveService` | JSON/file boundary | DTO mapping, migration, validation, atomic slots. | Serializing live renderer/LibGDX objects. |
+| `SaveService` (post-MVP; not built) | JSON/file boundary | DTO mapping, migration, validation, atomic slots. | Serializing live renderer/LibGDX objects. |
 
 ### In-memory city grid
 
@@ -160,9 +160,10 @@ Dynamic doors, NPCs, terminals, and lamps live outside the base cell array and h
 ### Map and content files
 
 ```text
-assets/maps/city-alpha.txt          # rectangular footprint, north row first
-assets/maps/city-alpha.meta.json    # map ID/version, spawn, sky/fog, optional ceiling, object path
-assets/maps/city-alpha.objects.json # Rin, three relays, archive terminal/seal, lamps
+assets/maps/<map>/<map>.txt          # rectangular footprint, north row first
+assets/maps/<map>/<map>.meta.json    # map ID/version, spawn, sky/fog, optional ceiling, objects file
+assets/maps/<map>/<map>.objects.json # NPCs, terminals, doors, lamps, façade signs, traffic, ambient actors
+# playable maps (MapCatalog): city-alpha, water-park, nature-reserve, casino
 assets/data/cells.json              # tokens -> semantic cell definitions
 assets/data/materials.json          # ground/facade glyph ramps, colors, window patterns
 assets/data/palette.json            # semantic RGBA colors
@@ -211,47 +212,44 @@ Resize recalculates output columns/rows, whole-number glyph scale, gutters, `Asc
 
 ### Implementation and learning workflow
 
-Each checkbox is one focused coding session unless its verification gate explicitly combines prior work. When executing a task: declare Babysteps/Bridge/Shadow mode; anchor the feature in the game; show only a small skeleton with blanks; have the user explain unfamiliar syntax before typing; target three micro-wins (source typed, test/build green, runtime evidence or tattoo note); and add/update `DOCS/kotlin-brain-tattoos/` when a concept lands. Intentional breakage happens only after green, with opt-in, an isolated reversible change, and a final return to green.
+Each checkbox is one focused coding session unless its verification gate explicitly combines prior work. When executing a task: declare Babysteps/Bridge/Shadow mode; anchor the feature in the game; show only a small skeleton with blanks; have the user explain unfamiliar syntax before typing; target three micro-wins (source typed, test/build green, runtime evidence or a written concept note). Intentional breakage happens only after green, with opt-in, an isolated reversible change, and a final return to green.
 
-## 3. Proposed package and folder structure
+## 3. Package and folder structure
 
 ```text
 ascii-city/
 ├─ settings.gradle.kts
 ├─ build.gradle.kts
-├─ gradle.properties
-├─ gradle/libs.versions.toml
-├─ core/
-│  ├─ build.gradle.kts
-│  └─ src/
-│     ├─ main/kotlin/com/asciicity/
-│     │  ├─ AsciiCityGame.kt
-│     │  ├─ screen/{LoadingScreen,GameScreen}.kt
-│     │  ├─ world/{GameWorld,WorldGrid,CellDefinition,WorldPosition}.kt
-│     │  ├─ entity/{WorldEntity,PlayerState,Npc,Door,Terminal}.kt
-│     │  ├─ input/{InputController,GameCommand}.kt
-│     │  ├─ system/{LookSystem,MovementSystem,CollisionSystem,InteractionSystem,NpcSystem}.kt
-│     │  ├─ story/{LastPacketStage,LastPacketSystem,StoryOutcome}.kt
-│     │  ├─ render/{AsciiFrame,AsciiPresenter,AsciiViewportCalculator,ViewPose,ProjectionMetrics,GridRaycaster,RayHit,WorldAsciiRenderer,RainRenderer,StreetLampRenderer,TreeSilhouette,ParkFixtureSilhouette,EntitySpriteRenderer,RenderPalette}.kt
-│     │  ├─ content/{ContentLoader,MapLoader,CellRegistry,MaterialRegistry,ContentValidationException}.kt
-│     │  ├─ ui/{Hud,DialogueOverlay,ErrorOverlay}.kt
-│     │  ├─ asset/GameAssets.kt
-│     │  ├─ audio/AudioService.kt
-│     │  ├─ save/{SaveGameDto,SaveService,SaveMigration}.kt       # post-MVP
-│     │  ├─ generation/{ChunkCoord,EdgeContract,CityGenerator}.kt # post-MVP
-│     │  └─ item/{ItemDefinition,ItemRegistry,Inventory}.kt       # post-MVP
-│     └─ test/kotlin/com/asciicity/{content,world,system,render,save,generation}/
-├─ desktop/src/main/kotlin/com/asciicity/desktop/DesktopLauncher.kt
-├─ assets/{fonts,maps,data,audio,licenses}/
-└─ DOCS/
-   ├─ devplans/ascii-city-development-plan.md
-   ├─ map-format.md
-   ├─ rendering-contract.md
-   ├─ verification-notes.md
-   └─ kotlin-brain-tattoos/
+├─ core/src/
+│  ├─ main/kotlin/com/asciicity/
+│  │  ├─ AsciiCityGame.kt
+│  │  ├─ ambient/     AmbientEventEmitter, AmbientEventSystem
+│  │  ├─ asset/       AssetKey, AssetLoadException, AssetLoadState, AssetPaths, GameAssets
+│  │  ├─ audio/       AudioService, FootstepCadence, WaterfallAudioField
+│  │  ├─ content/     ContentLoader, ContentVerifier, MapLoader, MapCatalog, CellRegistry,
+│  │  │               MaterialRegistry, DialogueRegistry, AsciiSpriteRegistry, ContentValidationException
+│  │  ├─ entity/      WorldEntity, PlayerState, Npc, AmbientActor
+│  │  ├─ input/       InputController, GameAction, GameCommand
+│  │  ├─ render/      AsciiFrame, AsciiPresenter, AsciiViewportCalculator, ProjectionMetrics, ViewPose,
+│  │  │               GridRaycaster, WorldAsciiRenderer, MaterialSampler, RainRenderer, StreetLampRenderer,
+│  │  │               TreeSilhouette, ParkFixtureSilhouette, EntitySpriteRenderer, FacadeSignSampler,
+│  │  │               LocalizedLightRenderer, FontMetrics, RenderPalette
+│  │  ├─ screen/      GameScreen, AssetErrorScreen
+│  │  ├─ system/      MovementSystem, LookSystem, CollisionSystem, InteractionSystem, NpcSystem,
+│  │  │               TrafficSystem, FixedStepClock, PlayerSimulation
+│  │  ├─ traffic/     TrafficCar
+│  │  ├─ ui/          Hud, HudModel, DialogueOverlay, ErrorOverlay
+│  │  ├─ util/        GameLog
+│  │  └─ world/       GameWorld, WorldGrid, CellDefinition, SurfaceMaterial, GridCell, WorldPosition,
+│  │                  WorldDirection, EntityId, SpatialEntityIndex
+│  └─ test/kotlin/com/asciicity/   ambient, asset, audio, content, entity, input, render, system, traffic, ui, world
+├─ desktop/src/main/kotlin/com/asciicity/desktop/
+│  DesktopLauncher, DesktopWindowSpec, FatalErrorHandler, RequestedWindowSize
+├─ assets/          audio, data, fonts, licenses, maps, test-fixtures
+└─ DOCS/            devplans, readme, verification, and the map, rendering, run, and workflow docs
 ```
 
-Post-MVP packages are created only when their phase begins. The package tree reserves stable boundaries; it does not authorize empty interfaces or speculative framework code.
+Planned packages (`save`, `generation`, `item`, `story`, `quest`) do not exist yet. Create each one when its phase begins; do not add empty interfaces or speculative framework code ahead of it.
 
 ## 4. Full checkbox development plan
 
@@ -260,23 +258,23 @@ Every task includes scope, dependency, likely files, and an objective completion
 ### Phase 0 — Design, learning, and project baseline
 
 - [x] **BASE-01 [MVP] Record the first-person visual contract.** Create original annotated reference plates showing horizon, vanishing point, building scale, road perspective, glyph density, fog, and neon; state that assets are inspiration-only. **Depends:** none. **Files:** `DOCS/rendering-contract.md`. **Done when:** the document distinguishes required first-person behavior from optional visual polish and contains no copyrighted asset extraction.
-- [x] **BASE-02 [MVP] Record the lesson execution contract.** Summarize the applicable `LEARNING_STRATEGY.md` workflow, three-micro-win rule, Boring Kotlin default, and tattoo-doc path for this repo. **Depends:** none. **Files:** `DOCS/implementation-workflow.md`, `DOCS/kotlin-brain-tattoos/README.md`. **Done when:** each future task can be run as a user-typed lesson without inventing teaching rules.
+- [x] **BASE-02 [MVP] Record the lesson execution contract.** Summarize the lesson workflow, three-micro-win rule, and Boring Kotlin default for this repo. **Depends:** none. **Files:** `DOCS/implementation-workflow.md`. **Done when:** each future task can be run as a user-typed lesson without inventing teaching rules.
 - [x] **SETUP-01 [MVP] Pin the build toolchain.** Select Java 21 and mutually compatible stable Kotlin, LibGDX, LWJGL3, and JUnit versions without dynamic selectors. **Depends:** none. **Files:** `settings.gradle.kts`, `build.gradle.kts`, `gradle.properties`, `gradle/libs.versions.toml`, wrapper. **Done when:** the wrapper resolves, Gradle daemon/compile/test toolchains require Java 21, and `./gradlew help` resolves cleanly.
 - [x] **SETUP-02 [MVP] Create `core` and `desktop` modules.** Configure Kotlin/JVM, UTF-8, assets path, desktop natives, test dependencies, and application main class. **Depends:** SETUP-01. **Files:** module build scripts. **Done when:** `./gradlew projects compileKotlin` succeeds and lists both modules.
 - [x] **SETUP-03 [MVP] Launch the responsive desktop window.** Add `AsciiCityGame` and `DesktopLauncher` with a 1280×720 default logical client size, 960×540 minimum, no upper resize/maximize cap, VSync, logical HDPI mode, no exclusive fullscreen option, and clean exit. **Depends:** SETUP-02. **Files:** launcher and game classes. **Done when:** `./gradlew desktop:run` opens at 1280×720, clamps only below 960×540, accepts larger/ultrawide requests and native maximize, and closes without an uncaught error.
 - [x] **SETUP-04 [MVP] Establish automated checks.** Configure JUnit 5, Kotlin assertions, and headless LibGDX tests where `Gdx` services are needed. **Depends:** SETUP-02. **Files:** build scripts, one smoke test, `README.md`. **Done when:** `./gradlew clean check` passes on a clean checkout.
-- [x] **SETUP-05 [MVP] Add repository hygiene and diagnostics.** Ignore build/IDE/native/local-save outputs, configure LibGDX logging, and install a launcher-level fatal error handler. **Depends:** SETUP-03. **Files:** `.gitignore`, `DesktopLauncher.kt`, proposed `GameLog.kt`. **Done when:** a deliberate failure test produces one readable fatal report and no generated build debris is tracked.
+- [x] **SETUP-05 [MVP] Add repository hygiene and diagnostics.** Ignore build/IDE/native/local-save outputs, configure LibGDX logging, and install a launcher-level fatal error handler. **Depends:** SETUP-03. **Files:** `.gitignore`, `DesktopLauncher.kt`, `util/GameLog.kt`. **Done when:** a deliberate failure test produces one readable fatal report and no generated build debris is tracked.
 - [x] **VERIFY-00 [MVP] Verify the baseline.** Run clean check, ten launch/exit cycles, resize to the minimum/reference/ultrawide sizes, attempt below-minimum and native maximize, alt-tab, and inspect logs. **Depends:** BASE-01, BASE-02, SETUP-01 through SETUP-05. **Files:** `DOCS/verification-notes.md`. **Done when:** evidence proves the client respects the 960×540 minimum, larger logical areas remain aligned and responsive, and lifecycle/build behavior is green.
 
 ### Phase 1 — Window and glyph surface (Milestone 1)
 
 - [x] **ASSET-01 [MVP] Implement `GameAssets`.** Own one `AssetManager`, typed keys, loading state, critical/recoverable failures, and one disposal boundary. **Depends:** SETUP-02. **Files:** `asset/GameAssets.kt`. **Done when:** tests reject access before load and prove one disposal path.
 - [x] **ASSET-02 [MVP] Bundle a licensed monospace bitmap font.** Include `.fnt`, texture, printable ASCII coverage, source/version, and license. **Depends:** ASSET-01. **Files:** `assets/fonts/*`, `assets/licenses/*`. **Done when:** characters 32–126 render and packaging inputs include the license.
-- [x] **ASSET-03 [MVP] Lock the 10×18 logical font cell.** Define immutable cell width, height, baseline, and HDPI presentation rules; validate `M`, `i`, `@`, `#`, `/`, `\`, and space. **Depends:** ASSET-02. **Files:** proposed `render/FontMetrics.kt`, tests. **Done when:** representative glyphs occupy stable 10×18 logical cells without drift and 128×40 cells exactly fill 1280×720.
+- [x] **ASSET-03 [MVP] Lock the 10×18 logical font cell.** Define immutable cell width, height, baseline, and HDPI presentation rules; validate `M`, `i`, `@`, `#`, `/`, `\`, and space. **Depends:** ASSET-02. **Files:** `render/FontMetrics.kt`, tests. **Done when:** representative glyphs occupy stable 10×18 logical cells without drift and 128×40 cells exactly fill 1280×720.
 - [x] **ASSET-04 [MVP] Load the semantic palette.** Define sky, fog, asphalt, sidewalk, wall faces, windows, neon variants, NPC, player-debug, rain, HUD, and errors. **Depends:** ASSET-01. **Files:** `assets/data/palette.json`, `RenderPalette.kt`. **Done when:** duplicate/malformed/missing keys fail with their logical key.
 - [x] **FRAME-01 [MVP] Implement `AsciiFrame`.** Allocate fixed `IntArray` glyph/foreground/background and `FloatArray` depth storage with bounds-safe index/clear/write APIs. **Depends:** ASSET-03. **Files:** `render/AsciiFrame.kt`, tests. **Done when:** tests cover corners, clear values, nearer-depth wins, invalid dimensions, and no object allocation per cell.
 - [x] **FRAME-02 [MVP] Implement the glyph presenter.** Draw `AsciiFrame` with `SpriteBatch`/`BitmapFont`, orthographic pixel coordinates, packed colors, and explicit layer/color reset. **Depends:** FRAME-01, ASSET-04. **Files:** `render/AsciiPresenter.kt`. **Done when:** a colored frame appears aligned with one batch begin/end pair.
-- [x] **FRAME-03 [MVP] Render the Milestone 1 test card.** Fill a deterministic grid with glyph ramp, color bands, diagonals, boxes, horizon line, and fake near/far building silhouettes. **Depends:** FRAME-02. **Files:** proposed `render/AsciiTestCard.kt`, `GameScreen.kt`. **Done when:** the window displays a colored ASCII perspective test image without world/raycast code.
+- [x] **FRAME-03 [MVP] Render the Milestone 1 test card.** Fill a deterministic grid with glyph ramp, color bands, diagonals, boxes, horizon line, and fake near/far building silhouettes. **Depends:** FRAME-02. **Files:** `render/AsciiTestCard.kt`, `GameScreen.kt`. **Done when:** the window displays a colored ASCII perspective test image without world/raycast code.
 - [x] **FRAME-04 [MVP] Implement responsive resize-safe ASCII viewport selection.** Divide the logical client area into uniformly scaled 10×18 cells, keep at least 96×30, choose a whole-number glyph scale near the 128×40 reference density, center leftover-pixel gutters, and recreate buffers only when the logical grid changes. **Depends:** ASSET-03, FRAME-02. **Files:** `AsciiViewportCalculator.kt`, tests. **Done when:** 960×540 yields 96×30 at 1×, 1280×720 yields 128×40 at 1×, 3440×1440 yields 172×40 at 2×, common work-area reductions keep the intended scale, non-divisible sizes center gutters, and HDPI backing size alone never changes the grid.
 - [x] **ASSET-05 [MVP] Add missing-asset UX.** Use a visible fallback for non-critical glyph/material content and a blocking Scene2D error overlay for font/palette/map failures. **Depends:** ASSET-01, FRAME-02. **Files:** `GameAssets.kt`, `ui/ErrorOverlay.kt`. **Done when:** missing font and corrupt palette tests never produce a blank window or null crash.
 - [x] **VERIFY-01 [MVP] Verify Milestone 1.** Capture the test card at required resolutions and exercise critical/recoverable asset failures. **Depends:** ASSET-02 through ASSET-05, FRAME-01 through FRAME-04. **Files:** `DOCS/verification-notes.md`, screenshots. **Done when:** Milestone 1 definition passes and `./gradlew clean check` is green.
@@ -290,7 +288,7 @@ Every task includes scope, dependency, likely files, and an objective completion
 - [x] **MAP-04 [MVP] Implement map/content loading.** Parse text/JSON into immutable DTOs, normalize line endings, validate all references/bounds/spawn clearance, then construct the grid. **Depends:** MAP-02, MAP-03. **Files:** `MapLoader.kt`, `ContentLoader.kt`, `ContentValidationException.kt`. **Done when:** failures identify file and line/column or JSON path and no partial world escapes.
 - [x] **MAP-05 [MVP] Test map parsing.** Cover empty/ragged/tabbed/unknown-token maps, LF/CRLF parity, missing/duplicate spawn, invalid height/material, out-of-bounds/duplicate objects, malformed JSON, and north-to-Z flip. **Depends:** MAP-04. **Files:** `content/MapLoaderTest.kt`, fixtures. **Done when:** all cases run headlessly with exact diagnostic assertions.
 - [x] **WORLD-02 [MVP] Implement `GameWorld` and spatial entity index.** Own grid, player, entities, map identity/time, and consistent add/move/remove queries by cell. **Depends:** WORLD-01, MAP-02. **Files:** `GameWorld.kt`, `WorldEntity.kt`, `PlayerState.kt`. **Done when:** entity lifecycle/index invariants pass tests.
-- [x] **MAP-06 [MVP] Author `city-alpha`.** Build at least a 96×96 footprint with connected roads, sidewalks, alleys, varied-height blocks, open sight lines, neon landmarks, player spawn, one terminal, and one NPC location. **Depends:** MAP-04. **Files:** `assets/maps/city-alpha.*`. **Done when:** validation passes, spawn has clearance, required interaction points are reachable, and every MVP material appears.
+- [x] **MAP-06 [MVP] Author `city-alpha`.** Build at least a 96×96 footprint with connected roads, sidewalks, alleys, varied-height blocks, open sight lines, neon landmarks, player spawn, one terminal, and one NPC location. **Depends:** MAP-04. **Files:** `assets/maps/city-alpha/`. **Done when:** validation passes, spawn has clearance, required interaction points are reachable, and every MVP material appears.
 - [x] **MAP-07 [MVP] Add content validation to `check`.** Run registry/map/object/dialogue validation without launching graphics and print concise per-file results. **Depends:** MAP-06. **Files:** build task or validation entry point. **Done when:** one intentionally bad fixture fails `check` and restoration returns green.
 - [x] **VERIFY-02 [MVP] Verify the fixed world data.** Load `city-alpha`, inspect dimensions/spawn/material/height distributions, test invalid fixtures, and record a simple debug footprint. **Depends:** MAP-01 through MAP-07, WORLD-02. **Files:** verification notes. **Done when:** the authored world is deterministic, reachable, and fully validated before rendering.
 
@@ -303,7 +301,7 @@ Every task includes scope, dependency, likely files, and an objective completion
 - [x] **RAY-03 [MVP] Project one wall column.** Convert perpendicular hit depth plus cell height into top/bottom rows relative to eye/horizon; shade face and clip to frame. **Depends:** PROJ-01, RAY-01, FRAME-01. **Files:** `WorldAsciiRenderer.kt`, tests. **Done when:** a test wall doubles apparent height at half distance, pitch shifts it correctly, and no fisheye appears across columns.
 - [x] **RAY-04 [MVP] Implement multi-height occlusion.** Continue DDA after nearer structures, write per-row depth, reveal only uncovered taller distant spans, and stop when distance/steps/full occlusion permits. **Depends:** RAY-03. **Files:** `WorldAsciiRenderer.kt`, tests. **Done when:** tall-behind-short, short-behind-tall, equal-height, gaps, and max-distance fixtures produce expected frame hashes.
 - [x] **RAY-05 [MVP] Implement sky and ground-plane casting.** Fill sky/fog and sample road/sidewalk/alley ground below the pitch-adjusted horizon with distance-correct coordinates. **Depends:** PROJ-01, MAP-01. **Files:** `WorldAsciiRenderer.kt`, tests. **Done when:** road edges converge, turning changes samples continuously, look up/down moves the horizon, and no NaN/divide-by-zero occurs at it.
-- [x] **RAY-06 [MVP] Implement living-data material glyph/color sampling.** Select facade/ground glyph ramps, side shading, distance fog, and palette colors; sample data-stream, signal-pulse, and restrained glitch channels from stable world phase plus time. **Depends:** RAY-04, RAY-05, MAP-01. **Files:** `MaterialRegistry.kt`, proposed `MaterialSampler.kt`. **Done when:** identical world/pose/time yields an identical frame, advancing time creates deterministic surface flow/vibration, semantic surfaces remain distinct, and geometry/collision checksums never change.
+- [x] **RAY-06 [MVP] Implement living-data material glyph/color sampling.** Select facade/ground glyph ramps, side shading, distance fog, and palette colors; sample data-stream, signal-pulse, and restrained glitch channels from stable world phase plus time. **Depends:** RAY-04, RAY-05, MAP-01. **Files:** `MaterialRegistry.kt`, `render/MaterialSampler.kt`. **Done when:** identical world/pose/time yields an identical frame, advancing time creates deterministic surface flow/vibration, semantic surfaces remain distinct, and geometry/collision checksums never change.
 - [x] **RAY-07 [MVP] Integrate world frame presentation.** Render sky/ground/buildings to `AsciiFrame`, then present it before UI; expose ray count, DDA steps, and filled glyph count. **Depends:** RAY-06, FRAME-02, WORLD-02. **Files:** `GameScreen.kt`, `WorldAsciiRenderer.kt`. **Done when:** `city-alpha` appears from spawn with visible vanishing point, varied skyline, roads, and correct occlusion.
 - [x] **RAY-08 [MVP] Remove steady-state renderer allocations.** Reuse hits/scratch arrays/colors, avoid per-cell strings/collections/vectors, and size scratch storage only on resize/config change. **Depends:** RAY-07. **Files:** render package. **Done when:** 60 seconds stationary produces no per-ray/per-character heap allocation in profiling.
 - [x] **RAY-09 [MVP] Add deterministic frame fixtures.** Hash glyph/color/depth results for selected poses facing cardinal/diagonal directions, looking up/down, near walls, and layered heights. **Depends:** RAY-07. **Files:** `WorldAsciiRendererTest.kt`, fixtures. **Done when:** headless math/frame tests reproduce hashes and a deliberate projection change fails clearly.
@@ -319,17 +317,17 @@ Every task includes scope, dependency, likely files, and an objective completion
 - [x] **COLL-02 [MVP] Add swept/substep movement and sliding.** Bound substep distance, resolve X/Z separately, prevent tunneling, and permit natural wall sliding without entering corners. **Depends:** COLL-01. **Files:** `CollisionSystem.kt`. **Done when:** extreme test speed cannot cross one-cell walls and diagonal contact slides deterministically.
 - [x] **COLL-03 [MVP] Add dynamic blockers.** Include closed doors and blocking NPC radii while ignoring rain and non-blocking objects; allow checking entity to ignore itself. **Depends:** COLL-02, WORLD-02. **Files:** `CollisionSystem.kt`, entity tests. **Done when:** each blocking/non-blocking case and index update passes.
 - [x] **MOVE-01 [MVP] Implement yaw-relative continuous movement.** Build forward/right movement from held WASD, normalize diagonals, multiply by fixed delta/speed, and commit through collision. **Depends:** INPUT-01, LOOK-01, COLL-02. **Files:** `MovementSystem.kt`. **Done when:** W follows view, S reverses, A/D strafe, W+D is not faster, and arrows never translate.
-- [x] **MOVE-02 [MVP] Add fixed-step simulation and pose interpolation.** Clamp frame delta, cap catch-up steps, store prior/current pose, and interpolate only for rendering. **Depends:** MOVE-01. **Files:** `GameScreen.kt`, proposed `FixedStepClock.kt`. **Done when:** simulated frame-rate sequences end at equivalent authoritative pose and a pause cannot spiral/burst.
+- [x] **MOVE-02 [MVP] Add fixed-step simulation and pose interpolation.** Clamp frame delta, cap catch-up steps, store prior/current pose, and interpolate only for rendering. **Depends:** MOVE-01. **Files:** `GameScreen.kt`, `system/FixedStepClock.kt`. **Done when:** simulated frame-rate sequences end at equivalent authoritative pose and a pause cannot spiral/burst.
 - [x] **MOVE-03 [MVP] Test player movement.** Cover all keys, combined move/look, collision/slide, spawn clearance, bounds, large delta/substeps, diagonal normalization, and repeated deterministic traces. **Depends:** MOVE-02, COLL-03. **Files:** `MovementSystemTest.kt`, `CollisionSystemTest.kt`. **Done when:** expected positions match within documented float tolerance.
 - [x] **LIFE-01 [MVP] Complete screen lifecycle.** Route resize/pause/resume/hide/dispose to input, viewports, audio hook, assets, and buffers; clear held state on modal/focus loss. **Depends:** MOVE-02, FRAME-04. **Files:** `GameScreen.kt`. **Done when:** resize/alt-tab/pause creates no stuck motion, jump, duplicate processor, or double dispose.
 - [x] **VERIFY-04 [MVP] Verify walking and looking.** Traverse a documented route with all movement/look combinations, collide with representative geometry, resize while moving, and return to spawn coordinates. **Depends:** INPUT-01, LOOK-01/02, COLL-01 through COLL-03, MOVE-01 through MOVE-03, LIFE-01. **Files:** verification notes. **Done when:** controls match the agreed first-person mapping, perspective updates every turn/pitch, and automated suites pass.
 
 ### Phase 5 — HUD and interaction targeting
 
-- [x] **HUD-01 [MVP] Build the first-person HUD.** Show `WASD Walk | Arrows Look | E Interact | Esc Back | M Music`, coordinates, yaw compass, a small center reticle, a clickable music control, and reserved one-line objective/signal regions through Scene2D. Accept immutable display values rather than reading story/world state directly. **Depends:** FRAME-04, WORLD-02. **Files:** `ui/Hud.kt`, proposed `ui/HudModel.kt`. **Done when:** HUD is readable, screen-anchored, unclipped at target sizes, and renders cleanly when objective/signal text is absent.
+- [x] **HUD-01 [MVP] Build the first-person HUD.** Show `WASD Walk | Arrows Look | E Interact | Esc Back | M Music`, coordinates, yaw compass, a small center reticle, a clickable music control, and reserved one-line objective/signal regions through Scene2D. Accept immutable display values rather than reading story/world state directly. **Depends:** FRAME-04, WORLD-02. **Files:** `ui/Hud.kt`, `ui/HudModel.kt`. **Done when:** HUD is readable, screen-anchored, unclipped at target sizes, and renders cleanly when objective/signal text is absent.
 - [x] **HUD-02 [MVP] Add F3 diagnostics and optional footprint map.** Show FPS, frame grid, pose, FOV/horizon, ray/step/glyph counts, target ID/depth, current cell/material, and a small debug map marking player `@`. **Depends:** HUD-01, RAY-07. **Files:** `Hud.kt`. **Done when:** displayed data agrees with tests and toggling has no gameplay effect.
 - [x] **INT-01 [MVP] Implement center-ray interaction queries.** Use center view ray plus vertical bounds/depth to select nearest visible interactable within 1.75 cells; reject occluded/out-of-range targets. **Depends:** RAY-01, WORLD-02. **Files:** `InteractionSystem.kt`, tests. **Done when:** centered, off-center, behind-wall, overlapping-depth, up/down-look, and range-boundary cases pass.
-- [x] **INT-02 [MVP] Add prompts and one terminal interaction.** Load terminal data, show prompt only for the current valid target, return a typed target/result for `ShowMessage` or `StartDialogue`, and debounce E. Keep story progression outside `InteractionSystem` so Phase 7 can route the same validated interaction through `LastPacketSystem`. **Depends:** INT-01, HUD-01, MAP-06. **Files:** `Terminal.kt`, `InteractionSystem.kt`, object data. **Done when:** the terminal responds exactly once per key edge, never through geometry, and exposes its stable entity/interaction ID without mutating story state.
+- [x] **INT-02 [MVP] Add prompts and one terminal interaction.** Load terminal data, show prompt only for the current valid target, return a typed target/result for `ShowMessage` or `StartDialogue`, and debounce E. Keep story progression outside `InteractionSystem` so Phase 7 can route the same validated interaction through `LastPacketSystem`. **Depends:** INT-01, HUD-01, MAP-06. **Files:** `entity/WorldEntity.kt`, `system/InteractionSystem.kt`, object data. **Done when:** the terminal responds exactly once per key edge, never through geometry, and exposes its stable entity/interaction ID without mutating story state.
 - [x] **INT-03 [MVP] Test input focus and interaction state.** Cover prompt transitions, turn-away, pitch-away, walk-out-of-range, modal capture, repeated open/close, and invalid target IDs. **Depends:** INT-02. **Files:** `InteractionSystemTest.kt`, UI-state tests. **Done when:** world look/movement cannot leak through a modal and safe errors replace bad data.
 - [x] **VERIFY-05 [MVP] Verify Milestone 2 fixed-map play.** Launch fresh, walk/strafe/look through `city-alpha`, demonstrate collision, perspective, resize, F3 `@`, and terminal interaction. **Depends:** VERIFY-03, VERIFY-04, HUD-01/02, INT-01 through INT-03. **Files:** smoke route and capture. **Done when:** Milestone 2 definition passes from a packaged-like run with no error logs.
 
@@ -358,11 +356,13 @@ Every task includes scope, dependency, likely files, and an objective completion
 
 ### Phase 7 — Last Packet narrative game (Milestone 4)
 
+> Legacy Last Packet planning, superseded by the [walking storyline plan](devplan-storyline-exploration.md). Unchecked items are not started, and the files they name are planned, not existing.
+
 - [x] **SPRITE-01 [MVP] Define static ASCII NPC/entity sprites.** Load one rectangular glyph/color image with an anchor, physical width/height, and transparent-space rules. The image persists across rendered frames; animated sprite sequences are post-MVP. **Depends:** FRAME-01, MAP-04. **Files:** `render/AsciiSprite.kt`, `content/AsciiSpriteRegistry.kt`, `assets/data/sprites.json`, `ContentLoader.kt`, format/authoring docs, tests. **Done when:** valid static sprites load and ragged/unknown-color/invalid-size sprites fail content validation. **Evidence:** `sprite.rin` loads as validated 9×10 static art with a bottom-center anchor; focused sprite/content/integration tests, `:core:validateContent`, and `clean check` pass on 2026-08-19.
 - [x] **SPRITE-02 [MVP] Project and depth-test NPC/entity sprites.** Transform each entity relative to the view, make camera-facing sprites face the player, reject sprites behind/outside the FOV, scale them into rows/columns, clip, and compare world depth per character. **Depends:** SPRITE-01, PROJ-01, RAY-07. **Files:** `EntitySpriteRenderer.kt`, `ProjectionMetrics.kt`, rendering contract, tests. **Done when:** near/far/edge/behind-wall/partial-occlusion fixtures produce expected frame hashes. **Evidence:** exact five-fixture hashes plus scale, yaw-facing, behind-camera, out-of-FOV, distance, clipping, and character-level occlusion tests pass; `:core:validateContent` and `clean check` pass on 2026-08-19.
 - [x] **NPC-01 [MVP] Complete Rin as the stationary story NPC.** Define stable ID `npc.rin`, position, radius, static ASCII sprite, blocking flag, facing metadata, display name, and dialogue references in object/data content. The prior record was placeholder evidence only; its stable ID remains locked while later story authoring may still refine its prose. **Depends:** WORLD-02, SPRITE-01, MAP-06. **Files:** `Npc.kt`, `LoadedContent.kt`, `ContentLoader.kt`, `city-alpha.objects.json`, sprite/dialogue data, map docs, tests. **Done when:** Rin renders at the authored position near the starting route, participates in collision, and every reference validates. **Evidence:** `npc.rin` resolves at `(45.5,16.5)` with radius `0.24`, explicit blocking, `sprite.rin`, west-facing `270°` metadata, display name `Rin`, and `dialogue.rin.intro`; focused domain/loader/integration tests prove exact-path failures, collision participation, and nonzero projection through the shared entity-sprite renderer. Content validation and the full build pass on 2026-08-19; NPC-02 remains the owner of live GameScreen composition.
 - [x] **NPC-02 [MVP] Render stationary NPC behavior safely.** Add NPCs to the position index and camera-facing entity-sprite layer in stable ID order; keep them alive across culling/resize. **Depends:** NPC-01, SPRITE-02, COLL-03. **Files:** `NpcSystem.kt`, `GameWorld.kt`, `WorldAsciiRenderer.kt`, `WorldRenderStats.kt`, `GameScreen.kt`, rendering contract, tests, verification captures. **Done when:** five minutes of approach/turn-away/reapproach never desynchronizes rendering and collision. **Evidence:** Rin composes after opaque geometry/façades and before lamps/rain from her authoritative world position; a revision cache refreshes only after entity mutation and the steady path allocates at most the existing 4 KiB test threshold. Stable-order, wall-occlusion, move/remove invariant, 128×40/96×30 resize, and 18,000-frame five-minute-equivalent approach/turn-away/reapproach tests pass. Updated east/diagonal/close hashes, `clean check`, content validation, and visually approved 1280×720 spawn/close captures pass on 2026-08-19.
-- [x] **WINDOW-01 [MVP] Expand the desktop renderer responsively for large and ultrawide displays.** Remove the 1280×720 upper native cap, retain the 960×540 minimum, scale glyph presentation uniformly by whole numbers, expand the logical frame with client size, keep HDPI backing pixels out of grid selection, widen horizontal projection from the 16:9 reference, and scale/re-anchor HUD plus modal dialogue. **Depends:** SETUP-03, FRAME-04, PROJ-01, HUD-01, DIALOGUE placeholder overlay. **Files:** `DesktopWindowSpec.kt`, `DesktopLauncher.kt`, `FontMetrics.kt`, `AsciiViewportCalculator.kt`, `AsciiPresenter.kt`, `ProjectionMetrics.kt`, `Hud.kt`, `MessageOverlay.kt`, `GameScreen.kt`, tests, contracts, captures. **Done when:** minimum/reference/intermediate/3440×1440/4K calculator fixtures pass; a real 3440-wide work-area launch selects 2× glyphs, preserves vertical framing, reveals more world horizontally, keeps the HUD/reticle aligned, and exits without errors; reference rendering remains unchanged. **Evidence:** focused viewport/projection/window/renderer/interaction tests and existing frame snapshots pass; `clean check`, content validation, 1280×720 reference smoke, and visually approved 3440-wide runtime capture pass on 2026-08-19.
+- [x] **WINDOW-01 [MVP] Expand the desktop renderer responsively for large and ultrawide displays.** Remove the 1280×720 upper native cap, retain the 960×540 minimum, scale glyph presentation uniformly by whole numbers, expand the logical frame with client size, keep HDPI backing pixels out of grid selection, widen horizontal projection from the 16:9 reference, and scale/re-anchor HUD plus modal dialogue. **Depends:** SETUP-03, FRAME-04, PROJ-01, HUD-01, DIALOGUE placeholder overlay. **Files:** `DesktopWindowSpec.kt`, `DesktopLauncher.kt`, `FontMetrics.kt`, `AsciiViewportCalculator.kt`, `AsciiPresenter.kt`, `ProjectionMetrics.kt`, `Hud.kt`, `ui/DialogueOverlay.kt`, `GameScreen.kt`, tests, contracts, captures. **Done when:** minimum/reference/intermediate/3440×1440/4K calculator fixtures pass; a real 3440-wide work-area launch selects 2× glyphs, preserves vertical framing, reveals more world horizontally, keeps the HUD/reticle aligned, and exits without errors; reference rendering remains unchanged. **Evidence:** focused viewport/projection/window/renderer/interaction tests and existing frame snapshots pass; `clean check`, content validation, 1280×720 reference smoke, and visually approved 3440-wide runtime capture pass on 2026-08-19.
 - [x] **DIALOGUE-01 [MVP] Implement data-driven linear message dialogue.** Load stable dialogue IDs and show speaker/text through one modal Scene2D overlay for both Rin and terminals; E/Enter advances, Esc closes, and opening/closing clears gameplay input. No choices, conditions, typewriter effect, or dialogue graph are required. **Depends:** NPC-02, INT-03. **Files:** `dialogue.json`, `DialogueOverlay.kt`, loaders. **Done when:** centering Rin or a terminal and pressing E can complete at least two lines without movement/look leakage, including resize while open. **Evidence:** validated Rin and terminal dialogue references route through one responsive line-by-line overlay; focused session/interaction/content/input tests, `:core:validateContent`, and `clean check` pass. The scripted desktop interaction run opened the two-line archive terminal dialogue, retained modal capture through 960×540, 3440×1415, and 1280×720 resizes, advanced and closed with Enter, then reopened and closed with Escape without look/movement leakage on 2026-08-20.
 - [ ] **DIALOGUE-02 [MVP] Test targeting and linear messages.** Cover center visibility, occlusion, range, sprite bounds, modal focus, advance/close, repeat, invalid dialogue reference, NPC/terminal speaker text, and resize while open. **Depends:** DIALOGUE-01. **Files:** interaction/dialogue tests. **Done when:** the complete interaction/message suite passes headlessly where possible and through one desktop smoke check.
 - [ ] **TRAVEL-01 [MVP] Author the Last Packet map journey.** Add paired, visible, non-blocking travel doors with stable IDs and validated destination spawns for `city-alpha -> water-park -> city-alpha -> casino -> city-alpha`; retain `door.last-light-casino` and `door.casino-exit`, and add the water-park pair without relying on F3 map rotation. Travel may be used early, but later relay terminals show contextual out-of-order dialogue and cannot advance the story. **Depends:** INT-02, MAP-06. **Files:** `city-alpha.objects.json`, `water-park.objects.json`, map metadata, door/content/reachability tests. **Done when:** every direction loads the intended map at a walkable arrival pose, exits remain usable after each relay, no critical route depends on F3, and malformed map/door/spawn references fail content validation with the responsible file/path.
@@ -377,7 +377,7 @@ Every task includes scope, dependency, likely files, and an objective completion
 
 ### Phase 8 — Testing, diagnostics, and performance
 
-- [ ] **TEST-01 [MVP] Create reusable headless fixtures.** Build registries, small grids, player poses, entities, input traces, frames, and deterministic clocks without OpenGL. **Depends:** MAP-02, WORLD-02, FRAME-01. **Files:** `TestWorldFactory.kt`, `TestFrameFactory.kt`. **Done when:** parser/collision/movement/raycast/interaction tests share fixtures without production asset coupling.
+- [ ] **TEST-01 [MVP] Create reusable headless fixtures.** Build registries, small grids, player poses, entities, input traces, frames, and deterministic clocks without OpenGL. **Depends:** MAP-02, WORLD-02, FRAME-01. **Files:** planned fixtures; existing equivalents are `TestContent.kt` and `system/SystemTestWorld.kt`. **Done when:** parser/collision/movement/raycast/interaction tests share fixtures without production asset coupling.
 - [ ] **TEST-02 [MVP] Add asset/content failure regression tests.** Cover missing font texture/descriptor, palette/material/cell/map files, invalid colors/glyphs/heights/sprites/objects/dialogue, missing or mistyped required Last Packet IDs, and friendly error mapping. **Depends:** ASSET-05, MAP-05, SPRITE-01, STORY-02. **Files:** asset/content tests. **Done when:** every failure is critical/recoverable by policy, story errors identify the responsible file/path or stable ID, and no case becomes an untyped null error.
 - [ ] **TEST-03 [MVP] Complete the responsive-window matrix.** Record logical/drawable pixels, columns/rows, glyph scale, gutters, effective horizontal/vertical FOV, glyph sharpness, HUD clipping, interaction center, rain coverage, and FPS at 960×540, 1024×576, 1152×648, 1280×720, 1600×900, 1920×1080, 2560×1080, 2560×1440, 3440×1440 or its maximized work area, 3840×2160, representative non-16:9 sizes, and common Windows scaling. **Depends:** FRAME-04, PROJ-01, WINDOW-01, VERIFY-06. **Files:** `DOCS/verification-notes.md`. **Done when:** every required size has dated pass evidence, the 960×540 minimum is enforced, larger/maximized areas expand without distortion, and HDPI backing density alone never changes the logical grid.
 - [ ] **TEST-04 [MVP] Define the end-to-end smoke route.** Include launch, eight-direction look, pitch limits, W/S/A/D movement, diagonal normalization, wall slide, skyline, neon/rain, Rin briefing, three relays, archive unlock/transmission, return/ending, F3 `@`, resize, pause, relaunch reset, and exit. **Depends:** VERIFY-07. **Files:** verification notes. **Done when:** a fresh build completes the full Last Packet route with expected stage checkpoints and no error logs.
@@ -388,6 +388,8 @@ Every task includes scope, dependency, likely files, and an objective completion
 
 ### Phase 9 — Packaging and MVP release
 
+> Not started. Named files such as `THIRD_PARTY_LICENSES.md` are planned, not existing.
+
 - [ ] **PACK-01 [MVP] Configure desktop distribution.** Produce a runnable fat JAR and/or runtime image with LWJGL natives, assets, main class, title, and JVM options. **Depends:** SETUP-03, ASSET-02. **Files:** `desktop/build.gradle.kts`. **Done when:** artifact launches outside IDE from a path containing spaces.
 - [ ] **PACK-02 [MVP] Eliminate working-directory assumptions.** Run from a clean temporary location and verify font/data/map/sprite lookup, optional audio lookup when bundled, and local log paths. **Depends:** PACK-01, ASSET-05. **Files:** release checklist. **Done when:** no source-tree-relative path is required.
 - [ ] **PACK-03 [MVP] Package controls, premise, requirements, and licenses.** Document the Last Packet premise without spoiling its ending, first-person controls, rendering expectations, troubleshooting, system requirements, and every bundled third-party asset/library license. **Depends:** STORY-03, PACK-01. **Files:** `README.md`, `THIRD_PARTY_LICENSES.md`, licenses. **Done when:** a new player understands the goal and controls and every bundled external asset is accounted for.
@@ -396,6 +398,8 @@ Every task includes scope, dependency, likely files, and an objective completion
 - [ ] **VERIFY-09 [MVP] Verify artifact independence.** Install/unpack exact candidate cleanly, run smoke route, resize/HDPI, inspect licenses, and exit. **Depends:** PACK-01 through PACK-04. **Files:** checksum/release evidence. **Done when:** artifact—not IDE—passes with no missing assets or error logs.
 
 ### Phase 10 — Save/load and content expansion
+
+> Not started. Save, migration, and state files named here are planned; none exist yet.
 
 - [ ] **SAVE-01 [Post-MVP] Define versioned save DTOs.** Store schema/game version, timestamp, map ID/version or seed/generator version, player X/Z/yaw/pitch, `LastPacketStage`, entity states, inventory, chunks, and deltas by stable IDs. **Depends:** STORY-03, NPC-03. **Files:** `SaveGameDto.kt`, documented JSON example. **Done when:** no DTO contains runtime indices or LibGDX/render objects and story/door state has one consistent representation.
 - [ ] **SAVE-02 [Post-MVP] Map live state to/from candidate DTO state.** Validate positions, finite values, collision-free spawn, content IDs, and invariants before constructing a new world. **Depends:** SAVE-01. **Files:** `SaveService.kt`, proposed `WorldStateMapper.kt`. **Done when:** invalid input leaves active world semantically unchanged.
@@ -407,6 +411,8 @@ Every task includes scope, dependency, likely files, and an objective completion
 - [ ] **VERIFY-10 [Post-MVP] Verify persistence and content.** Change world/player pose, save, exit/relaunch/load, interrupt a save, recover previous slot, and add one content-only object. **Depends:** SAVE-01 through SAVE-06, CONTENT-01. **Files:** verification notes/fixtures. **Done when:** state matches, recovery succeeds, and invalid content cannot replace active world.
 
 ### Phase 11 — Seamless procedural city (Milestone 5)
+
+> Not started. Generation files named here are planned; none exist yet.
 
 - [ ] **PROC-01 [Post-MVP] Lock generation contracts.** Define 32×32 chunks, global/local conversion, seed/version, stages, RNG mixing, shared edge key, reserved road cells, building IDs/heights, and validation. **Depends:** MAP-03, SAVE-01. **Files:** `DOCS/procedural-generation.md`, `ChunkCoord.kt`. **Done when:** exact formulas make two neighbors independently compute identical sample connectors.
 - [ ] **PROC-02 [Post-MVP] Partition deterministic RNG streams.** Derive separate roads, lots, heights, facades, fixtures, and entities streams from seed/chunk/stage. **Depends:** PROC-01. **Files:** proposed `SeedMixer.kt`, tests. **Done when:** extra cosmetic RNG calls cannot change road/lot hashes.
@@ -421,6 +427,8 @@ Every task includes scope, dependency, likely files, and an objective completion
 - [ ] **VERIFY-11 [Post-MVP] Verify Milestone 5.** Traverse at least 25 chunks and every edge orientation, inspect first-person seams, revisit changes, save/reload, and run seed/cache suites. **Depends:** PROC-01 through PROC-09. **Files:** verification evidence. **Done when:** full Milestone 5 definition passes.
 
 ### Phase 12 — Inventory and optional game expansion
+
+> Not started. Inventory and item files named here are planned; none exist yet.
 
 - [ ] **ITEM-01 [Post-MVP] Define item registry and inventory.** Add stable item ID, glyph/color/name/description/tags/stack limit and ordered capacity-limited stacks with atomic add/remove. **Depends:** CONTENT-01. **Files:** item package, `items.json`. **Done when:** stacking, capacity, exact removal, unknown IDs, and no-partial-failure tests pass.
 - [ ] **ITEM-02 [Post-MVP] Build a cyberdeck inventory overlay.** Use existing font/palette, keyboard navigation, glyph/name/count/description, empty state, and modal focus. **Depends:** ITEM-01, HUD-01, DIALOGUE-01. **Files:** proposed `InventoryOverlay.kt`, input mappings. **Done when:** open/navigate/close never moves/looks and remains readable at target sizes.
@@ -506,7 +514,7 @@ Every task includes scope, dependency, likely files, and an objective completion
 | Procedural edges match roads but not perspective materials. | Visible ground/facade seam at boundary. | Edge contract includes ground/material continuity and rendered seam fixtures. |
 | Background generation adds races. | Half-built chunks/nondeterminism/shutdown hang. | Stay synchronous until profiling; publish only immutable validated candidates if PROC-10 is justified. |
 | Packaging depends on IDE paths. | Assets work only via `run`. | LibGDX internal assets and clean-path artifact verification. |
-| Learning sessions become oversized. | Long stall with no green feedback. | One concept/session, three micro-wins, cut after stalled 25–60 minutes per `LEARNING_STRATEGY.md`. |
+| Learning sessions become oversized. | Long stall with no green feedback. | One concept/session, three micro-wins, cut after 25–60 stalled minutes. |
 
 ## 7. Current next five tasks
 
@@ -516,12 +524,12 @@ Every task includes scope, dependency, likely files, and an objective completion
 4. **STORY-02:** Author the three-relay route, dialogue content, validation, and cross-map HUD guidance.
 5. **DOOR-01 / STORY-03:** Open the archive after Casino Relay 3, then complete the return-to-Rin ending.
 
-The required Phase 6 scope, mandatory nature-spur/Cascade Relay route, optional ambience/footsteps/head bob/façade marquees, responsive `WINDOW-01` revision, and linear `DIALOGUE-01` presentation are verified complete. SPRITE-01/02 provide the shared validated static-art registry/projector; NPC-01/02 pair Rin's typed metadata and authoritative blocking world entity with stable, depth-tested live composition. DIALOGUE-02 is next. TRAVEL-01 then turns the existing water-park and casino into compact story chapters without F3 map rotation; STORY-02 must preserve Cascade Relay as the fixed first recovery landmark while using those two existing terminals for the remaining relays. Continue Phase 7 in listed dependency order through `VERIFY-07`. Only then may the optional [life pass](../ARCHIVE/devplan-life-pass.md) begin, reusing the proven entity-sprite and NPC occupancy path; it does not block Phase 8, packaging, or release. An optional interaction cue remains non-blocking.
+The required Phase 6 scope, mandatory nature-spur/Cascade Relay route, optional ambience/footsteps/head bob/façade marquees, responsive `WINDOW-01` revision, and linear `DIALOGUE-01` presentation are verified complete. SPRITE-01/02 provide the shared validated static-art registry/projector; NPC-01/02 pair Rin's typed metadata and authoritative blocking world entity with stable, depth-tested live composition. DIALOGUE-02 is next. TRAVEL-01 then turns the existing water-park and casino into compact story chapters without F3 map rotation; STORY-02 must preserve Cascade Relay as the fixed first recovery landmark while using those two existing terminals for the remaining relays. Continue Phase 7 in listed dependency order through `VERIFY-07`. Only then may optional ambient life work begin, reusing the proven entity-sprite and NPC occupancy path; it does not block Phase 8, packaging, or release. An optional interaction cue remains non-blocking.
 
 ## 8. Features that should not be included in the MVP
 
 - Overhead/isometric gameplay as a second main view; only an F3 debug footprint may use `@`.
-- `PerspectiveCamera`/`ModelBatch`, imported 3D models, arbitrary meshes, skeletal animation, or any shader-based ASCII post-process beyond the one bounded cell-aware composite pass required by `devplan-city-visual-density.md`.
+- `PerspectiveCamera`/`ModelBatch`, imported 3D models, arbitrary meshes, skeletal animation, or any shader-based ASCII post-process beyond the one bounded cell-aware composite pass described in `DOCS/rendering-contract.md`.
 - Arbitrary polygon buildings, diagonal walls, curves, slopes, stairs, elevators, rooftops, stacked walkable floors, jumping, crouching, or vertical physics.
 - Mouse look, controllers, touch, key-rebinding UI, or broad accessibility settings beyond readable defaults and reduced-flicker-safe tuning points.
 - Procedural generation, chunk streaming, background generation, save/load, autosave, or cloud saves.

@@ -1,6 +1,6 @@
 # ASCII City Implementation Workflow
 
-> Authority: `LEARNING_STRATEGY.md` remains the complete learning contract. This file routes that contract into this project.
+> This file defines how implementation sessions are run as user-typed lessons in this project.
 
 ## Default session shape
 
@@ -9,9 +9,9 @@
 3. Explain what the task contributes to the visible game before discussing syntax.
 4. Show only a small syntax skeleton with blanks for unfamiliar Kotlin.
 5. The user explains unfamiliar syntax in plain English, then types the implementation.
-6. Reach at least three micro-wins: source typed, build/test green, and runtime evidence or a tattoo note.
+6. Reach at least three micro-wins: source typed, build/test green, and runtime evidence or a written note of the concept.
 7. Record evidence before checking the development-plan task.
-8. Ask for the murkiest sentence and update `DOCS/kotlin-brain-tattoos/` when a concept lands.
+8. Ask for the murkiest sentence when a concept lands.
 
 ## Kotlin style while learning
 

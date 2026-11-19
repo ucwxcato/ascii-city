@@ -44,7 +44,7 @@
 
 - [x] Refreshed presentation baseline evidence with audio and head bob disabled: a requested 960×540 launch first selected a 96×30 surface, then correctly enforced the desktop 1280×720 logical minimum and captured at 128×40; the direct 1280×720 run also captured at 128×40; and the 3440×1440 run settled at 344×74 after its initial whole-number-scaled surface. The retained [requested-960/minimum-enforced](verification/life-pass-phase0-requested-960x540-enforced-1280x720.png), [1280×720](verification/life-pass-phase0-baseline-1280x720.png), and [3440×1440](verification/life-pass-phase0-baseline-3440x1440.png) captures were visually reviewed. Their SHA-256 digests are `472a898184979174d5cc4e66c0f1b5c9408d7ad6e0b6332dc3a98e1f03c991e2`, `6376a1f163278894de12d5238308609cb7c0c093dd5711ca1318ecf54a9f8618`, and `fa2879cd657cdc5f790a0e6659935885d7c72624d586e925c1f6440d6caa8eb6` respectively.
 - [x] The 540-frame no-audio/no-head-bob presentation route captured [its 1280×720 baseline frame](verification/life-pass-phase0-presentation-route-1280x720.png), toggled the default-off soundtrack on and back off, paused/resumed, resized through the minimum, 3440-wide, and reference work areas, and completed with stable semantic hash `b28ac29600d065f77e654e4c84a4e436ce26d2bd591edda35655d75a3429b808`. Its capture SHA-256 is `1e7fd09597f7417d92728380dcf20b9c6ccb6bb07a1b293ad0a34dffec89be01`.
-- [x] `LPASS-02`/`LPASS-03` are reconciled against the current implementation: strict optional-object parsing and the shared `AsciiSpriteRegistry` → `GameWorld`/`CollisionSystem` → `EntitySpriteRenderer` actor path are documented in the life-pass plan and covered by current loader/actor/NPC tests.
+- [x] `LPASS-02`/`LPASS-03` are reconciled against the current implementation: strict optional-object parsing and the shared `AsciiSpriteRegistry` → `GameWorld`/`CollisionSystem` → `EntitySpriteRenderer` actor path are covered by current loader/actor/NPC tests.
 - [ ] Canonical Last Packet verification is not claimed here. The canonical plan still leaves `TRAVEL-01`, `STORY-01` through `STORY-03`, `DOOR-01`, and `VERIFY-07` open, so no complete story-route checkpoints or final Phase 0 gate assertion exists yet.
 
 ## Close-façade contrast retune — 2026-08-25
@@ -169,7 +169,7 @@ The runtime logged the selected ASCII surface for each successful launch, captur
 - [x] Map parsing rejects empty, ragged, tabbed, unknown-token, and malformed content while treating LF and CRLF identically.
 - [x] Spawn, object bounds, duplicate objects, interaction references, and interactable reachability are validated before a `GameWorld` escapes.
 - [x] `WorldGrid` storage and `GameWorld` entity add/move/remove spatial-index invariants pass.
-- [x] `gradlew check -PcontentMap=invalid-phase2` fails as intended with `maps/invalid-phase2.txt:1:1: unknown map token '?'`.
+- [x] `gradlew check -PcontentMap=invalid-phase2` fails as intended with `maps/invalid-phase2/invalid-phase2.txt:1:1: unknown map token '?'`.
 - [x] Restoring the default invocation returns `gradlew clean check` to green.
 
 ### Authored-world evidence
