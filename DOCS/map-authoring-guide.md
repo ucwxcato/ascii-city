@@ -57,6 +57,19 @@ The first line is the northern edge of the map. In world coordinates, `(0, 0)` i
 | `m` | building.mid | No | 12-unit facade |
 | `t` | building.tall | No | 22-unit tower facade |
 | `n` | building.neon | No | 16-unit neon facade |
+| `H` | building.garden-home-1 | No | 3-unit one-story garden home facade |
+| `J` | building.garden-home-2 | No | 6-unit two-story garden home facade |
+| `1` | building.residential-1 | No | 3-unit one-story residential facade |
+| `2` | building.residential-2 | No | 6-unit two-story residential facade |
+| `3` | building.residential-3 | No | 9-unit three-story complex facade |
+| `4` | building.residential-4 | No | 12-unit four-story complex facade |
+| `5` | building.residential-5 | No | 15-unit five-story complex facade |
+| `u` | interior.casino-floor | Yes | Casino carpet floor |
+| `j` | interior.casino-aisle | Yes | Casino aisle |
+| `X` | interior.casino-wall | No | 7-unit casino wall |
+| `s` | interior.casino-slot | No | 2-unit slot-machine fixture |
+| `k` | interior.casino-table | No | 1-unit gaming table |
+| `o` | interior.casino-light-column | No | 3-unit light column |
 
 The precise behavior comes from `assets/data/cells.json`. Solid and opaque properties there control collision and visibility; the rendered character or material glyph does not.
 
@@ -173,6 +186,8 @@ For north/south faces, `widthCells` advances east from `cellX`; for east/west fa
 ### Add restrained city life
 
 `atmosphericEmitters`, `ambientEventEmitters`, and `ambientActors` are optional top-level arrays in the same objects file. Use steam only on open ground and rooftop exhaust only on a building cell. Event emitters support `ventHiss`, `electricSpark`, and `distantHorn`; keep their intervals long enough that separate locations do not fire continuously.
+
+Optional `trafficCars` add cosmetic camera-facing cars on closed road loops, and `facadeEntrances` add ground-level door artwork that never changes collision. Their fields are listed in [map-format.md](map-format.md).
 
 Pedestrians reference shared sprite art and follow short axis-aligned `waypoints` on walkable cells. `speedCellsPerSecond`, endpoint `waitSeconds`, and `startDelaySeconds` form their simple authored schedule. Their positions are blocking semantic entities, so keep routes away from story doors, one-cell choke points, and interaction targets. The content validator samples the entire route for solid-cell and radius clearance before constructing the world.
 

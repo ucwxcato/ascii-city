@@ -149,10 +149,10 @@ Observed evidence:
 
 | Capture | Observed result |
 |---|---|
-| [1280×720 test card](verification/milestone-1-1280x720.png) | Exactly 128×40 cells; aligned border, glyph ramp, palette bands, skyline, horizon, and converging road guides |
-| [960×540 test card](verification/milestone-1-960x540.png) | Exactly 96×30 cells with the same stable composition and whole-cell alignment |
-| [Missing font](verification/milestone-1-missing-font.png) | Readable blocking Scene2D error screen; no blank window or null crash |
-| [Corrupt palette](verification/milestone-1-corrupt-palette.png) | Readable validation path naming the file, key, expected formats, and invalid value |
+| 1280×720 test card | Exactly 128×40 cells; aligned border, glyph ramp, palette bands, skyline, horizon, and converging road guides |
+| 960×540 test card | Exactly 96×30 cells with the same stable composition and whole-cell alignment |
+| Missing font | Readable blocking Scene2D error screen; no blank window or null crash |
+| Corrupt palette | Readable validation path naming the file, key, expected formats, and invalid value |
 
 The runtime logged the selected ASCII surface for each successful launch, captured after four rendered frames, and exited cleanly after ten frames. Visual inspection confirmed nearest-filtered glyphs, stable 10×18 spacing, distinct semantic colors, centered error text, and correctly oriented screenshots.
 
@@ -240,13 +240,13 @@ The verification sweep captured all eight 45° yaw directions at level, +25°, a
 
 | Capture | Observed result |
 |---|---|
-| [North, level, 1280×720](verification/phase3-north-level-1280x720.png) | 128×40 street canyon with a stable horizon, converging data road, stepped facade depth, varied towers, and neon signal bands |
-| [North, +25°, 1280×720](verification/phase3-north-up-1280x720.png) | Horizon moves down and upper facade/tower spans expand without changing position |
-| [North, −25°, 1280×720](verification/phase3-north-down-1280x720.png) | Horizon moves up and ground-plane data flow occupies the view without numerical artifacts |
-| [Southwest, level, 1280×720](verification/phase3-southwest-level-1280x720.png) | Rotation exposes a different neon facade and depth ordering rather than sliding a flat image |
-| [North, level, 960×540](verification/phase3-north-level-960x540.png) | The same composition survives at the 96×30 minimum surface with undistorted FOV |
-| [North, +25°, 960×540](verification/phase3-north-up-960x540.png) | Upper spans remain readable and whole-cell aligned at minimum size |
-| [North, −25°, 960×540](verification/phase3-north-down-960x540.png) | Ground convergence and horizon behavior remain stable at minimum size |
+| North, level, 1280×720 | 128×40 street canyon with a stable horizon, converging data road, stepped facade depth, varied towers, and neon signal bands |
+| North, +25°, 1280×720 | Horizon moves down and upper facade/tower spans expand without changing position |
+| North, −25°, 1280×720 | Horizon moves up and ground-plane data flow occupies the view without numerical artifacts |
+| Southwest, level, 1280×720 | Rotation exposes a different neon facade and depth ordering rather than sliding a flat image |
+| North, level, 960×540 | The same composition survives at the 96×30 minimum surface with undistorted FOV |
+| North, +25°, 960×540 | Upper spans remain readable and whole-cell aligned at minimum size |
+| North, −25°, 960×540 | Ground convergence and horizon behavior remain stable at minimum size |
 
 At the reference north view, early-occlusion termination reduced the observed traversal from 8,500 candidate steps to 3,133 while preserving the frame image; a southwest view required 856 steps. The retained presentation intentionally reads as a city being decoded from moving data rather than static ASCII-painted walls.
 
@@ -281,7 +281,7 @@ At the reference north view, early-occlusion termination reduced the observed tr
 6. Held right+up arrows to yaw `100°` and clamp pitch at `55°`, then left+down to restore both axes to `0°` without translating.
 7. Exited normally with no error-level lifecycle log or duplicate input processor.
 
-The retained [walk verification capture](verification/phase4-walk-verification.png) shows the interpolated city view during the arrow-look segment after the movement/collision/resize route.
+The retained walk verification capture shows the interpolated city view during the arrow-look segment after the movement/collision/resize route.
 
 ## Phase 5 — HUD and interaction targeting
 
@@ -308,7 +308,7 @@ The retained [walk verification capture](verification/phase4-walk-verification.p
 5. Reopened with E, closed with Escape, restored 1280×720, and completed with no error-level log, stuck input, or duplicate interaction.
 6. Ran the ordinary non-verification smoke path afterward to prove normal launch/render/exit remained green.
 
-The retained [Phase 5 interaction capture](verification/phase5-interaction-1280x720.png) shows the aligned controls, live F3 diagnostics/footprint, dark modal panel, and readable archive-terminal response over the first-person frame.
+The retained Phase 5 interaction capture shows the aligned controls, live F3 diagnostics/footprint, dark modal panel, and readable archive-terminal response over the first-person frame.
 
 ## Phase 6 — Cyberpunk presentation
 
@@ -335,7 +335,7 @@ The retained [Phase 5 interaction capture](verification/phase5-interaction-1280x
 4. Recomputed a SHA-256 digest across the map identity, every semantic grid cell, and every static entity at step 480; it exactly matched the startup digest `8dc444126da92aeb47856dd8b6c664cf1801631b009943c9d595bc248c10458e`.
 5. Reported heap use after explicit collection at both bounds (`4,409,072` to `7,260,648` bytes; `+2,851,576` bytes during startup/warmup) and exited normally. The long-run allocation guard remains the renderer's warmed 3,600-frame probe rather than this startup-inclusive smoke measurement.
 
-The retained [fog-tuning capture](verification/phase6-fog-1280x720.png) confirms readable neutral near geometry and a smoothly fading skyline. The retained [presentation-route capture](verification/phase6-presentation-smoke-1280x720.png) shows the live F3/HUD overlay, rain, stable neon accents, park paths/fixtures, lamps, and depth-separated facades at 1280×720.
+The retained fog-tuning capture confirms readable neutral near geometry and a smoothly fading skyline. The retained presentation-route capture shows the live F3/HUD overlay, rain, stable neon accents, park paths/fixtures, lamps, and depth-separated facades at 1280×720.
 
 ### Ambience refinement — 2026-08-19
 
@@ -350,11 +350,11 @@ The retained [fog-tuning capture](verification/phase6-fog-1280x720.png) confirms
 - [x] `desktop:run --args=--verify-walk` loaded all four natural/pavement footstep derivatives, exercised distance-based park-path walking plus lifecycle/collision/resize behavior, and exited normally after 750 frames; `clean check` and `:core:validateContent` passed afterward.
 - [x] `desktop:run --args="--smoke-test --no-audio --no-head-bob"` completed ten frames with the no-op audio backend and reduced-motion presentation, and `clean check` passed afterward.
 
-The retained [audio HUD capture](verification/phase6-audio-hud-1280x720.png) confirms the bottom-right control's alignment at 1280×720; its current label is `[M] MUSIC ON/OFF` to match soundtrack-only behavior. PRESENT-01 tests bound head bob to ±0.015 world units and prove it changes only render eye height; `--no-head-bob` disables it for reduced motion. AUDIO-02 remains open only for an interaction one-shot and its once-per-action emission rule.
+The retained audio HUD capture confirms the bottom-right control's alignment at 1280×720; its current label is `[M] MUSIC ON/OFF` to match soundtrack-only behavior. PRESENT-01 tests bound head bob to ±0.015 world units and prove it changes only render eye height; `--no-head-bob` disables it for reduced motion. AUDIO-02 remains open only for an interaction one-shot and its once-per-action emission rule.
 
 ### Contrast-separation refinement — 2026-08-19
 
-The neutral palette no longer aliases wall fronts with fog or wall sides with sidewalks. Side-face brightness is 0.66, and deterministic glyph thinning now falls from full density at the 10-cell fog start to 0.38 at the 48-cell fog end without changing depth, collision, or authored world state. Focused presentation/content/renderer tests, `:core:validateContent`, and `clean check` passed. Visual inspection of the retained [1280×720 contrast-separation capture](verification/contrast-separation-1280x720.png) confirmed clearer face orientation and a less uniformly dense mid/far skyline while preserving silhouettes, neon landmarks, and the dark ground plane.
+The neutral palette no longer aliases wall fronts with fog or wall sides with sidewalks. Side-face brightness is 0.66, and deterministic glyph thinning now falls from full density at the 10-cell fog start to 0.38 at the 48-cell fog end without changing depth, collision, or authored world state. Focused presentation/content/renderer tests, `:core:validateContent`, and `clean check` passed. Visual inspection of the retained 1280×720 contrast-separation capture confirmed clearer face orientation and a less uniformly dense mid/far skyline while preserving silhouettes, neon landmarks, and the dark ground plane.
 
 ### Vegas façade marquees — 2026-08-19
 
@@ -364,7 +364,7 @@ The neutral palette no longer aliases wall fronts with fog or wall sides with si
 - [x] Focused content, palette, sampler, snapshot, determinism, and warmed allocation tests pass; `:core:validateContent` and `clean check` pass with the canonical map.
 - [x] A 1280×720 desktop smoke view at yaw 180° and pitch 10° rendered the close marquee with no error logs; additional oblique views confirmed partial building occlusion and distance LOD behavior.
 
-The retained [façade-sign capture](verification/facade-signs-1280x720.png) confirms the approved giant warm marquee treatment against the existing cyan/magenta building accents. The signs remain flush with their buildings and visually distinct from Rin's camera-facing entity-sprite art.
+The retained façade-sign capture confirms the approved giant warm marquee treatment against the existing cyan/magenta building accents. The signs remain flush with their buildings and visually distinct from Rin's camera-facing entity-sprite art.
 
 ### Required Last Packet nature spur — 2026-08-19
 
@@ -376,7 +376,7 @@ The retained [façade-sign capture](verification/facade-signs-1280x720.png) conf
 - [x] The displaced `LUCKY//7 SYNTHETICS` marquee was re-anchored to a valid east-facing exterior wall and continues to pass façade placement validation.
 - [x] The Cascade waterfall now owns a licensed looped environmental layer. Two semantic waterfall cells form its allocation-free distance field: full level within 2.5 cells, smooth fade through the reserve, and silence at 14 cells and beyond. Focused tests cover source derivation, midpoint attenuation, city-spawn silence, music-mute independence, no-restart mixing, pause/resume, disposal, invalid levels, and empty-source safety.
 
-The retained [park trailhead capture](verification/nature-spur-1280x720.png) shows the connected city/park transition and pine silhouettes from the canonical spawn. The retained [cascade capture](verification/nature-cascade-1280x720.png) shows the animated twin-width waterfall feeding the river between stone shoulders, while the [campsite capture](verification/nature-camp-1280x720.png) confirms warm triangular tents among the trail, pines, and lamps.
+The retained park trailhead capture shows the connected city/park transition and pine silhouettes from the canonical spawn. The retained cascade capture shows the animated twin-width waterfall feeding the river between stone shoulders, while the campsite capture confirms warm triangular tents among the trail, pines, and lamps.
 
 ## Phase 7 — Stationary Rin definition (`NPC-01`)
 
@@ -400,7 +400,7 @@ The retained [park trailhead capture](verification/nature-spur-1280x720.png) sho
 - [x] All 135 core tests pass with zero failures, errors, or skips. `:core:validateContent` preserves 21 entities and 5,718 reachable cells; `clean check` passes. Updated east, diagonal-up, and close-approach hashes lock the intended live sprite output.
 - [x] A 1280×720 spawn-distance smoke view at yaw `80°` writes 10 Rin cells and exits after ten frames. A closer verification view writes 42 cells, turns Rin outside the FOV, renders at 96×30, turns back, restores 128×40, and exits after 210 frames without losing entity/collision state or logging an error.
 
-The retained [spawn-distance Rin capture](verification/phase7-rin-1280x720.png) confirms she is discoverable from the park approach without dominating the skyline. The retained [close Rin capture](verification/phase7-rin-close-1280x720.png) confirms readable cyan hood/magenta coat/neutral body colors, transparent sprite cells, grounded feet, and correct depth alongside lamps, trees, façades, and the dark street plane.
+The retained spawn-distance Rin capture confirms she is discoverable from the park approach without dominating the skyline. The retained close Rin capture confirms readable cyan hood/magenta coat/neutral body colors, transparent sprite cells, grounded feet, and correct depth alongside lamps, trees, façades, and the dark street plane.
 
 ## Playable map rotation and themed maps - 2026-08-19
 
@@ -423,7 +423,7 @@ The retained [spawn-distance Rin capture](verification/phase7-rin-1280x720.png) 
 - [x] The direct `--map=water-park` smoke route opened a 1280×720 logical client, selected a 128×40 surface, rendered 128 rays with 2,297 ceiling writes, captured the frame, and exited normally after ten frames with audio disabled.
 - [x] Focused metadata, catalog, projection, material, and renderer tests pass. Final `clean check` passes all 148 core and 7 desktop tests, and a separate `:core:validateContent -PcontentMap=water-park` confirms the v2 bundle and reachable component.
 
-The retained [liminal waterpark capture](verification/water-park-interior-1280x720.png) confirms a converging pale tiled ceiling, repetitive white-tile wall fields, dark pool/floor bands, fixture occlusion, and no visible outdoor sky or rain. The deliberately repetitive, washed-out shell establishes the requested liminal horror-space treatment without replacing the first-person ASCII renderer or semantic collision model.
+The retained liminal waterpark capture confirms a converging pale tiled ceiling, repetitive white-tile wall fields, dark pool/floor bands, fixture occlusion, and no visible outdoor sky or rain. The deliberately repetitive, washed-out shell establishes the requested liminal horror-space treatment without replacing the first-person ASCII renderer or semantic collision model.
 
 ## Responsive large and ultrawide window (`WINDOW-01`)
 
@@ -445,9 +445,9 @@ Retained visual evidence:
 
 | Capture | Observed result |
 |---|---|
-| [1280×720 responsive reference](verification/ultrawide-reference-1280x720.png) | Original 128×40 composition at 1× remains aligned and undistorted |
-| [3440-wide ultrawide world](verification/ultrawide-3440x1440.png) | Actual 3440×1415 client renders 172×39 at 2×, fills the work area, and reveals more horizontal city geometry |
-| [3440-wide ultrawide modal and F3](verification/ultrawide-dialogue-3440x1440.png) | Scaled modal, debug panel, controls, reticle-centered composition, and effective 93.2° horizontal FOV remain readable |
+| 1280×720 responsive reference | Original 128×40 composition at 1× remains aligned and undistorted |
+| 3440-wide ultrawide world | Actual 3440×1415 client renders 172×39 at 2×, fills the work area, and reveals more horizontal city geometry |
+| 3440-wide ultrawide modal and F3 | Scaled modal, debug panel, controls, reticle-centered composition, and effective 93.2° horizontal FOV remain readable |
 
 ## Data-driven linear dialogue (`DIALOGUE-01`) — 2026-08-20
 

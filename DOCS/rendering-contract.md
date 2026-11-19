@@ -1,6 +1,6 @@
 # First-Person ASCII Rendering Contract
 
-> Status: Phase 4 implementation and visual verification complete; first-person projection follows interpolated WASD/arrow-controlled simulation from the 960×540 minimum through responsive large and ultrawide client areas. The Phase 7 camera-facing NPC/entity sprite projector and stationary Rin composition are verified at the reference sizes, and the responsive window revision is verified at 1280×720 plus a 3440-wide Windows work area.
+> Status: Phase 4 implementation and visual verification complete; first-person projection follows interpolated WASD/arrow-controlled simulation from the 1280×720 minimum through responsive large and ultrawide client areas. The Phase 7 camera-facing NPC/entity sprite projector and stationary Rin composition are verified at the reference sizes, and the responsive window revision is verified at 1280×720 plus a 3440-wide Windows work area.
 
 ## Reference boundary
 
