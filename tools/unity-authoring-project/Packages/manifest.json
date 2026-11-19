@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "com.asciicity.world-authoring": "file:../../unity-world-authoring",
-    "com.unity.modules.imgui": "1.0.0"
+    "com.asciicity.world-authoring": "file:../../unity-world-authoring"
   }
 }

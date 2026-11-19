@@ -9,7 +9,6 @@ import com.asciicity.render.PresentationTuning
 import com.asciicity.render.FacadeSign
 import com.asciicity.traffic.TrafficCar
 import com.asciicity.world.GameWorld
-import com.asciicity.world.WorldAsset
 
 data class LoadedContent(
     val palette: RenderPalette,
@@ -26,5 +25,4 @@ data class LoadedContent(
     val atmosphericEmitters: List<AtmosphericEmitter> = emptyList(),
     val ambientEventEmitters: List<AmbientEventEmitter> = emptyList(),
     val ambientActors: List<AmbientActor> = emptyList(),
-    val worldAssets: List<WorldAsset> = emptyList(),
 )

@@ -5,12 +5,6 @@
       "depth": 0,
       "source": "local",
       "dependencies": {}
-    },
-    "com.unity.modules.imgui": {
-      "version": "1.0.0",
-      "depth": 0,
-      "source": "builtin",
-      "dependencies": {}
     }
   }
 }

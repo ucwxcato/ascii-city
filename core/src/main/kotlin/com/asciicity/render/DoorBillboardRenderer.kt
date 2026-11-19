@@ -21,14 +21,7 @@ class DoorBillboardRenderer(
         refreshEntitiesIfChanged()
         var writtenCells = 0
         for (door in resolvedDoors) {
-            writtenCells += renderer.render(
-                frame,
-                pose,
-                metrics,
-                doorSprite,
-                door.position,
-                anchorHeight = world.grid.terrainHeightAt(door.position.x, door.position.z),
-            )
+            writtenCells += renderer.render(frame, pose, metrics, doorSprite, door.position)
         }
         return writtenCells
     }

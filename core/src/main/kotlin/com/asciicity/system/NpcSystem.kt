@@ -52,7 +52,6 @@ class NpcSystem(
                 metrics = metrics,
                 sprite = sprites.sprite(npc.spriteId),
                 position = entity.position,
-                anchorHeight = world.grid.terrainHeightAt(entity.position.x, entity.position.z),
             )
             index += 1
         }

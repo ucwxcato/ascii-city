@@ -44,8 +44,8 @@ internal class ParkFixtureBillboardRenderer(
         val rightScreen = metrics.projectCameraPlaneX(rightLateral / depth)
         if (rightScreen <= 0.0 || leftScreen >= frame.width.toDouble()) return
 
-        val topScreen = metrics.projectWorldHeight(fixture.baseHeight + fixture.definition.height, pose.eyeHeight, depth)
-        val bottomScreen = metrics.projectWorldHeight(fixture.baseHeight, pose.eyeHeight, depth)
+        val topScreen = metrics.projectWorldHeight(fixture.definition.height.toDouble(), pose.eyeHeight, depth)
+        val bottomScreen = metrics.projectWorldHeight(0.0, pose.eyeHeight, depth)
         if (topScreen <= 0.0 || bottomScreen >= frame.height.toDouble()) return
 
         val firstColumn = floor(leftScreen).toInt().coerceAtLeast(0)
@@ -64,7 +64,7 @@ internal class ParkFixtureBillboardRenderer(
         val fixtureDepth = depth.toFloat()
         var row = firstRow
         while (row <= lastRow) {
-            val vertical = pose.eyeHeight + (row + 0.5 - metrics.horizonRow) * depth / metrics.focalRows - fixture.baseHeight
+            val vertical = pose.eyeHeight + (row + 0.5 - metrics.horizonRow) * depth / metrics.focalRows
             var column = firstColumn
             while (column <= lastColumn) {
                 val horizontal = (metrics.cameraPlaneXForColumn(column) * depth - leftLateral) / BILLBOARD_WIDTH
@@ -116,8 +116,7 @@ internal class ParkFixtureBillboardRenderer(
         val fixtures = ArrayList<Fixture>()
         grid.forEachCell { cell, definition ->
             if (FIXTURE_TAG in definition.tags) {
-                val position = WorldPosition(cell.x + 0.5, cell.z + 0.5)
-                fixtures += Fixture(position, grid.terrainHeightAt(position.x, position.z), definition)
+                fixtures += Fixture(WorldPosition(cell.x + 0.5, cell.z + 0.5), definition)
             }
         }
         return fixtures.toTypedArray()
@@ -125,7 +124,6 @@ internal class ParkFixtureBillboardRenderer(
 
     private data class Fixture(
         val position: WorldPosition,
-        val baseHeight: Double,
         val definition: CellDefinition,
     )
 
